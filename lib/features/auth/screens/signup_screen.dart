@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/utils/app_print.dart';
+import '../../../navigation/route_names.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
@@ -44,10 +45,25 @@ class _SignupScreenState extends State<SignupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.primaryBackground,
       appBar: AppBar(
-        title: const Text('Sign Up'),
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.primaryBackground,
         elevation: 0,
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back_ios,
+            color: AppColors.textLight,
+          ),
+          onPressed: () => context.go(RouteNames.userTypeSelectionPath),
+        ),
+        title: const Text(
+          'Sign Up',
+          style: TextStyle(
+            color: AppColors.textLight,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        centerTitle: true,
       ),
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
@@ -77,13 +93,14 @@ class _SignupScreenState extends State<SignupScreen> {
                   Icon(
                     Icons.fitness_center,
                     size: 80,
-                    color: AppColors.primary,
+                    color: AppColors.textLight,
                   ),
                   const SizedBox(height: 24),
                   Text(
                     'Create Account',
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                       fontWeight: FontWeight.bold,
+                      color: AppColors.textLight,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -91,7 +108,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   Text(
                     'Join us and start your fitness journey',
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: Colors.grey[600],
+                      color: AppColors.textSecondary,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -101,10 +118,25 @@ class _SignupScreenState extends State<SignupScreen> {
                   TextFormField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
-                    decoration: const InputDecoration(
+                    style: const TextStyle(color: AppColors.textLight),
+                    decoration: InputDecoration(
                       labelText: 'Email',
-                      prefixIcon: Icon(Icons.email),
-                      border: OutlineInputBorder(),
+                      labelStyle: const TextStyle(color: AppColors.textSecondary),
+                      prefixIcon: const Icon(Icons.email, color: AppColors.textLight),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(color: AppColors.textSecondary),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(color: AppColors.textSecondary),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(color: AppColors.secondary, width: 2),
+                      ),
+                      filled: true,
+                      fillColor: AppColors.surfaceDark,
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -123,14 +155,17 @@ class _SignupScreenState extends State<SignupScreen> {
                   TextFormField(
                     controller: _passwordController,
                     obscureText: _obscurePassword,
+                    style: const TextStyle(color: AppColors.textLight),
                     decoration: InputDecoration(
                       labelText: 'Password',
-                      prefixIcon: const Icon(Icons.lock),
+                      labelStyle: const TextStyle(color: AppColors.textSecondary),
+                      prefixIcon: const Icon(Icons.lock, color: AppColors.textLight),
                       suffixIcon: IconButton(
                         icon: Icon(
                           _obscurePassword
                               ? Icons.visibility
                               : Icons.visibility_off,
+                          color: AppColors.textLight,
                         ),
                         onPressed: () {
                           setState(() {
@@ -138,7 +173,20 @@ class _SignupScreenState extends State<SignupScreen> {
                           });
                         },
                       ),
-                      border: const OutlineInputBorder(),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(color: AppColors.textSecondary),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(color: AppColors.textSecondary),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(color: AppColors.secondary, width: 2),
+                      ),
+                      filled: true,
+                      fillColor: AppColors.surfaceDark,
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -158,8 +206,8 @@ class _SignupScreenState extends State<SignupScreen> {
                       return ElevatedButton(
                         onPressed: state is AuthLoading ? null : _handleSignup,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          foregroundColor: Colors.white,
+                          backgroundColor: AppColors.secondary,
+                          foregroundColor: AppColors.textLight,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
@@ -172,7 +220,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
                                   valueColor: AlwaysStoppedAnimation<Color>(
-                                    Colors.white,
+                                    AppColors.textLight,
                                   ),
                                 ),
                               )
@@ -194,11 +242,14 @@ class _SignupScreenState extends State<SignupScreen> {
                     children: [
                       Text(
                         'Already have an account? ',
-                        style: TextStyle(color: Colors.grey[600]),
+                        style: TextStyle(color: AppColors.textSecondary),
                       ),
                       TextButton(
                         onPressed: () => context.go('/login'),
-                        child: const Text('Sign In'),
+                        child: const Text(
+                          'Sign In',
+                          style: TextStyle(color: AppColors.secondary),
+                        ),
                       ),
                     ],
                   ),
