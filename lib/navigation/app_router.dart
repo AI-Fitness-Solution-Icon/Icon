@@ -1,27 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../features/auth/screens/login_screen.dart';
-import '../features/auth/screens/signup_screen.dart';
-import '../features/auth/screens/profile_screen.dart';
-import '../features/auth/screens/edit_profile_screen.dart';
-import '../features/auth/screens/change_password_screen.dart';
-import '../features/workout/screens/workout_home.dart';
-import '../features/workout/screens/workout_session.dart';
-import '../features/ai_coach/screens/ai_chat_screen.dart';
-import '../features/ai_coach/screens/voice_interaction.dart';
-import '../features/subscription/screens/subscription_screen.dart';
-import '../features/settings/screens/settings_screen.dart';
-import '../features/settings/screens/notification_settings_screen.dart';
-import '../features/settings/screens/privacy_settings_screen.dart';
-import '../core/services/supabase_service.dart';
-import 'route_names.dart';
+import 'package:icon_app/features/splash/screens/splash_screen.dart';
+import 'package:icon_app/features/onboarding/screens/user_type_selection_screen.dart';
+import 'package:icon_app/features/auth/screens/login_screen.dart';
+import 'package:icon_app/features/auth/screens/signup_screen.dart';
+import 'package:icon_app/features/auth/screens/profile_screen.dart';
+import 'package:icon_app/features/auth/screens/edit_profile_screen.dart';
+import 'package:icon_app/features/auth/screens/change_password_screen.dart';
+import 'package:icon_app/features/workout/screens/workout_home.dart';
+import 'package:icon_app/features/workout/screens/workout_session.dart';
+import 'package:icon_app/features/ai_coach/screens/ai_chat_screen.dart';
+import 'package:icon_app/features/ai_coach/screens/voice_interaction.dart';
+import 'package:icon_app/features/subscription/screens/subscription_screen.dart';
+import 'package:icon_app/features/settings/screens/settings_screen.dart';
+import 'package:icon_app/features/settings/screens/notification_settings_screen.dart';
+import 'package:icon_app/features/settings/screens/privacy_settings_screen.dart';
+import 'package:icon_app/core/services/supabase_service.dart';
+import 'package:icon_app/navigation/route_names.dart';
 
 /// App router configuration using go_router
 class AppRouter {
   /// Main router instance
   static final GoRouter router = GoRouter(
-    initialLocation: '/',
+    initialLocation: RouteNames.splashPath,
     routes: [
+      // Splash and onboarding routes
+      GoRoute(
+        path: RouteNames.splashPath,
+        name: RouteNames.splash,
+        builder: (context, state) => const SplashScreen(),
+      ),
+      GoRoute(
+        path: RouteNames.userTypeSelectionPath,
+        name: RouteNames.userTypeSelection,
+        builder: (context, state) => const UserTypeSelectionScreen(),
+      ),
+      
       // Auth routes
       GoRoute(
         path: RouteNames.loginPath,
@@ -118,10 +132,17 @@ class AppRouter {
       final isAuthenticated = supabaseService.isAuthenticated;
       final isAuthRoute = state.matchedLocation == RouteNames.loginPath || 
                         state.matchedLocation == RouteNames.signupPath;
+      final isOnboardingRoute = state.matchedLocation == RouteNames.splashPath ||
+                               state.matchedLocation == RouteNames.userTypeSelectionPath;
+      
+      // Allow access to splash and onboarding routes
+      if (isOnboardingRoute) {
+        return null;
+      }
       
       // If user is not authenticated and trying to access protected routes
       if (!isAuthenticated && !isAuthRoute) {
-        return RouteNames.loginPath;
+        return RouteNames.userTypeSelectionPath;
       }
       
       // If user is authenticated and trying to access auth routes
@@ -166,6 +187,16 @@ class AppRouter {
 
 /// Navigation helper methods
 class NavigationHelper {
+  /// Navigate to splash screen
+  static void goToSplash(BuildContext context) {
+    context.go(RouteNames.splashPath);
+  }
+
+  /// Navigate to user type selection screen
+  static void goToUserTypeSelection(BuildContext context) {
+    context.go(RouteNames.userTypeSelectionPath);
+  }
+
   /// Navigate to login screen
   static void goToLogin(BuildContext context) {
     context.go(RouteNames.loginPath);

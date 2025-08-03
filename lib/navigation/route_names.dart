@@ -1,5 +1,9 @@
 /// Route names constants for the app
 class RouteNames {
+  // Splash and onboarding routes
+  static const String splash = 'splash';
+  static const String userTypeSelection = 'user_type_selection';
+
   // Auth routes
   static const String login = 'login';
   static const String signup = 'signup';
@@ -27,6 +31,8 @@ class RouteNames {
   static const String home = 'home';
 
   // Route paths
+  static const String splashPath = '/splash';
+  static const String userTypeSelectionPath = '/user-type-selection';
   static const String loginPath = '/login';
   static const String signupPath = '/signup';
   static const String profilePath = '/profile';
