@@ -68,7 +68,7 @@ class MyApp extends StatelessWidget {
           ],
           child: MaterialApp.router(
             title: AppStrings.appName,
-            theme: AppThemes.lightTheme,
+            theme: AppThemes.darkTheme, // Use dark theme as default
             darkTheme: AppThemes.darkTheme,
             routerConfig: AppRouter.router,
             debugShowCheckedModeBanner: false,

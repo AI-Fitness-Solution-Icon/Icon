@@ -50,16 +50,20 @@ class AppThemes {
     scaffoldBackgroundColor: AppColors.background,
   );
 
-  /// Dark theme configuration
+  /// Dark theme configuration (Primary theme)
   static final ThemeData darkTheme = ThemeData(
     useMaterial3: true,
     brightness: Brightness.dark,
     colorScheme: ColorScheme.fromSeed(
       seedColor: AppColors.primary,
       brightness: Brightness.dark,
+      background: AppColors.primaryBackground,
+      surface: AppColors.surfaceDark,
+      onBackground: AppColors.textLight,
+      onSurface: AppColors.textLight,
     ),
     appBarTheme: const AppBarTheme(
-      backgroundColor: AppColors.surfaceDark,
+      backgroundColor: AppColors.primaryBackground,
       foregroundColor: AppColors.textLight,
       elevation: 0,
       centerTitle: true,
@@ -73,7 +77,7 @@ class AppThemes {
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.primary,
+        backgroundColor: AppColors.secondary,
         foregroundColor: AppColors.textLight,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
@@ -88,11 +92,20 @@ class AppThemes {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),
-        borderSide: const BorderSide(color: AppColors.primary, width: 2),
+        borderSide: const BorderSide(color: AppColors.secondary, width: 2),
       ),
       filled: true,
       fillColor: AppColors.surfaceDark,
+      labelStyle: const TextStyle(color: AppColors.textSecondary),
+      hintStyle: const TextStyle(color: AppColors.textSecondary),
     ),
-    scaffoldBackgroundColor: AppColors.surfaceDark,
+    scaffoldBackgroundColor: AppColors.primaryBackground,
+    textTheme: const TextTheme(
+      bodyLarge: TextStyle(color: AppColors.textLight),
+      bodyMedium: TextStyle(color: AppColors.textLight),
+      titleLarge: TextStyle(color: AppColors.textLight),
+      titleMedium: TextStyle(color: AppColors.textLight),
+      titleSmall: TextStyle(color: AppColors.textLight),
+    ),
   );
 } 
