@@ -59,6 +59,7 @@ class SupabaseService {
     return await _client.auth.signUp(
       email: email,
       password: password,
+      emailRedirectTo: "icon://login-callback"
     );
   }
 

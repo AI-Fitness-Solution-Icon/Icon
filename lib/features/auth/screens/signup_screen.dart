@@ -7,6 +7,7 @@ import '../../../navigation/route_names.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
+import '../../../core/utils/snackbar.dart';
 
 /// Sign up screen for user registration
 class SignupScreen extends StatefulWidget {
@@ -37,7 +38,7 @@ class _SignupScreenState extends State<SignupScreen> {
     context.read<AuthBloc>().add(
           SignUpRequested(
             email: _emailController.text.trim(),
-            password: _passwordController.text,
+            password: _passwordController.text.trim(),
           ),
         );
   }

@@ -45,5 +45,22 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<!-- Custom URL Scheme for icon:// links -->
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>com.icon.app</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>icon</string>
+			</array>
+		</dict>
+	</array>
+
+	<key>NSUserActivityTypes</key>
+	<array>
+		<string>NSUserActivityTypeBrowsingWeb</string>
+	</array>
 </dict>
 </plist>
