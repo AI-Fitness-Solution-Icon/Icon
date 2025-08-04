@@ -5,6 +5,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/utils/app_print.dart';
 import '../../../core/utils/snackbar.dart';
 import '../../../navigation/route_names.dart';
+import '../../../core/services/settings_service.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
@@ -67,10 +68,20 @@ class _SignupScreenState extends State<SignupScreen> {
         centerTitle: true,
       ),
       body: BlocListener<AuthBloc, AuthState>(
-        listener: (context, state) {
+        listener: (context, state) async {
           if (state is Authenticated) {
             AppPrint.printInfo('Signup successful - user immediately authenticated');
-            context.go(RouteNames.homePath);
+            
+            // Check if onboarding is completed
+            final settingsService = SettingsService();
+            final isOnboardingCompleted = settingsService.isOnboardingCompleted;
+            
+            if (isOnboardingCompleted) {
+              context.go(RouteNames.homePath);
+            } else {
+              // Navigate to onboarding flow
+              context.go(RouteNames.personalInfoPath);
+            }
           } else if (state is SignUpSuccess) {
             AppPrint.printInfo('Signup successful - email verification required');
             // Show success message

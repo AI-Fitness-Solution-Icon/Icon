@@ -222,7 +222,39 @@ CREATE TABLE client_badges (
 CREATE INDEX idx_client_badges_client ON client_badges(client_id);
 CREATE INDEX idx_client_badges_badge ON client_badges(badge_id);
 
--- 20. user_settings
+-- 20. trainer_profiles
+CREATE TABLE trainer_profiles (
+  id UUID PRIMARY KEY REFERENCES auth.users(id),
+  full_name TEXT NOT NULL,
+  pronouns TEXT,
+  custom_pronouns TEXT,
+  nickname TEXT,
+  experience_level TEXT NOT NULL,
+  descriptive_words TEXT[],
+  motivation TEXT,
+  certifications TEXT[],
+  coaching_experience TEXT,
+  equipment_details TEXT,
+  training_philosophy TEXT[],
+  user_type TEXT DEFAULT 'trainer',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Enable RLS for trainer_profiles
+ALTER TABLE trainer_profiles ENABLE ROW LEVEL SECURITY;
+
+-- RLS Policies for trainer_profiles
+CREATE POLICY "Users can view own profile" ON trainer_profiles
+  FOR SELECT USING (auth.uid() = id);
+
+CREATE POLICY "Users can update own profile" ON trainer_profiles
+  FOR UPDATE USING (auth.uid() = id);
+
+CREATE POLICY "Users can insert own profile" ON trainer_profiles
+  FOR INSERT WITH CHECK (auth.uid() = id);
+
+-- 21. user_settings
 CREATE TABLE user_settings (
   setting_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   user_id UUID NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,

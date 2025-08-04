@@ -60,17 +60,18 @@ You are working on Icon, an AI-powered fitness app built with Flutter. The app u
 - **Data Sources**: Place in `lib/features/[feature]/data/datasources/`
 - **Screens**: Place in `lib/features/[feature]/presentation/screens/`
 - **Widgets**: Place in `lib/features/[feature]/presentation/widgets/`
-- **Providers**: Place in `lib/features/[feature]/presentation/providers/`
+- **BLoCs**: Place in `lib/features/[feature]/bloc/` (events, states, bloc)
 - **Shared Models**: Place in `lib/core/models/` for cross-feature models
 - **Shared Services**: Place in `lib/core/services/` for external integrations
 
 ### 8. State Management
-- Use Provider with ChangeNotifier for state management
-- Each feature should have its own provider
-- Use `context.watch<Provider>()` to listen to state changes
-- Use `context.read<Provider>()` to call methods on providers
-- Keep providers in the presentation layer only
+- Use BLoC pattern consistently throughout the app for state management
+- Each feature should have its own BLoC with events and states
+- Use `BlocProvider.of<Bloc>()` or `context.read<Bloc>()` to access BLoCs
+- Use `BlocBuilder`, `BlocListener`, or `BlocConsumer` for UI updates
+- Keep BLoCs in the presentation layer only
 - Domain layer should be stateless and pure
+- Never mix Provider and BLoC in the same feature
 
 ### 4. Navigation
 - Use Go Router for navigation
@@ -100,6 +101,67 @@ You are working on Icon, an AI-powered fitness app built with Flutter. The app u
 - Use the existing dependencies in `pubspec.yaml`
 - Don't add new dependencies without justification
 - Follow the established patterns for service integration
+
+## Code Quality and Error Prevention Rules
+
+### 9. Compilation Error Prevention
+- **ALWAYS** check for compilation errors after making code changes
+- **NEVER** leave files with compilation errors
+- **ALWAYS** run `flutter analyze` or check the Problems panel before completing tasks
+- **ALWAYS** fix import errors immediately when they occur
+- **ALWAYS** ensure all referenced classes, methods, and variables exist
+- **ALWAYS** verify type safety and null safety compliance
+
+### 10. State Management Consistency
+- **ALWAYS** use BLoC pattern for new features
+- **NEVER** mix Provider and BLoC in the same feature
+- **ALWAYS** ensure BLoC events and states are properly defined
+- **ALWAYS** verify BLoC event handlers are registered in the constructor
+- **ALWAYS** check that BLoC dependencies are properly injected
+
+### 11. Import and Dependency Management
+- **ALWAYS** use correct import paths
+- **ALWAYS** remove unused imports
+- **ALWAYS** ensure circular dependencies are avoided
+- **ALWAYS** verify that imported classes exist in the specified files
+- **ALWAYS** use relative imports for files within the same feature
+- **ALWAYS** use absolute imports for core and cross-feature dependencies
+
+### 12. Null Safety Compliance
+- **ALWAYS** handle nullable values properly
+- **ALWAYS** use null-aware operators (`?.`, `??`, `!`) appropriately
+- **ALWAYS** provide default values for nullable parameters
+- **ALWAYS** check for null before accessing properties
+- **NEVER** use `!` operator without being certain the value is not null
+
+### 13. Type Safety
+- **ALWAYS** ensure proper type casting
+- **ALWAYS** verify generic type parameters are correct
+- **ALWAYS** check that method signatures match their implementations
+- **ALWAYS** ensure enum values are used correctly
+- **ALWAYS** verify that abstract classes are properly implemented
+
+### 14. Code Review Checklist
+Before completing any code changes, verify:
+- [ ] No compilation errors in the Problems panel
+- [ ] All imports are correct and necessary
+- [ ] All referenced classes and methods exist
+- [ ] BLoC events and states are properly defined
+- [ ] Null safety is properly handled
+- [ ] Type safety is maintained
+- [ ] No unused variables or imports
+- [ ] All required dependencies are injected
+- [ ] Error handling is implemented
+- [ ] Code follows the established patterns
+
+### 15. Error Resolution Priority
+When fixing errors, follow this order:
+1. **Import errors** - Fix missing or incorrect imports first
+2. **Type errors** - Resolve type mismatches and null safety issues
+3. **Method errors** - Fix undefined methods and incorrect signatures
+4. **Dependency errors** - Resolve missing dependencies and injection issues
+5. **Logic errors** - Fix business logic and flow issues
+6. **Style warnings** - Address code style and formatting issues
 
 ### 9. File Naming
 - Use `snake_case.dart` for file names

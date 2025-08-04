@@ -47,6 +47,7 @@ class SettingsService {
 
   // User Preferences
   static const String _keyUserType = 'user_type';
+  static const String _keyOnboardingCompleted = 'onboarding_completed';
 
   // Fitness Goals
   static const String _keyPrimaryGoal = 'primary_goal';
@@ -90,6 +91,7 @@ class SettingsService {
 
   // User Preferences Methods
   String get userType => _prefs.getString(_keyUserType) ?? 'get_fit';
+  bool get isOnboardingCompleted => _prefs.getBool(_keyOnboardingCompleted) ?? false;
 
   // Alias methods for compatibility
   bool get areNotificationsEnabled => notificationEnabled;
@@ -171,6 +173,11 @@ class SettingsService {
   Future<void> setUserType(String userType) async {
     await _prefs.setString(_keyUserType, userType);
     _logger.i('User type set: $userType');
+  }
+
+  Future<void> setOnboardingCompleted(bool completed) async {
+    await _prefs.setBool(_keyOnboardingCompleted, completed);
+    _logger.i('Onboarding completed: $completed');
   }
 
   // Fitness Goals Methods

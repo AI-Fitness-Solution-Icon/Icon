@@ -167,9 +167,9 @@ class UserTypeSelectionScreen extends StatelessWidget {
     final settingsService = SettingsService();
     await settingsService.setUserType('trainer');
     
-    // Navigate to signup with trainer context
+    // Navigate to trainer onboarding
     if (context.mounted) {
-      context.go(RouteNames.signupPath);
+      context.go(RouteNames.trainerOnboardingPath);
     }
   }
 

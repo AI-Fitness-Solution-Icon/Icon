@@ -1,27 +1,9 @@
 flutter_native_splash:
   # Background color for the splash screen
-  background_color: "#1E1E1E"
-  
-  # Background image (optional)
-  # background_image: "assets/splash_bg.png"
+  color: "#1E1E1E"
   
   # Image to display in the center of the splash screen
   image: "assets/splash_logo.png"
-  
-  # Image size (optional, defaults to 100x100)
-  image_size: 120
-  
-  # Image dark mode (optional, defaults to the same as image)
-  # image_dark: "assets/splash_logo_dark.png"
-  
-  # Branding image (optional, displayed below the main image)
-  # branding: "assets/branding.png"
-  
-  # Branding dark mode (optional)
-  # branding_dark: "assets/branding_dark.png"
-  
-  # Color of the branding image (optional)
-  # branding_mode: bottom
   
   # Fullscreen mode (optional, defaults to false)
   fullscreen: true
@@ -29,37 +11,7 @@ flutter_native_splash:
   # Android 12+ support (optional, defaults to true)
   android_12:
     # Background color for Android 12+
-    background_color: "#1E1E1E"
+    color: "#1E1E1E"
     
     # Image for Android 12+
-    image: "assets/splash_logo.png"
-    
-    # Image dark mode for Android 12+ (optional)
-    # image_dark: "assets/splash_logo_dark.png"
-    
-    # Branding image for Android 12+ (optional)
-    # branding: "assets/branding.png"
-    
-    # Branding dark mode for Android 12+ (optional)
-    # branding_dark: "assets/branding_dark.png"
-    
-    # Icon background color for Android 12+ (optional)
-    # icon_background_color: "#1E1E1E"
-  
-  # iOS support (optional, defaults to true)
-  ios: true
-  
-  # Android support (optional, defaults to true)
-  android: true
-  
-  # Web support (optional, defaults to true)
-  web: true
-  
-  # Windows support (optional, defaults to true)
-  windows: true
-  
-  # macOS support (optional, defaults to true)
-  macos: true
-  
-  # Linux support (optional, defaults to true)
-  linux: true 
+    image: "assets/splash_logo.png" 

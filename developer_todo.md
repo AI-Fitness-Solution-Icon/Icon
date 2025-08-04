@@ -21,12 +21,12 @@ This file contains tasks that require manual intervention and cannot be automate
 ### Database Setup
 - [ ] **Supabase Database**: Set up Supabase project and database
   - Create new project at https://app.supabase.com
-  - Run the schema.sql file to create all necessary tables
+  - Run the updated schema.sql file to create all necessary tables including trainer_profiles
   - Configure Row Level Security (RLS) policies
   - Set up database triggers and functions
 
 - [ ] **Database Schema Updates**: If any schema changes are needed
-  - Review and update `schema.sql` file
+  - ✅ Updated `schema.sql` file with trainer_profiles table
   - Apply migrations to production database
   - Update any related model classes
 
@@ -90,6 +90,12 @@ This file contains tasks that require manual intervention and cannot be automate
   - Configure iOS code signing certificates
   - Set up Android keystore for app signing
   - Configure build variants
+
+- [ ] **Disk Space Management**: Resolve disk space issues
+  - Clean up disk space (currently at 99% capacity)
+  - Remove unnecessary files and build artifacts
+  - Consider upgrading storage if needed
+  - Set up regular cleanup procedures
 
 ## Testing and Deployment
 
