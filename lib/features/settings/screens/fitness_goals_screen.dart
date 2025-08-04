@@ -19,6 +19,7 @@ class _FitnessGoalsScreenState extends State<FitnessGoalsScreen> {
   
   String _selectedGoal = 'Weight Loss';
   String _selectedFitnessLevel = 'Beginner';
+  late final SettingsService _settingsService;
 
   final List<String> _goalTypes = [
     'Weight Loss',
@@ -37,6 +38,7 @@ class _FitnessGoalsScreenState extends State<FitnessGoalsScreen> {
   @override
   void initState() {
     super.initState();
+    _settingsService = SettingsService();
     _loadCurrentGoals();
   }
 
@@ -50,23 +52,47 @@ class _FitnessGoalsScreenState extends State<FitnessGoalsScreen> {
   }
 
   void _loadCurrentGoals() {
-    // TODO: Load from local storage or API
-    _weightGoalController.text = '70';
-    _workoutDaysController.text = '4';
-    _caloriesController.text = '2000';
-    _stepsController.text = '10000';
+    // Load from local storage
+    _weightGoalController.text = _settingsService.weightGoal.toString();
+    _workoutDaysController.text = _settingsService.workoutDaysPerWeek.toString();
+    _caloriesController.text = _settingsService.dailyCalorieGoal.toString();
+    _stepsController.text = _settingsService.dailyStepsGoal.toString();
+    _selectedGoal = _settingsService.primaryGoal;
+    _selectedFitnessLevel = _settingsService.fitnessLevel;
   }
 
-  void _saveGoals() {
+  Future<void> _saveGoals() async {
     if (_formKey.currentState!.validate()) {
-      // TODO: Save to local storage or API
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Fitness goals saved successfully!'),
-          backgroundColor: Colors.green,
-        ),
-      );
-      Navigator.of(context).pop();
+      try {
+        // Save to local storage
+        await Future.wait([
+          _settingsService.setPrimaryGoal(_selectedGoal),
+          _settingsService.setFitnessLevel(_selectedFitnessLevel),
+          _settingsService.setWeightGoal(double.tryParse(_weightGoalController.text) ?? 70.0),
+          _settingsService.setWorkoutDaysPerWeek(int.tryParse(_workoutDaysController.text) ?? 4),
+          _settingsService.setDailyCalorieGoal(int.tryParse(_caloriesController.text) ?? 2000),
+          _settingsService.setDailyStepsGoal(int.tryParse(_stepsController.text) ?? 10000),
+        ]);
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Fitness goals saved successfully!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+          Navigator.of(context).pop();
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Failed to save fitness goals: ${e.toString()}'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
     }
   }
 

@@ -52,6 +52,9 @@ class SettingsService {
   static const String _keyPrimaryGoal = 'primary_goal';
   static const String _keyFitnessLevel = 'fitness_level';
   static const String _keyWeightGoal = 'weight_goal';
+  static const String _keyWorkoutDaysPerWeek = 'workout_days_per_week';
+  static const String _keyDailyCalorieGoal = 'daily_calorie_goal';
+  static const String _keyDailyStepsGoal = 'daily_steps_goal';
   static const String _keyWorkoutDays = 'workout_days';
   static const String _keyCaloriesGoal = 'calories_goal';
   static const String _keyStepsGoal = 'steps_goal';
@@ -171,9 +174,12 @@ class SettingsService {
   }
 
   // Fitness Goals Methods
-  String get primaryGoal => _prefs.getString(_keyPrimaryGoal) ?? 'lose_weight';
-  String get fitnessLevel => _prefs.getString(_keyFitnessLevel) ?? 'beginner';
+  String get primaryGoal => _prefs.getString(_keyPrimaryGoal) ?? 'Weight Loss';
+  String get fitnessLevel => _prefs.getString(_keyFitnessLevel) ?? 'Beginner';
   double get weightGoal => _prefs.getDouble(_keyWeightGoal) ?? 70.0;
+  int get workoutDaysPerWeek => _prefs.getInt(_keyWorkoutDaysPerWeek) ?? 4;
+  int get dailyCalorieGoal => _prefs.getInt(_keyDailyCalorieGoal) ?? 2000;
+  int get dailyStepsGoal => _prefs.getInt(_keyDailyStepsGoal) ?? 10000;
   int get workoutDays => _prefs.getInt(_keyWorkoutDays) ?? 4;
   int get caloriesGoal => _prefs.getInt(_keyCaloriesGoal) ?? 2000;
   int get stepsGoal => _prefs.getInt(_keyStepsGoal) ?? 10000;
@@ -206,6 +212,21 @@ class SettingsService {
   Future<void> setStepsGoal(int steps) async {
     await _prefs.setInt(_keyStepsGoal, steps);
     _logger.i('Steps goal set: $steps');
+  }
+
+  Future<void> setWorkoutDaysPerWeek(int days) async {
+    await _prefs.setInt(_keyWorkoutDaysPerWeek, days);
+    _logger.i('Workout days per week set: $days');
+  }
+
+  Future<void> setDailyCalorieGoal(int calories) async {
+    await _prefs.setInt(_keyDailyCalorieGoal, calories);
+    _logger.i('Daily calorie goal set: $calories');
+  }
+
+  Future<void> setDailyStepsGoal(int steps) async {
+    await _prefs.setInt(_keyDailyStepsGoal, steps);
+    _logger.i('Daily steps goal set: $steps');
   }
 
   // Save all notification settings

@@ -5,6 +5,8 @@ import 'package:icon_app/features/onboarding/screens/user_type_selection_screen.
 import 'package:icon_app/features/auth/screens/login_screen.dart';
 import 'package:icon_app/features/auth/screens/signup_screen.dart';
 import 'package:icon_app/features/auth/screens/email_verification_screen.dart';
+import 'package:icon_app/features/auth/screens/forgot_password_screen.dart';
+import 'package:icon_app/features/auth/screens/reset_password_screen.dart';
 import 'package:icon_app/features/auth/screens/profile_screen.dart';
 import 'package:icon_app/features/dashboard/screens/dashboard_screen.dart';
 import 'package:icon_app/features/auth/screens/edit_profile_screen.dart';
@@ -50,12 +52,24 @@ class AppRouter {
         builder: (context, state) => const SignupScreen(),
       ),
       GoRoute(
+        path: '/forgot-password',
+        name: 'forgot-password',
+        builder: (context, state) => const ForgotPasswordScreen(),
+      ),
+      GoRoute(
+        path: '/email-verification',
+        name: 'email-verification',
+        builder: (context, state) => const EmailVerificationScreen(),
+      ),
+      GoRoute(
+        path: '/reset-password',
+        name: 'reset-password',
+        builder: (context, state) => const ResetPasswordScreen(),
+      ),
+      GoRoute(
         path: RouteNames.emailVerificationPath,
         name: RouteNames.emailVerification,
-        builder: (context, state) {
-          final email = state.extra as String? ?? '';
-          return EmailVerificationScreen(email: email);
-        },
+        builder: (context, state) => const EmailVerificationScreen(),
       ),
       GoRoute(
         path: RouteNames.profilePath,

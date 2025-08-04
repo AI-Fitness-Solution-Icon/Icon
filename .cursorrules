@@ -3,28 +3,74 @@
 ## Project Overview
 You are working on Icon, an AI-powered fitness app built with Flutter. The app uses clean architecture with feature-based modules, Provider for state management, and Go Router for navigation.
 
-## Architecture Guidelines
+## Clean Architecture Guidelines
 
-### 1. Project Structure
+### 1. Clean Architecture Principles
+- **Dependency Rule**: Dependencies point inward. Inner layers (Domain) should not depend on outer layers (Data, Presentation)
+- **Separation of Concerns**: Each layer has a single responsibility
+- **Testability**: Business logic should be easily testable without UI or external dependencies
+- **Independence**: Domain layer should be independent of frameworks, databases, and external services
+- **Maintainability**: Changes in one layer should not affect other layers
+
+### 2. Layer Structure (Inside-Out)
+```
+┌─────────────────────────────────────┐
+│           Presentation              │ ← UI, Widgets, Screens
+├─────────────────────────────────────┤
+│             Domain                  │ ← Business Logic, Entities, Use Cases
+├─────────────────────────────────────┤
+│              Data                   │ ← Repositories, Data Sources, Models
+└─────────────────────────────────────┘
+```
+
+### 3. Domain Layer (Core Business Logic)
+- **Entities**: Pure business objects with no dependencies on external frameworks
+- **Use Cases**: Business rules and application-specific logic
+- **Repository Interfaces**: Abstract contracts for data access
+- **Value Objects**: Immutable objects representing domain concepts
+- **Domain Exceptions**: Business-specific error types
+
+### 4. Data Layer (Data Access)
+- **Repository Implementations**: Concrete implementations of domain repository interfaces
+- **Data Sources**: API clients, local storage, external services
+- **Data Models**: JSON serialization/deserialization models
+- **Mappers**: Convert between domain entities and data models
+- **Local Storage**: SharedPreferences, SQLite, Hive
+
+### 5. Presentation Layer (UI)
+- **Screens**: Full-page UI components
+- **Widgets**: Reusable UI components
+- **Providers**: State management using ChangeNotifier
+- **Controllers**: Handle UI-specific logic
+- **View Models**: Prepare data for UI consumption
+
+### 6. Project Structure
 - Follow the established feature-based architecture
 - Each feature should be self-contained in `lib/features/[feature_name]/`
 - Use the existing folder structure: `data/`, `domain/`, `presentation/`
 - Core functionality goes in `lib/core/`
 - Navigation configuration in `lib/navigation/`
 
-### 2. Code Organization
-- **Models**: Place in `lib/core/models/` for shared models, or `lib/features/[feature]/data/models/` for feature-specific models
-- **Services**: Place in `lib/core/services/` for shared services
-- **Repositories**: Place in `lib/core/repositories/` for data access
+### 7. Code Organization
+- **Domain Models**: Place in `lib/features/[feature]/domain/entities/`
+- **Use Cases**: Place in `lib/features/[feature]/domain/usecases/`
+- **Repository Interfaces**: Place in `lib/features/[feature]/domain/repositories/`
+- **Data Models**: Place in `lib/features/[feature]/data/models/`
+- **Repository Implementations**: Place in `lib/features/[feature]/data/repositories/`
+- **Data Sources**: Place in `lib/features/[feature]/data/datasources/`
 - **Screens**: Place in `lib/features/[feature]/presentation/screens/`
 - **Widgets**: Place in `lib/features/[feature]/presentation/widgets/`
-- **Providers**: Place in `lib/features/[feature]/domain/providers/`
+- **Providers**: Place in `lib/features/[feature]/presentation/providers/`
+- **Shared Models**: Place in `lib/core/models/` for cross-feature models
+- **Shared Services**: Place in `lib/core/services/` for external integrations
 
-### 3. State Management
+### 8. State Management
 - Use Provider with ChangeNotifier for state management
 - Each feature should have its own provider
 - Use `context.watch<Provider>()` to listen to state changes
 - Use `context.read<Provider>()` to call methods on providers
+- Keep providers in the presentation layer only
+- Domain layer should be stateless and pure
 
 ### 4. Navigation
 - Use Go Router for navigation
@@ -123,13 +169,25 @@ You are working on Icon, an AI-powered fitness app built with Flutter. The app u
 - Handle different date/time formats
 - Consider cultural differences
 
-## Development Workflow
+## Clean Architecture Implementation Workflow
 
-### 1. Feature Development
-- Start with the data layer (models and repositories)
-- Implement business logic (providers)
-- Create UI components (screens and widgets)
-- Add tests for all layers
+### 1. Feature Development (Bottom-Up Approach)
+1. **Domain Layer First**:
+   - Define entities (pure business objects)
+   - Create repository interfaces
+   - Implement use cases (business logic)
+   - Define domain exceptions
+
+2. **Data Layer**:
+   - Create data models (JSON serialization)
+   - Implement repository interfaces
+   - Create data sources (API, local storage)
+   - Implement mappers (entity ↔ model conversion)
+
+3. **Presentation Layer**:
+   - Create providers (state management)
+   - Build UI components (screens, widgets)
+   - Wire up navigation and user interactions
 
 ### 2. Integration
 - Integrate with existing services
@@ -137,11 +195,11 @@ You are working on Icon, an AI-powered fitness app built with Flutter. The app u
 - Maintain backward compatibility
 - Update documentation
 
-### 3. Testing
-- Write tests before or alongside implementation
-- Test all edge cases
-- Ensure proper error handling
-- Validate user flows
+### 3. Testing (TDD Approach)
+- **Domain Tests**: Test use cases and entities in isolation
+- **Data Tests**: Test repositories with mocked data sources
+- **Presentation Tests**: Test providers and UI components
+- **Integration Tests**: Test complete feature workflows
 
 ### 4. Documentation
 - Update README.md for new features
@@ -149,61 +207,318 @@ You are working on Icon, an AI-powered fitness app built with Flutter. The app u
 - Add inline documentation
 - Update architecture documentation
 
-## Common Patterns
+### 5. Code Review Checklist
+- [ ] Domain layer has no external dependencies
+- [ ] Repository interfaces are in domain layer
+- [ ] Use cases contain business logic only
+- [ ] Data models handle JSON serialization
+- [ ] Mappers convert between entities and models
+- [ ] Providers manage UI state only
+- [ ] Error handling is appropriate for each layer
+- [ ] Tests cover all layers
+- [ ] Naming follows conventions
+- [ ] Code is properly documented
 
-### 1. Service Integration
+## Clean Architecture Patterns
+
+### 1. Entity (Domain Model)
 ```dart
-// Example service pattern
-class ExampleService {
-  static final ExampleService _instance = ExampleService._internal();
-  factory ExampleService() => _instance;
-  ExampleService._internal();
+// lib/features/workout/domain/entities/workout.dart
+class Workout {
+  final String id;
+  final String name;
+  final List<Exercise> exercises;
+  final Duration duration;
+  final WorkoutType type;
 
-  Future<void> initialize() async {
-    // Initialization logic
+  const Workout({
+    required this.id,
+    required this.name,
+    required this.exercises,
+    required this.duration,
+    required this.type,
+  });
+
+  // Pure business logic - no external dependencies
+  bool get isCompleted => exercises.every((exercise) => exercise.isCompleted);
+  Duration get totalDuration => exercises.fold(
+    Duration.zero,
+    (total, exercise) => total + exercise.duration,
+  );
+}
+```
+
+### 2. Repository Interface (Domain)
+```dart
+// lib/features/workout/domain/repositories/workout_repository.dart
+abstract class WorkoutRepository {
+  Future<List<Workout>> getWorkouts();
+  Future<Workout> getWorkoutById(String id);
+  Future<void> saveWorkout(Workout workout);
+  Future<void> deleteWorkout(String id);
+  Future<void> updateWorkout(Workout workout);
+}
+```
+
+### 3. Use Case (Domain)
+```dart
+// lib/features/workout/domain/usecases/get_workouts_usecase.dart
+class GetWorkoutsUseCase {
+  final WorkoutRepository repository;
+
+  GetWorkoutsUseCase(this.repository);
+
+  Future<List<Workout>> execute() async {
+    try {
+      return await repository.getWorkouts();
+    } catch (e) {
+      throw WorkoutException('Failed to fetch workouts: $e');
+    }
   }
 }
 ```
 
-### 2. Provider Pattern
+### 4. Repository Implementation (Data)
 ```dart
-// Example provider pattern
-class ExampleProvider extends ChangeNotifier {
-  bool _isLoading = false;
-  bool get isLoading => _isLoading;
+// lib/features/workout/data/repositories/workout_repository_impl.dart
+class WorkoutRepositoryImpl implements WorkoutRepository {
+  final WorkoutRemoteDataSource remoteDataSource;
+  final WorkoutLocalDataSource localDataSource;
+  final WorkoutMapper mapper;
 
-  Future<void> performAction() async {
-    _isLoading = true;
-    notifyListeners();
-    
+  WorkoutRepositoryImpl({
+    required this.remoteDataSource,
+    required this.localDataSource,
+    required this.mapper,
+  });
+
+  @override
+  Future<List<Workout>> getWorkouts() async {
     try {
-      // Action logic
+      final workoutModels = await remoteDataSource.getWorkouts();
+      return workoutModels.map((model) => mapper.toEntity(model)).toList();
     } catch (e) {
-      // Error handling
+      // Fallback to local data
+      final localModels = await localDataSource.getWorkouts();
+      return localModels.map((model) => mapper.toEntity(model)).toList();
+    }
+  }
+}
+```
+
+### 5. Data Model (Data)
+```dart
+// lib/features/workout/data/models/workout_model.dart
+class WorkoutModel {
+  final String id;
+  final String name;
+  final List<ExerciseModel> exercises;
+  final int durationInMinutes;
+  final String type;
+
+  WorkoutModel({
+    required this.id,
+    required this.name,
+    required this.exercises,
+    required this.durationInMinutes,
+    required this.type,
+  });
+
+  factory WorkoutModel.fromJson(Map<String, dynamic> json) {
+    return WorkoutModel(
+      id: json['id'],
+      name: json['name'],
+      exercises: (json['exercises'] as List)
+          .map((e) => ExerciseModel.fromJson(e))
+          .toList(),
+      durationInMinutes: json['duration_in_minutes'],
+      type: json['type'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'exercises': exercises.map((e) => e.toJson()).toList(),
+      'duration_in_minutes': durationInMinutes,
+      'type': type,
+    };
+  }
+}
+```
+
+### 6. Mapper (Data)
+```dart
+// lib/features/workout/data/mappers/workout_mapper.dart
+class WorkoutMapper {
+  final ExerciseMapper exerciseMapper;
+
+  WorkoutMapper(this.exerciseMapper);
+
+  Workout toEntity(WorkoutModel model) {
+    return Workout(
+      id: model.id,
+      name: model.name,
+      exercises: model.exercises.map((e) => exerciseMapper.toEntity(e)).toList(),
+      duration: Duration(minutes: model.durationInMinutes),
+      type: WorkoutType.values.firstWhere((e) => e.name == model.type),
+    );
+  }
+
+  WorkoutModel toModel(Workout entity) {
+    return WorkoutModel(
+      id: entity.id,
+      name: entity.name,
+      exercises: entity.exercises.map((e) => exerciseMapper.toModel(e)).toList(),
+      durationInMinutes: entity.duration.inMinutes,
+      type: entity.type.name,
+    );
+  }
+}
+```
+
+### 7. Provider (Presentation)
+```dart
+// lib/features/workout/presentation/providers/workout_provider.dart
+class WorkoutProvider extends ChangeNotifier {
+  final GetWorkoutsUseCase getWorkoutsUseCase;
+  final SaveWorkoutUseCase saveWorkoutUseCase;
+
+  WorkoutProvider({
+    required this.getWorkoutsUseCase,
+    required this.saveWorkoutUseCase,
+  });
+
+  List<Workout> _workouts = [];
+  bool _isLoading = false;
+  String? _error;
+
+  List<Workout> get workouts => _workouts;
+  bool get isLoading => _isLoading;
+  String? get error => _error;
+
+  Future<void> loadWorkouts() async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      _workouts = await getWorkoutsUseCase.execute();
+    } catch (e) {
+      _error = e.toString();
     } finally {
       _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> saveWorkout(Workout workout) async {
+    try {
+      await saveWorkoutUseCase.execute(workout);
+      await loadWorkouts(); // Refresh the list
+    } catch (e) {
+      _error = e.toString();
       notifyListeners();
     }
   }
 }
 ```
 
-### 3. Repository Pattern
+### 8. Service Integration (Core)
 ```dart
-// Example repository pattern
-class ExampleRepository {
-  final ExampleService _service = ExampleService();
+// lib/core/services/supabase_service.dart
+class SupabaseService {
+  static final SupabaseService _instance = SupabaseService._internal();
+  factory SupabaseService() => _instance;
+  SupabaseService._internal();
 
-  Future<List<ExampleModel>> getData() async {
-    try {
-      final response = await _service.getData();
-      return response.map((json) => ExampleModel.fromJson(json)).toList();
-    } catch (e) {
-      throw Exception('Failed to fetch data: $e');
-    }
+  late final SupabaseClient _client;
+
+  Future<void> initialize() async {
+    _client = SupabaseClient(
+      const String.fromEnvironment('SUPABASE_URL'),
+      const String.fromEnvironment('SUPABASE_ANON_KEY'),
+    );
   }
+
+  SupabaseClient get client => _client;
 }
 ```
+
+### 9. Dependency Injection Pattern
+```dart
+// lib/core/di/service_locator.dart
+class ServiceLocator {
+  static final ServiceLocator _instance = ServiceLocator._internal();
+  factory ServiceLocator() => _instance;
+  ServiceLocator._internal();
+
+  final Map<String, dynamic> _services = {};
+
+  void register<T>(T service) {
+    _services[T.toString()] = service;
+  }
+
+  T get<T>() {
+    return _services[T.toString()] as T;
+  }
+}
+
+// Usage in main.dart
+void setupDependencies() {
+  final sl = ServiceLocator();
+  
+  // Core services
+  sl.register(SupabaseService());
+  sl.register(OpenAIService());
+  
+  // Repositories
+  sl.register(WorkoutRepositoryImpl(
+    remoteDataSource: WorkoutRemoteDataSourceImpl(),
+    localDataSource: WorkoutLocalDataSourceImpl(),
+    mapper: WorkoutMapper(ExerciseMapper()),
+  ));
+  
+  // Use cases
+  sl.register(GetWorkoutsUseCase(sl.get<WorkoutRepository>()));
+  sl.register(SaveWorkoutUseCase(sl.get<WorkoutRepository>()));
+}
+```
+
+## Clean Architecture Best Practices
+
+### 1. Dependency Inversion
+- Domain layer should define abstract interfaces
+- Data layer should implement domain interfaces
+- Presentation layer should depend on domain abstractions
+- Never let domain layer depend on data or presentation layers
+
+### 2. Error Handling
+- Create domain-specific exceptions in the domain layer
+- Handle errors at the appropriate layer
+- Use Result/Either pattern for error handling
+- Provide meaningful error messages to users
+
+### 3. Testing Strategy
+- **Unit Tests**: Test use cases and domain logic in isolation
+- **Repository Tests**: Test data layer with mocked data sources
+- **Widget Tests**: Test UI components with mocked providers
+- **Integration Tests**: Test complete user flows
+
+### 4. Data Flow
+```
+UI Action → Provider → Use Case → Repository → Data Source
+Data Source → Repository → Use Case → Provider → UI Update
+```
+
+### 5. Naming Conventions
+- **Entities**: `Workout`, `User`, `Exercise` (domain objects)
+- **Use Cases**: `GetWorkoutsUseCase`, `SaveWorkoutUseCase` (business actions)
+- **Repositories**: `WorkoutRepository` (interface), `WorkoutRepositoryImpl` (implementation)
+- **Models**: `WorkoutModel`, `UserModel` (data transfer objects)
+- **Mappers**: `WorkoutMapper`, `UserMapper` (data conversion)
+- **Providers**: `WorkoutProvider`, `UserProvider` (state management)
 
 ## Environment and Configuration
 
@@ -225,6 +540,67 @@ class ExampleRepository {
 - Implement proper data migration
 - Handle storage errors
 
+## Project Management and Documentation
+
+### 1. Backlog Management
+- Maintain a `prompts/backlog.md` file to track all tasks needed to make the project bug-free and fully functional
+- Automatically add new tasks to the backlog as they are identified
+- Execute tasks when possible without user intervention
+- Update the backlog regularly with progress and new requirements
+
+### 2. Change Logging
+- Create and maintain a `CHANGELOG.md` file in the project root
+- Log all changes, improvements, and bug fixes as they are implemented
+- Include version numbers, dates, and detailed descriptions of changes
+- Follow conventional changelog format
+
+### 3. Developer Tasks
+- Create and maintain a `developer_todo.md` file for tasks that require manual intervention
+- Add tasks for:
+  - API key configuration (e.g., Stripe keys in .env file)
+  - Database schema changes
+  - Manual setup steps
+  - External service configuration
+  - Any action that cannot be automated
+- Provide clear instructions for each manual task
+
+### 4. Commit Messages
+- Automatically create meaningful commit messages for all code changes
+- Use conventional commit format: `type(scope): description`
+- Include relevant details about what was changed and why
+- Reference issue numbers or task IDs when applicable
+
+### 5. System Design Documentation
+- Keep `system_design.md` updated with all prompts and architectural decisions
+- Document any new system components or changes
+- Maintain a complete record of design decisions and their rationale
+
+## Clean Architecture Anti-Patterns to Avoid
+
+### 1. Domain Layer Violations
+- ❌ **Domain entities with JSON serialization**: Entities should be pure business objects
+- ❌ **Domain layer importing Flutter packages**: Domain should be framework-agnostic
+- ❌ **Business logic in providers**: Use cases should contain business logic
+- ❌ **Direct API calls in domain**: Use repository interfaces instead
+
+### 2. Data Layer Violations
+- ❌ **Data models with business logic**: Models should only handle data transformation
+- ❌ **Repository implementations in domain**: Keep implementations in data layer
+- ❌ **Direct database queries in use cases**: Use repository pattern
+- ❌ **Hardcoded API endpoints in repositories**: Use configuration
+
+### 3. Presentation Layer Violations
+- ❌ **Business logic in UI widgets**: Keep UI components pure
+- ❌ **Direct repository calls in providers**: Use use cases instead
+- ❌ **State management in domain**: Keep state in presentation layer
+- ❌ **Navigation logic in use cases**: Handle navigation in UI layer
+
+### 4. General Anti-Patterns
+- ❌ **Circular dependencies**: Dependencies should point inward only
+- ❌ **God objects**: Classes should have single responsibilities
+- ❌ **Tight coupling**: Use dependency injection and interfaces
+- ❌ **Mixed concerns**: Each layer should have a single responsibility
+
 ## Final Notes
 
 - Always consider the user experience
@@ -234,4 +610,9 @@ class ExampleRepository {
 - Test thoroughly before submitting
 - Document your changes
 - Consider performance implications
-- Follow security best practices 
+- Follow security best practices
+- Automatically manage project documentation and task tracking
+- **Follow clean architecture principles strictly**
+- **Keep domain layer pure and independent**
+- **Use dependency inversion consistently**
+- **Test each layer in isolation** 

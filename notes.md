@@ -1,6 +1,0 @@
-- Add the remainning prompts to the system_design.md file. 
-- add to y cursor rules that cursor should maintain a backlog.md file in the prompts directory which is going to use and always write all of the things that need to be done to make this project bug free and up and running and if there are things ,it just goes ahead and execute the things. 
-- tell cursor to create a changelog.md and use the file to log changes as it is working. 
-- tell cursor rules to also add a rule that for any action that it cannot do and it needs me to manually do, it should add it as a task in the developer_todo.md file for exmaple. say it needs api keys from stripe to be added to the .env file, it should add a todo telling me the developer to go get it or it could also be somethign like adding an attribute to a table in the database e.t.c
-- Tell cursor to add rules that automatically create and add commit messages as it writes code.
-- 

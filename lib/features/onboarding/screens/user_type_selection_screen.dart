@@ -168,7 +168,9 @@ class UserTypeSelectionScreen extends StatelessWidget {
     await settingsService.setUserType('trainer');
     
     // Navigate to signup with trainer context
-    context.go(RouteNames.signupPath);
+    if (context.mounted) {
+      context.go(RouteNames.signupPath);
+    }
   }
 
   void _handleGetFitSelection(BuildContext context) async {
@@ -177,6 +179,8 @@ class UserTypeSelectionScreen extends StatelessWidget {
     await settingsService.setUserType('get_fit');
     
     // Navigate to signup with get fit context
-    context.go(RouteNames.signupPath);
+    if (context.mounted) {
+      context.go(RouteNames.signupPath);
+    }
   }
 } 
