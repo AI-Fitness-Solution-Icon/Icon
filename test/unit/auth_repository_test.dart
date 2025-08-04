@@ -28,13 +28,6 @@ void main() {
       expect(authRepository.signOut, isA<Function>());
     });
 
-    test('should get current user', () {
-      // Test synchronous getCurrentUser method
-      final user = authRepository.getCurrentUser();
-      // Should return null if no user is authenticated
-      expect(user, isNull);
-    });
-
     test('should check authentication status', () {
       // Test isAuthenticated method
       final isAuthenticated = authRepository.isAuthenticated();
@@ -61,13 +54,6 @@ void main() {
       expect(authRepository.signInWithEmail, isA<Function>());
       expect(authRepository.signUpWithEmail, isA<Function>());
     });
-
-    test('should return null for current user when not authenticated', () {
-      // Test that getCurrentUser returns null when not authenticated
-      final user = authRepository.getCurrentUser();
-      expect(user, isNull);
-    });
-
     test('should return false for authentication status when not authenticated', () {
       // Test that isAuthenticated returns false when not authenticated
       final isAuthenticated = authRepository.isAuthenticated();

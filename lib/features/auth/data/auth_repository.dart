@@ -1,3 +1,4 @@
+
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -5,22 +6,23 @@ import '../../../core/models/user.dart' as app_user;
 import '../../../core/services/supabase_service.dart';
 import '../../../core/repositories/user_repository.dart';
 import '../../../core/utils/app_print.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
 
 /// Repository for authentication operations
 class AuthRepository {
   final SupabaseService _supabaseService = SupabaseService.instance;
 
   /// Sign in with email and password
-  Future<app_user.User?> signInWithEmail(String email, String password) async {
+  Future<supabase.User?> signInWithEmail(String email, String password) async {
     try {
       AppPrint.printInfo('Signing in user: $email');
-      final response = await _supabaseService.signInWithEmail(
-        email: email,
-        password: password,
-      );
+      final response = await Supabase.instance.client.auth.signInWithPassword(
+      email: email,
+      password: password,
+    );
       
       if (response.user != null) {
-        return await _supabaseService.convertSupabaseUserToAppUser(response.user);
+        return response.user;
       }
       
       return null;
@@ -43,23 +45,20 @@ class AuthRepository {
   }
 
   /// Sign up with email and password
-  Future<app_user.User?> signUpWithEmail(String email, String password) async {
+  Future<User?> signUpWithEmail(String email, String password) async {
     try {
       AppPrint.printInfo('Signing up user: $email');
-      final response = await _supabaseService.signUpWithEmail(
+      final AuthResponse response = await Supabase.instance.client.auth.signUp(
         email: email,
         password: password,
+        emailRedirectTo: "icon://login-callback"
       );
 
       if (response.user == null) {
         throw Exception('Login failed. Please try again.');
       }
-      
-      if (response.user != null) {
-        return await _supabaseService.convertSupabaseUserToAppUser(response.user);
-      }
-      
-      return null;
+
+      return response.user;
     } on AuthException catch (e) {
       String errorMsg = 'Failed to sign up';
 
@@ -90,26 +89,10 @@ class AuthRepository {
   Future<void> signOut() async {
     try {
       AppPrint.printInfo('Signing out user');
-      await _supabaseService.signOut();
+      await Supabase.instance.client.auth.signOut();
     } catch (e) {
       AppPrint.printError('Sign out failed: $e');
       rethrow;
-    }
-  }
-
-  /// Get current user
-  app_user.User? getCurrentUser() {
-    try {
-      final supabaseUser = _supabaseService.currentUser;
-      if (supabaseUser != null) {
-        // Note: This is synchronous, so we can't use the async conversion method
-        // In a real app, you might want to cache the user data or handle this differently
-        return null;
-      }
-      return null;
-    } catch (e) {
-      AppPrint.printError('Get current user failed: $e');
-      return null;
     }
   }
 
@@ -156,7 +139,7 @@ class AuthRepository {
       
       // Verify current password by attempting to sign in with current credentials
       // This is a common pattern to verify the current password before changing it
-      await _supabaseService.signInWithEmail(
+      await Supabase.instance.client.auth.signInWithPassword(
         email: currentUser.email!,
         password: currentPassword,
       );
@@ -167,41 +150,6 @@ class AuthRepository {
       AppPrint.printInfo('Password changed successfully');
     } catch (e) {
       AppPrint.printError('Change password failed: $e');
-      rethrow;
-    }
-  }
-
-  /// Update user profile
-  Future<app_user.User?> updateProfile({
-    required String firstName,
-    required String lastName,
-    required String email,
-  }) async {
-    try {
-      AppPrint.printInfo('Updating profile for current user');
-      
-      final currentUser = _supabaseService.currentUser;
-      if (currentUser == null) {
-        throw Exception('No authenticated user found');
-      }
-
-      // Use UserRepository to update the profile
-      final userRepository = UserRepository();
-      final updatedUser = await userRepository.updateUserProfile(
-        userId: currentUser.id,
-        firstName: firstName,
-        lastName: lastName,
-        email: email,
-      );
-
-      if (updatedUser != null) {
-        AppPrint.printInfo('Profile updated successfully');
-        return updatedUser;
-      }
-      
-      return null;
-    } catch (e) {
-      AppPrint.printError('Update profile failed: $e');
       rethrow;
     }
   }
@@ -229,4 +177,6 @@ class AuthRepository {
       rethrow;
     }
   }
+
+  
 } 

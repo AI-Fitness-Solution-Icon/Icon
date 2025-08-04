@@ -1,6 +1,7 @@
 import '../../../core/models/user.dart';
 import '../../../core/services/supabase_service.dart';
 import '../../../core/utils/app_print.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
 
 /// Repository for User model operations
 class UserRepository {
@@ -208,11 +209,21 @@ class UserRepository {
 
   /// Update user profile
   Future<User?> updateUserProfile({
-    required String userId,
     String? firstName,
     String? lastName,
     String? email,
   }) async {
+
+      AppPrint.printInfo('Updating profile for current user');
+      
+      final currentUser = _supabaseService.currentUser;
+      if (currentUser == null) {
+        throw Exception('No authenticated user found');
+      }
+
+      final userId = supabase.Supabase.instance.client.auth.currentUser!.id;
+
+
     try {
       AppPrint.printStep('Updating user profile: $userId');
       

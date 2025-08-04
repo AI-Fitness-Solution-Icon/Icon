@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../../core/models/user.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_state.dart';
 
@@ -62,7 +62,7 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildProfileHeader(BuildContext context, User user) {
+  Widget _buildProfileHeader(BuildContext context, supabase.User user) {
     return Center(
       child: Column(
         children: [
@@ -77,14 +77,14 @@ class ProfileScreen extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            user.email,
+            user.email ?? 'No email',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
               fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(height: 8),
           Text(
-            'Member since ${_formatDate(user.createdAt)}',
+            'Member since ${_formatDate(DateTime.parse(user.createdAt))}',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: Colors.grey[600],
             ),
@@ -94,7 +94,7 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildProfileInfo(BuildContext context, User user) {
+  Widget _buildProfileInfo(BuildContext context, supabase.User user) {
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -110,12 +110,12 @@ class ProfileScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            _buildInfoRow('Email', user.email),
-            _buildInfoRow('User ID', user.userId),
-            _buildInfoRow('Role', user.role?.roleName ?? 'Unknown'),
-            _buildInfoRow('Status', user.isActive ? 'Active' : 'Inactive'),
-            _buildInfoRow('Created', _formatDate(user.createdAt)),
-            _buildInfoRow('Last Updated', _formatDate(user.updatedAt)),
+            _buildInfoRow('Email', user.email ?? 'No email'),
+            _buildInfoRow('User ID', user.id),
+            _buildInfoRow('Role', 'User'),
+            _buildInfoRow('Status', 'Active'),
+            _buildInfoRow('Created', _formatDate(DateTime.parse(user.createdAt))),
+            _buildInfoRow('Last Updated', _formatDate(DateTime.parse(user.updatedAt ?? user.createdAt))),
           ],
         ),
       ),

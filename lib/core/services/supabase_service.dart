@@ -40,34 +40,6 @@ class SupabaseService {
   /// Check if user is authenticated
   bool get isAuthenticated => currentUser != null;
 
-  /// Sign in with email and password
-  Future<supabase.AuthResponse> signInWithEmail({
-    required String email,
-    required String password,
-  }) async {
-    return await _client.auth.signInWithPassword(
-      email: email,
-      password: password,
-    );
-  }
-
-  /// Sign up with email and password
-  Future<supabase.AuthResponse> signUpWithEmail({
-    required String email,
-    required String password,
-  }) async {
-    return await _client.auth.signUp(
-      email: email,
-      password: password,
-      emailRedirectTo: "icon://login-callback"
-    );
-  }
-
-  /// Sign out current user
-  Future<void> signOut() async {
-    await _client.auth.signOut();
-  }
-
   /// Reset password
   Future<void> resetPassword(String email) async {
     await _client.auth.resetPasswordForEmail(email);

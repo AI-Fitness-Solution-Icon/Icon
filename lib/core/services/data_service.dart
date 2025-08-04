@@ -41,7 +41,7 @@ class DataService {
       // 3. Send an email to the user with a download link
       // 4. Store the request in a database for tracking
 
-      AppPrint.printInfo('User data prepared for download');
+      AppPrint.printInfo('User data prepared for download: ${allUserData.length} items');
       
       // Simulate sending email notification
       await _sendDataDownloadEmail(currentUser.email!);

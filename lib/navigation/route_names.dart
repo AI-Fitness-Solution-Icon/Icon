@@ -46,5 +46,5 @@ class RouteNames {
   static const String settingsPath = '/settings';
   static const String notificationSettingsPath = '/notification-settings';
   static const String privacySettingsPath = '/privacy-settings';
-  static const String homePath = '/';
+  static const String homePath = '/home';
 } 

@@ -44,9 +44,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final state = context.read<AuthBloc>().state;
     if (state is Authenticated) {
       final user = state.user;
-      _firstNameController.text = user.firstName ?? '';
-      _lastNameController.text = user.lastName ?? '';
-      _emailController.text = user.email;
+      // Load user data from user metadata or profile
+      final userMetadata = user.userMetadata;
+      _firstNameController.text = userMetadata?['first_name']?.toString() ?? '';
+      _lastNameController.text = userMetadata?['last_name']?.toString() ?? '';
+      _emailController.text = user.email ?? '';
     }
   }
 

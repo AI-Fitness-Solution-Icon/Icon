@@ -7,7 +7,6 @@ import '../../../navigation/route_names.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
-import '../../../core/utils/snackbar.dart';
 
 /// Sign up screen for user registration
 class SignupScreen extends StatefulWidget {
@@ -70,7 +69,7 @@ class _SignupScreenState extends State<SignupScreen> {
         listener: (context, state) {
           if (state is Authenticated) {
             AppPrint.printInfo('Signup successful');
-            context.go('/home');
+            context.go(RouteNames.homePath);
           } else if (state is AuthError) {
             AppPrint.printError('Signup failed: ${state.message}');
             ScaffoldMessenger.of(context).showSnackBar(

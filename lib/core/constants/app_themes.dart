@@ -47,7 +47,7 @@ class AppThemes {
       filled: true,
       fillColor: AppColors.surface,
     ),
-    scaffoldBackgroundColor: AppColors.background,
+    scaffoldBackgroundColor: AppColors.surface,
   );
 
   /// Dark theme configuration (Primary theme)
@@ -57,9 +57,7 @@ class AppThemes {
     colorScheme: ColorScheme.fromSeed(
       seedColor: AppColors.primary,
       brightness: Brightness.dark,
-      background: AppColors.primaryBackground,
       surface: AppColors.surfaceDark,
-      onBackground: AppColors.textLight,
       onSurface: AppColors.textLight,
     ),
     appBarTheme: const AppBarTheme(
@@ -99,7 +97,7 @@ class AppThemes {
       labelStyle: const TextStyle(color: AppColors.textSecondary),
       hintStyle: const TextStyle(color: AppColors.textSecondary),
     ),
-    scaffoldBackgroundColor: AppColors.primaryBackground,
+    scaffoldBackgroundColor: AppColors.surfaceDark,
     textTheme: const TextTheme(
       bodyLarge: TextStyle(color: AppColors.textLight),
       bodyMedium: TextStyle(color: AppColors.textLight),

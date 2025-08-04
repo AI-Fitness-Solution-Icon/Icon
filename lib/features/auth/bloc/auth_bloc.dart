@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../data/auth_repository.dart';
-import '../../../core/models/user.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
 import 'auth_event.dart';
 import 'auth_state.dart';
+import '../../../core/repositories/user_repository.dart';
 
 /// BLoC for managing authentication state
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
@@ -37,7 +38,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       );
 
       if (user != null) {
-        emit(Authenticated(user: user));
+        emit(Authenticated(user: user ));
       } else {
         emit(const AuthError(message: 'Sign in failed'));
       }
@@ -107,7 +108,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(const AuthLoading());
 
     try {
-      final user = _authRepository.getCurrentUser();
+      final user = supabase.Supabase.instance.client.auth.currentUser;
       if (user != null) {
         emit(Authenticated(user: user));
       } else {
@@ -125,7 +126,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     try {
       if (_authRepository.isAuthenticated()) {
-        final user = _authRepository.getCurrentUser();
+        final user = supabase.Supabase.instance.client.auth.currentUser;
         if (user != null) {
           emit(Authenticated(user: user));
         } else {
@@ -155,7 +156,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   /// Get current user from state
-  User? get currentUser {
+  supabase.User? get currentUser {
     if (state is Authenticated) {
       return (state as Authenticated).user;
     }
@@ -194,18 +195,25 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(const AuthLoading());
 
     try {
-      final updatedUser = await _authRepository.updateProfile(
+      final userRepository = UserRepository();
+      final updatedUser = await userRepository.updateUserProfile(
         firstName: event.firstName,
         lastName: event.lastName,
         email: event.email,
       );
       
       if (updatedUser != null) {
-        emit(Authenticated(user: updatedUser));
+        // Get the current Supabase user to maintain the auth state
+        final currentSupabaseUser = supabase.Supabase.instance.client.auth.currentUser;
+        if (currentSupabaseUser != null) {
+          emit(Authenticated(user: currentSupabaseUser));
+        } else {
+          emit(const AuthError(message: 'Profile update failed'));
+        }
       } else {
         emit(const AuthError(message: 'Profile update failed'));
       }
-    } catch (e) {
+    } catch (e) { 
       emit(AuthError(message: e.toString()));
     }
   }

@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../../../core/models/user.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
 
 /// Base class for all authentication states
 abstract class AuthState extends Equatable {
@@ -21,7 +21,7 @@ class AuthLoading extends AuthState {
 
 /// State when user is authenticated
 class Authenticated extends AuthState {
-  final User user;
+  final supabase.User user;
 
   const Authenticated({required this.user});
 
