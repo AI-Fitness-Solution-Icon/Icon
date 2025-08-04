@@ -547,12 +547,16 @@ Data Source → Repository → Use Case → Provider → UI Update
 - Automatically add new tasks to the backlog as they are identified
 - Execute tasks when possible without user intervention
 - Update the backlog regularly with progress and new requirements
+- Prioritize tasks based on criticality and dependencies
+- Mark tasks as completed when finished
 
 ### 2. Change Logging
 - Create and maintain a `CHANGELOG.md` file in the project root
 - Log all changes, improvements, and bug fixes as they are implemented
 - Include version numbers, dates, and detailed descriptions of changes
-- Follow conventional changelog format
+- Follow conventional changelog format (Added, Changed, Deprecated, Removed, Fixed, Security)
+- Update changelog immediately after making any code changes
+- Include relevant issue numbers and pull request references
 
 ### 3. Developer Tasks
 - Create and maintain a `developer_todo.md` file for tasks that require manual intervention
@@ -562,18 +566,28 @@ Data Source → Repository → Use Case → Provider → UI Update
   - Manual setup steps
   - External service configuration
   - Any action that cannot be automated
+  - App store configuration and submission
+  - Code signing and certificates
+  - Production environment setup
 - Provide clear instructions for each manual task
+- Include relevant links and resources for each task
+- Update task status as items are completed
 
 ### 4. Commit Messages
 - Automatically create meaningful commit messages for all code changes
 - Use conventional commit format: `type(scope): description`
 - Include relevant details about what was changed and why
 - Reference issue numbers or task IDs when applicable
+- Use appropriate commit types: feat, fix, docs, style, refactor, test, chore
+- Keep commit messages concise but descriptive
+- Create commits for logical units of work
 
 ### 5. System Design Documentation
 - Keep `system_design.md` updated with all prompts and architectural decisions
 - Document any new system components or changes
 - Maintain a complete record of design decisions and their rationale
+- Include all development prompts and their purposes
+- Update documentation as the system evolves
 
 ## Clean Architecture Anti-Patterns to Avoid
 
