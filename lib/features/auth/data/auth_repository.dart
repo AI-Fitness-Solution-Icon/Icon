@@ -1,6 +1,6 @@
 
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:url_launcher/url_launcher.dart';
+
 
 import '../../../core/models/user.dart' as app_user;
 import '../../../core/services/supabase_service.dart';
@@ -32,33 +32,34 @@ class AuthRepository {
     }
   }
 
-  void openEmail(String email) {
-    // This method attempts to open the default email app so the user can check their email.
-    // Note: This requires the 'url_launcher' package to be added to pubspec.yaml.
-    // Usage: openEmail(userEmail);
-    final Uri emailLaunchUri = Uri(
-      scheme: 'mailto',
-      path: email,
-    );
-    // ignore: deprecated_member_use
-    launchUrl(emailLaunchUri, mode: LaunchMode.externalApplication);
-  }
-
   /// Sign up with email and password
-  Future<User?> signUpWithEmail(String email, String password) async {
+  Future<Map<String, dynamic>> signUpWithEmail(String email, String password) async {
     try {
       AppPrint.printInfo('Signing up user: $email');
       final AuthResponse response = await Supabase.instance.client.auth.signUp(
         email: email,
         password: password,
-        emailRedirectTo: "icon://login-callback"
+        emailRedirectTo: "icon://login-callback",
       );
 
       if (response.user == null) {
-        throw Exception('Login failed. Please try again.');
+        throw Exception('Sign up failed. Please try again.');
       }
 
-      return response.user;
+      // Check if email confirmation is required
+      if (response.session == null) {
+        // Email confirmation is required
+        return {
+          'user': response.user,
+          'requiresEmailConfirmation': true,
+        };
+      } else {
+        // User is immediately authenticated (email confirmation not required)
+        return {
+          'user': response.user,
+          'requiresEmailConfirmation': false,
+        };
+      }
     } on AuthException catch (e) {
       String errorMsg = 'Failed to sign up';
 
@@ -67,10 +68,6 @@ class AuthRepository {
             'Invalid email or password. Please check your credentials and try again.';
       } else if (e.message.contains('Email not confirmed')) {
         errorMsg = 'Please verify your email address before signing in.';
-
-      // open the amil client for the user to check it . 
-      openEmail(email);
-
       } else if (e.message.contains('Too many requests')) {
         errorMsg = 'Too many login attempts. Please try again later.';
       } else if (e.message.contains('network')) {

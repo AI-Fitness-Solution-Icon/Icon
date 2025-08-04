@@ -1,0 +1,422 @@
+# Icon App - Project Setup Prompt
+
+You are a senior Flutter engineer working on the Icon fitness app. Set up the initial project structure following clean architecture principles with feature-based modules.
+
+## Project Context
+
+Icon is an AI-powered fitness app with the following tech stack:
+- **Frontend**: Flutter (Dart)
+- **Backend**: Supabase (PostgreSQL, Auth, Storage)
+- **AI Services**: OpenAI API
+- **Voice Services**: Speech-to-Text and Text-to-Speech
+- **Payments**: Stripe
+- **State Management**: Provider
+- **Navigation**: Go Router
+
+## Required Setup
+
+### 1. Project Structure
+Create the following folder structure in `lib/`:
+
+```
+lib/
+├── core/
+│   ├── constants/
+│   │   ├── app_constants.dart
+│   │   ├── api_endpoints.dart
+│   │   ├── app_strings.dart
+│   │   └── app_themes.dart
+│   ├── models/
+│   │   ├── user.dart
+│   │   ├── workout.dart
+│   │   ├── exercise.dart
+│   │   └── subscription.dart
+│   ├── services/
+│   │   ├── supabase_service.dart
+│   │   ├── openai_service.dart
+│   │   ├── stripe_service.dart
+│   │   ├── voice_service.dart
+│   │   └── analytics_service.dart
+│   ├── repositories/
+│   │   ├── auth_repository.dart
+│   │   ├── workout_repository.dart
+│   │   ├── user_repository.dart
+│   │   └── subscription_repository.dart
+│   └── utils/
+│       ├── validators.dart
+│       ├── formatters.dart
+│       ├── helpers.dart
+│       └── extensions.dart
+├── features/
+│   ├── auth/
+│   │   ├── data/
+│   │   │   ├── models/
+│   │   │   └── repositories/
+│   │   ├── domain/
+│   │   │   └── providers/
+│   │   └── presentation/
+│   │       ├── screens/
+│   │       └── widgets/
+│   ├── workout/
+│   │   ├── data/
+│   │   ├── domain/
+│   │   └── presentation/
+│   ├── ai_coach/
+│   │   ├── data/
+│   │   ├── domain/
+│   │   └── presentation/
+│   ├── subscription/
+│   │   ├── data/
+│   │   ├── domain/
+│   │   └── presentation/
+│   └── settings/
+│       ├── data/
+│       ├── domain/
+│       └── presentation/
+└── navigation/
+    ├── app_router.dart
+    ├── route_names.dart
+    └── navigation_service.dart
+```
+
+### 2. Core Constants
+
+Create `lib/core/constants/app_constants.dart`:
+```dart
+class AppConstants {
+  // App Information
+  static const String appName = 'Icon';
+  static const String appVersion = '1.0.0';
+  static const String appDescription = 'AI-Powered Fitness App';
+  
+  // API Configuration
+  static const int apiTimeout = 30000; // 30 seconds
+  static const int maxRetries = 3;
+  
+  // Storage Keys
+  static const String authTokenKey = 'auth_token';
+  static const String userDataKey = 'user_data';
+  static const String settingsKey = 'app_settings';
+  
+  // Animation Durations
+  static const Duration shortAnimation = Duration(milliseconds: 200);
+  static const Duration mediumAnimation = Duration(milliseconds: 300);
+  static const Duration longAnimation = Duration(milliseconds: 500);
+  
+  // Validation Rules
+  static const int minPasswordLength = 8;
+  static const int maxPasswordLength = 128;
+  static const int maxNameLength = 50;
+  static const int maxBioLength = 500;
+}
+```
+
+### 3. API Endpoints
+
+Create `lib/core/constants/api_endpoints.dart`:
+```dart
+class ApiEndpoints {
+  // Supabase Endpoints
+  static const String supabaseUrl = 'SUPABASE_URL';
+  static const String supabaseAnonKey = 'SUPABASE_ANON_KEY';
+  
+  // OpenAI Endpoints
+  static const String openaiBaseUrl = 'https://api.openai.com/v1';
+  static const String openaiChatCompletions = '/chat/completions';
+  
+  // Stripe Endpoints
+  static const String stripeBaseUrl = 'https://api.stripe.com/v1';
+  static const String stripePaymentIntents = '/payment_intents';
+  static const String stripeSubscriptions = '/subscriptions';
+  
+  // Voice API Endpoints
+  static const String voiceApiBaseUrl = 'VOICE_API_BASE_URL';
+  static const String voiceApiKey = 'VOICE_API_KEY';
+}
+```
+
+### 4. App Strings
+
+Create `lib/core/constants/app_strings.dart`:
+```dart
+class AppStrings {
+  // Common
+  static const String loading = 'Loading...';
+  static const String error = 'Error';
+  static const String success = 'Success';
+  static const String cancel = 'Cancel';
+  static const String save = 'Save';
+  static const String delete = 'Delete';
+  static const String edit = 'Edit';
+  static const String done = 'Done';
+  
+  // Authentication
+  static const String login = 'Login';
+  static const String signup = 'Sign Up';
+  static const String logout = 'Logout';
+  static const String email = 'Email';
+  static const String password = 'Password';
+  static const String confirmPassword = 'Confirm Password';
+  static const String forgotPassword = 'Forgot Password?';
+  static const String resetPassword = 'Reset Password';
+  
+  // Workout
+  static const String workouts = 'Workouts';
+  static const String exercises = 'Exercises';
+  static const String startWorkout = 'Start Workout';
+  static const String pauseWorkout = 'Pause Workout';
+  static const String endWorkout = 'End Workout';
+  static const String workoutHistory = 'Workout History';
+  
+  // AI Coach
+  static const String aiCoach = 'AI Coach';
+  static const String askCoach = 'Ask your coach...';
+  static const String coachResponse = 'Coach Response';
+  static const String voiceMode = 'Voice Mode';
+  
+  // Subscription
+  static const String subscription = 'Subscription';
+  static const String plans = 'Plans';
+  static const String subscribe = 'Subscribe';
+  static const String manageSubscription = 'Manage Subscription';
+  
+  // Settings
+  static const String settings = 'Settings';
+  static const String profile = 'Profile';
+  static const String notifications = 'Notifications';
+  static const String privacy = 'Privacy';
+  static const String about = 'About';
+  static const String help = 'Help';
+}
+```
+
+### 5. App Themes
+
+Create `lib/core/constants/app_themes.dart`:
+```dart
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+class AppThemes {
+  // Colors
+  static const Color primaryColor = Color(0xFF6366F1);
+  static const Color secondaryColor = Color(0xFF8B5CF6);
+  static const Color accentColor = Color(0xFF06B6D4);
+  static const Color backgroundColor = Color(0xFF0F172A);
+  static const Color surfaceColor = Color(0xFF1E293B);
+  static const Color errorColor = Color(0xFFEF4444);
+  static const Color successColor = Color(0xFF10B981);
+  static const Color warningColor = Color(0xFFF59E0B);
+  
+  // Text Colors
+  static const Color textPrimary = Color(0xFFF8FAFC);
+  static const Color textSecondary = Color(0xFF94A3B8);
+  static const Color textTertiary = Color(0xFF64748B);
+  
+  // Dark Theme
+  static ThemeData get darkTheme {
+    return ThemeData(
+      useMaterial3: true,
+      brightness: Brightness.dark,
+      colorScheme: const ColorScheme.dark(
+        primary: primaryColor,
+        secondary: secondaryColor,
+        tertiary: accentColor,
+        surface: surfaceColor,
+        background: backgroundColor,
+        error: errorColor,
+        onPrimary: Colors.white,
+        onSecondary: Colors.white,
+        onSurface: textPrimary,
+        onBackground: textPrimary,
+        onError: Colors.white,
+      ),
+      textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme),
+      appBarTheme: const AppBarTheme(
+        backgroundColor: backgroundColor,
+        foregroundColor: textPrimary,
+        elevation: 0,
+      ),
+      cardTheme: CardTheme(
+        color: surfaceColor,
+        elevation: 2,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: primaryColor,
+          foregroundColor: Colors.white,
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        ),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: surfaceColor,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: textTertiary.withOpacity(0.3)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(color: primaryColor),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(color: errorColor),
+        ),
+      ),
+    );
+  }
+}
+```
+
+### 6. Main App Configuration
+
+Update `lib/main.dart` to use the new structure:
+```dart
+import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:provider/provider.dart';
+import 'core/constants/app_themes.dart';
+import 'core/constants/app_strings.dart';
+import 'core/services/supabase_service.dart';
+import 'core/services/openai_service.dart';
+import 'core/services/stripe_service.dart';
+import 'core/services/voice_service.dart';
+import 'navigation/app_router.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // Load environment variables
+  await dotenv.load(fileName: ".env");
+  
+  // Initialize services
+  await SupabaseService.initialize();
+  await OpenAIService.initialize();
+  await StripeService.initialize();
+  await VoiceService.initialize();
+  
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp.router(
+      title: AppStrings.appName,
+      theme: AppThemes.darkTheme,
+      routerConfig: AppRouter.router,
+      debugShowCheckedModeBanner: false,
+    );
+  }
+}
+```
+
+### 7. Environment Configuration
+
+Create `.env` file in the root directory:
+```env
+# Supabase Configuration
+SUPABASE_URL=your-supabase-url
+SUPABASE_ANON_KEY=your-supabase-anon-key
+
+# OpenAI Configuration
+OPENAI_API_KEY=your-openai-api-key
+
+# Stripe Configuration
+STRIPE_PUBLISHABLE_KEY=your-stripe-publishable-key
+STRIPE_SECRET_KEY=your-stripe-secret-key
+
+# Voice API Configuration
+VOICE_API_KEY=your-voice-api-key
+VOICE_API_BASE_URL=your-voice-api-base-url
+```
+
+### 8. Dependencies
+
+Update `pubspec.yaml` with required dependencies:
+```yaml
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # State Management
+  provider: ^6.1.1
+  
+  # Navigation
+  go_router: ^12.1.3
+  
+  # Backend & Database
+  supabase_flutter: ^2.3.4
+  
+  # AI Services
+  dio: ^5.4.0
+  
+  # Voice Services
+  speech_to_text: ^6.6.0
+  flutter_tts: ^3.8.5
+  
+  # Payments
+  flutter_stripe: ^10.0.0
+  
+  # UI & Styling
+  google_fonts: ^6.1.0
+  flutter_animate: ^4.3.0
+  
+  # Utilities
+  flutter_dotenv: ^5.1.0
+  shared_preferences: ^2.2.2
+  logger: ^2.0.2+1
+  
+  # Other
+  url_launcher: ^6.2.4
+  image_picker: ^1.0.7
+  cached_network_image: ^3.3.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.1
+```
+
+## Implementation Guidelines
+
+1. **Follow Clean Architecture**: Separate data, domain, and presentation layers
+2. **Use Provider Pattern**: Implement state management with ChangeNotifier
+3. **Error Handling**: Implement proper error handling throughout
+4. **Loading States**: Add loading indicators for async operations
+5. **Validation**: Implement input validation for forms
+6. **Testing**: Write unit tests for business logic
+7. **Documentation**: Add proper documentation for public APIs
+
+## Next Steps
+
+After setting up the project structure:
+
+1. Implement core services (Supabase, OpenAI, Stripe, Voice)
+2. Set up authentication module
+3. Create workout management features
+4. Integrate AI coaching
+5. Implement subscription system
+6. Add comprehensive testing
+7. Optimize for performance
+
+Remember to:
+- Never commit sensitive data (API keys, secrets)
+- Follow Flutter best practices
+- Maintain code consistency
+- Write comprehensive tests
+- Document your code 

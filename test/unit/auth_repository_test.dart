@@ -1,63 +1,96 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:icon_app/features/auth/data/auth_repository.dart';
+import 'package:icon_app/core/services/supabase_service.dart';
+import 'package:icon_app/core/repositories/user_repository.dart';
+import 'package:mockito/annotations.dart';
+import 'auth_repository_test.mocks.dart';
 
-/// Tests for auth repository
+@GenerateMocks([SupabaseClient, GoTrueClient, SupabaseService, User, UserRepository])
 void main() {
+  late AuthRepository authRepository;
+  late MockSupabaseService mockSupabaseService;
+  late MockSupabaseClient mockSupabaseClient;
+  late MockGoTrueClient mockGoTrueClient;
+  late MockUserRepository mockUserRepository;
+
+  setUp(() {
+    mockSupabaseService = MockSupabaseService();
+    mockSupabaseClient = MockSupabaseClient();
+    mockGoTrueClient = MockGoTrueClient();
+    mockUserRepository = MockUserRepository();
+    
+    // Mock the Supabase.instance.client getter
+    // This is a bit of a workaround since we can't directly mock the static instance.
+    // We will mock the service that uses it.
+    when(mockSupabaseService.client).thenReturn(mockSupabaseClient);
+    when(mockSupabaseClient.auth).thenReturn(mockGoTrueClient);
+
+    authRepository = AuthRepository();
+  });
+
   group('AuthRepository', () {
-    late AuthRepository authRepository;
+    const tEmail = 'test@example.com';
+    const tPassword = 'password';
+    final tUser = User(id: '1', appMetadata: {}, userMetadata: {}, aud: 'authenticated', createdAt: DateTime.now().toIso8601String());
 
-    setUp(() {
-      authRepository = AuthRepository();
+    test('signInWithEmail returns a user on successful sign in', () async {
+      final authResponse = AuthResponse(user: tUser, session: Session(accessToken: 'token', tokenType: 'bearer', user: tUser));
+      when(mockGoTrueClient.signInWithPassword(email: tEmail, password: tPassword))
+          .thenAnswer((_) async => authResponse);
+
+      final result = await authRepository.signInWithEmail(tEmail, tPassword);
+
+      expect(result, equals(tUser));
+      verify(mockGoTrueClient.signInWithPassword(email: tEmail, password: tPassword)).called(1);
     });
 
-    test('should sign in user with valid credentials', () async {
-      // This test would require mocking Supabase service
-      // For now, we'll test the method exists and doesn't throw
-      expect(authRepository.signInWithEmail, isA<Function>());
+    test('signInWithEmail throws an exception on failure', () async {
+      when(mockGoTrueClient.signInWithPassword(email: tEmail, password: tPassword))
+          .thenThrow(const AuthException('Invalid login credentials'));
+
+      expect(() => authRepository.signInWithEmail(tEmail, tPassword), throwsA(isA<AuthException>()));
     });
 
-    test('should sign up user with valid credentials', () async {
-      // This test would require mocking Supabase service
-      // For now, we'll test the method exists and doesn't throw
-      expect(authRepository.signUpWithEmail, isA<Function>());
+    test('signUpWithEmail returns user and requires email confirmation', () async {
+      final authResponse = AuthResponse(user: tUser, session: null);
+      when(mockGoTrueClient.signUp(email: tEmail, password: tPassword, emailRedirectTo: "icon://login-callback"))
+          .thenAnswer((_) async => authResponse);
+
+      final result = await authRepository.signUpWithEmail(tEmail, tPassword);
+
+      expect(result['user'], tUser);
+      expect(result['requiresEmailConfirmation'], isTrue);
     });
 
-    test('should sign out user', () async {
-      // This test would require mocking Supabase service
-      // For now, we'll test the method exists and doesn't throw
-      expect(authRepository.signOut, isA<Function>());
+    test('signOut completes successfully', () async {
+      when(mockGoTrueClient.signOut()).thenAnswer((_) async => AuthResponse(session: null, user: null));
+      await authRepository.signOut();
+      verify(mockGoTrueClient.signOut()).called(1);
     });
 
-    test('should check authentication status', () {
-      // Test isAuthenticated method
-      final isAuthenticated = authRepository.isAuthenticated();
-      // Should return false if no user is authenticated
-      expect(isAuthenticated, isFalse);
+    test('isAuthenticated returns true when user is authenticated', () {
+      when(mockSupabaseService.isAuthenticated).thenReturn(true);
+      final result = authRepository.isAuthenticated();
+      expect(result, isTrue);
     });
 
-    test('should reset password', () async {
-      // This test would require mocking Supabase service
-      // For now, we'll test the method exists and doesn't throw
-      expect(authRepository.resetPassword, isA<Function>());
+    test('resetPassword completes successfully', () async {
+      when(mockSupabaseService.resetPassword(tEmail)).thenAnswer((_) async => {});
+      await authRepository.resetPassword(tEmail);
+      verify(mockSupabaseService.resetPassword(tEmail)).called(1);
     });
 
-    test('should get current user asynchronously', () async {
-      // Test getCurrentUserAsync method
-      final user = await authRepository.getCurrentUserAsync();
-      // Should return null if no user is authenticated
-      expect(user, isNull);
-    });
+    test('deleteAccount completes successfully', () async {
+      when(mockSupabaseService.currentUser).thenReturn(tUser);
+      when(mockUserRepository.deleteUser(tUser.id)).thenAnswer((_) async => Future.value());
+      when(mockSupabaseService.deleteUser()).thenAnswer((_) async => {});
 
-    test('should handle authentication errors gracefully', () async {
-      // Test error handling by calling methods with invalid data
-      // This would typically require mocking to simulate errors
-      expect(authRepository.signInWithEmail, isA<Function>());
-      expect(authRepository.signUpWithEmail, isA<Function>());
-    });
-    test('should return false for authentication status when not authenticated', () {
-      // Test that isAuthenticated returns false when not authenticated
-      final isAuthenticated = authRepository.isAuthenticated();
-      expect(isAuthenticated, isFalse);
+      await authRepository.deleteAccount();
+
+      verify(mockUserRepository.deleteUser(tUser.id)).called(1);
+      verify(mockSupabaseService.deleteUser()).called(1);
     });
   });
-} 
+}

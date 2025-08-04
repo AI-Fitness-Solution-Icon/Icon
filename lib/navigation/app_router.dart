@@ -4,7 +4,9 @@ import 'package:icon_app/features/splash/screens/splash_screen.dart';
 import 'package:icon_app/features/onboarding/screens/user_type_selection_screen.dart';
 import 'package:icon_app/features/auth/screens/login_screen.dart';
 import 'package:icon_app/features/auth/screens/signup_screen.dart';
+import 'package:icon_app/features/auth/screens/email_verification_screen.dart';
 import 'package:icon_app/features/auth/screens/profile_screen.dart';
+import 'package:icon_app/features/dashboard/screens/dashboard_screen.dart';
 import 'package:icon_app/features/auth/screens/edit_profile_screen.dart';
 import 'package:icon_app/features/auth/screens/change_password_screen.dart';
 import 'package:icon_app/features/workout/screens/workout_home.dart';
@@ -46,6 +48,14 @@ class AppRouter {
         path: RouteNames.signupPath,
         name: RouteNames.signup,
         builder: (context, state) => const SignupScreen(),
+      ),
+      GoRoute(
+        path: RouteNames.emailVerificationPath,
+        name: RouteNames.emailVerification,
+        builder: (context, state) {
+          final email = state.extra as String? ?? '';
+          return EmailVerificationScreen(email: email);
+        },
       ),
       GoRoute(
         path: RouteNames.profilePath,
@@ -118,11 +128,18 @@ class AppRouter {
         builder: (context, state) => const PrivacySettingsScreen(),
       ),
       
-      // Root route - redirect to workout home
+      // Dashboard route
+      GoRoute(
+        path: RouteNames.dashboardPath,
+        name: RouteNames.dashboard,
+        builder: (context, state) => const DashboardScreen(),
+      ),
+      
+      // Root route - redirect to dashboard
       GoRoute(
         path: RouteNames.homePath,
         name: RouteNames.home,
-        builder: (context, state) => const WorkoutHomeScreen(),
+        builder: (context, state) => const DashboardScreen(),
       ),
     ],
     

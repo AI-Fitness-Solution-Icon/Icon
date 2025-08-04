@@ -1,0 +1,237 @@
+# Cursor Rules for Icon App Development
+
+## Project Overview
+You are working on Icon, an AI-powered fitness app built with Flutter. The app uses clean architecture with feature-based modules, Provider for state management, and Go Router for navigation.
+
+## Architecture Guidelines
+
+### 1. Project Structure
+- Follow the established feature-based architecture
+- Each feature should be self-contained in `lib/features/[feature_name]/`
+- Use the existing folder structure: `data/`, `domain/`, `presentation/`
+- Core functionality goes in `lib/core/`
+- Navigation configuration in `lib/navigation/`
+
+### 2. Code Organization
+- **Models**: Place in `lib/core/models/` for shared models, or `lib/features/[feature]/data/models/` for feature-specific models
+- **Services**: Place in `lib/core/services/` for shared services
+- **Repositories**: Place in `lib/core/repositories/` for data access
+- **Screens**: Place in `lib/features/[feature]/presentation/screens/`
+- **Widgets**: Place in `lib/features/[feature]/presentation/widgets/`
+- **Providers**: Place in `lib/features/[feature]/domain/providers/`
+
+### 3. State Management
+- Use Provider with ChangeNotifier for state management
+- Each feature should have its own provider
+- Use `context.watch<Provider>()` to listen to state changes
+- Use `context.read<Provider>()` to call methods on providers
+
+### 4. Navigation
+- Use Go Router for navigation
+- Define routes in `lib/navigation/app_router.dart`
+- Use named routes for consistency
+- Implement route guards for authentication
+
+### 5. Styling and UI
+- Follow Material Design 3 principles
+- Use the app's theme consistently
+- Create reusable widgets for common UI elements
+- Use proper spacing and typography
+
+### 6. Error Handling
+- Implement proper error handling throughout the app
+- Use try-catch blocks for async operations
+- Show user-friendly error messages
+- Log errors for debugging
+
+### 7. Testing
+- Write unit tests for business logic
+- Write widget tests for UI components
+- Use mock data for testing
+- Follow the existing test structure
+
+### 8. Dependencies
+- Use the existing dependencies in `pubspec.yaml`
+- Don't add new dependencies without justification
+- Follow the established patterns for service integration
+
+### 9. File Naming
+- Use `snake_case.dart` for file names
+- Use `PascalCase` for class names
+- Use `camelCase` for variables and methods
+
+### 10. Documentation
+- Add proper documentation for public APIs
+- Use meaningful variable and method names
+- Add comments for complex logic
+
+## Feature-Specific Guidelines
+
+### Authentication
+- Use Supabase Auth for authentication
+- Implement email/password, social login, and password reset
+- Handle authentication state properly
+- Secure sensitive data
+
+### Workout Management
+- Create comprehensive workout models
+- Implement workout tracking and progress monitoring
+- Use proper data validation
+- Handle offline scenarios
+
+### AI Coach
+- Integrate OpenAI API for AI responses
+- Implement voice interaction (speech-to-text and text-to-speech)
+- Handle conversation context
+- Provide personalized recommendations
+
+### Subscription Management
+- Use Stripe for payment processing
+- Implement subscription plans and billing
+- Handle subscription state changes
+- Secure payment information
+
+### Settings
+- Implement user preferences
+- Handle app configuration
+- Provide clear user feedback
+- Support multiple languages
+
+## Code Quality Standards
+
+### 1. Performance
+- Optimize widget rebuilds
+- Use const constructors where possible
+- Implement proper loading states
+- Handle large datasets efficiently
+
+### 2. Security
+- Never hardcode API keys
+- Use environment variables for sensitive data
+- Implement proper input validation
+- Secure data transmission
+
+### 3. Accessibility
+- Use semantic labels
+- Support screen readers
+- Implement proper contrast ratios
+- Handle different screen sizes
+
+### 4. Internationalization
+- Use proper string localization
+- Support multiple languages
+- Handle different date/time formats
+- Consider cultural differences
+
+## Development Workflow
+
+### 1. Feature Development
+- Start with the data layer (models and repositories)
+- Implement business logic (providers)
+- Create UI components (screens and widgets)
+- Add tests for all layers
+
+### 2. Integration
+- Integrate with existing services
+- Follow established patterns
+- Maintain backward compatibility
+- Update documentation
+
+### 3. Testing
+- Write tests before or alongside implementation
+- Test all edge cases
+- Ensure proper error handling
+- Validate user flows
+
+### 4. Documentation
+- Update README.md for new features
+- Document API changes
+- Add inline documentation
+- Update architecture documentation
+
+## Common Patterns
+
+### 1. Service Integration
+```dart
+// Example service pattern
+class ExampleService {
+  static final ExampleService _instance = ExampleService._internal();
+  factory ExampleService() => _instance;
+  ExampleService._internal();
+
+  Future<void> initialize() async {
+    // Initialization logic
+  }
+}
+```
+
+### 2. Provider Pattern
+```dart
+// Example provider pattern
+class ExampleProvider extends ChangeNotifier {
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
+
+  Future<void> performAction() async {
+    _isLoading = true;
+    notifyListeners();
+    
+    try {
+      // Action logic
+    } catch (e) {
+      // Error handling
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+}
+```
+
+### 3. Repository Pattern
+```dart
+// Example repository pattern
+class ExampleRepository {
+  final ExampleService _service = ExampleService();
+
+  Future<List<ExampleModel>> getData() async {
+    try {
+      final response = await _service.getData();
+      return response.map((json) => ExampleModel.fromJson(json)).toList();
+    } catch (e) {
+      throw Exception('Failed to fetch data: $e');
+    }
+  }
+}
+```
+
+## Environment and Configuration
+
+### 1. Environment Variables
+- Use `.env` file for configuration
+- Never commit sensitive data
+- Use proper environment separation
+- Validate configuration on startup
+
+### 2. API Integration
+- Use proper HTTP status code handling
+- Implement retry logic for network failures
+- Handle rate limiting
+- Cache data appropriately
+
+### 3. Local Storage
+- Use SharedPreferences for simple data
+- Use SQLite for complex data
+- Implement proper data migration
+- Handle storage errors
+
+## Final Notes
+
+- Always consider the user experience
+- Follow Flutter best practices
+- Maintain code consistency
+- Think about scalability and maintainability
+- Test thoroughly before submitting
+- Document your changes
+- Consider performance implications
+- Follow security best practices 

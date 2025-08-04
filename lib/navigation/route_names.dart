@@ -10,6 +10,8 @@ class RouteNames {
   static const String profile = 'profile';
   static const String editProfile = 'edit_profile';
   static const String changePassword = 'change_password';
+  static const String emailVerification = 'email_verification';
+  static const String dashboard = 'dashboard';
 
   // Workout routes
   static const String workout = 'workout';
@@ -38,6 +40,8 @@ class RouteNames {
   static const String profilePath = '/profile';
   static const String editProfilePath = '/edit-profile';
   static const String changePasswordPath = '/change-password';
+  static const String emailVerificationPath = '/email-verification';
+  static const String dashboardPath = '/dashboard';
   static const String workoutPath = '/workout';
   static const String workoutSessionPath = '/workout/session';
   static const String aiCoachPath = '/ai-coach';

@@ -55,15 +55,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(const AuthLoading());
 
     try {
-      final user = await _authRepository.signUpWithEmail(
+      final result = await _authRepository.signUpWithEmail(
         event.email,
         event.password,
       );
 
-      if (user != null) {
-        emit(Authenticated(user: user));
+      final user = result['user'] as supabase.User;
+      final requiresEmailConfirmation = result['requiresEmailConfirmation'] as bool;
+
+      if (requiresEmailConfirmation) {
+        // User needs to verify their email
+        emit(const SignUpSuccess());
       } else {
-        emit(const AuthError(message: 'Sign up failed'));
+        // User is immediately authenticated
+        emit(Authenticated(user: user));
       }
     } catch (e) {
       emit(AuthError(message: e.toString()));

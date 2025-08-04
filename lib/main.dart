@@ -6,6 +6,7 @@ import 'core/constants/app_strings.dart';
 import 'core/services/supabase_service.dart';
 import 'core/services/stripe_service.dart';
 import 'core/services/settings_service.dart';
+import 'core/services/deep_link_service.dart';
 import 'navigation/app_router.dart';
 import 'features/auth/bloc/auth_bloc.dart';
 import 'features/auth/data/auth_repository.dart';
@@ -20,6 +21,8 @@ void main() async {
   await SupabaseService.initialize();
   // Initialize Stripe
   await StripeService.initialize();
+  // Initialize Deep Link Service
+  await DeepLinkService().initialize();
   
   runApp(const MyApp());
 }

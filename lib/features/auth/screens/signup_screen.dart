@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/utils/app_print.dart';
+import '../../../core/utils/snackbar.dart';
 import '../../../navigation/route_names.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
@@ -68,8 +69,17 @@ class _SignupScreenState extends State<SignupScreen> {
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is Authenticated) {
-            AppPrint.printInfo('Signup successful');
+            AppPrint.printInfo('Signup successful - user immediately authenticated');
             context.go(RouteNames.homePath);
+          } else if (state is SignUpSuccess) {
+            AppPrint.printInfo('Signup successful - email verification required');
+            // Show success message
+            AppSnackBar.showSuccessText(
+              context,
+              message: 'Account created successfully! Please check your email to verify your account.',
+            );
+            // Navigate to email verification screen
+            context.go(RouteNames.emailVerificationPath, extra: _emailController.text.trim());
           } else if (state is AuthError) {
             AppPrint.printError('Signup failed: ${state.message}');
             ScaffoldMessenger.of(context).showSnackBar(
