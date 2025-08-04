@@ -120,10 +120,10 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   Future<void> _onLoadSettings(LoadSettings event, Emitter<SettingsState> emit) async {
     emit(SettingsLoading());
     try {
-      final isDarkMode = await _settingsService.isDarkMode();
-      final notificationsEnabled = await _settingsService.areNotificationsEnabled();
-      final soundEnabled = await _settingsService.isSoundEnabled();
-      final vibrationEnabled = await _settingsService.isVibrationEnabled();
+      final isDarkMode = _settingsService.isDarkMode;
+      final notificationsEnabled = _settingsService.areNotificationsEnabled;
+      final soundEnabled = _settingsService.isSoundEnabled;
+      final vibrationEnabled = _settingsService.isVibrationEnabled;
 
       emit(SettingsLoaded(
         isDarkMode: isDarkMode,

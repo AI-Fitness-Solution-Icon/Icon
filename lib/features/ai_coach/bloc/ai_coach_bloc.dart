@@ -7,10 +7,13 @@ import 'ai_coach_state.dart';
 
 /// BLoC for managing AI Coach interactions
 class AiCoachBloc extends Bloc<AiCoachEvent, AiCoachState> {
-  final OpenAIService _openAIService = OpenAIService.instance;
+  late final OpenAIService _openAIService;
+  late final SupabaseService _supabaseService;
   final List<AIResponse> _messages = [];
 
-  AiCoachBloc() : super(const AiCoachInitial()) {
+  AiCoachBloc({OpenAIService? openAIService, SupabaseService? supabaseService}) : super(const AiCoachInitial()) {
+    _openAIService = openAIService ?? OpenAIService.instance;
+    _supabaseService = supabaseService ?? SupabaseService.instance;
     on<SendMessageEvent>(_onSendMessage);
     on<ClearMessagesEvent>(_onClearMessages);
     on<RetryMessageEvent>(_onRetryMessage);
@@ -18,7 +21,7 @@ class AiCoachBloc extends Bloc<AiCoachEvent, AiCoachState> {
 
   /// Get the current authenticated user ID
   String? _getCurrentUserId() {
-    final user = SupabaseService.instance.client.auth.currentUser;
+    final user = _supabaseService.client.auth.currentUser;
     return user?.id;
   }
 

@@ -27,7 +27,7 @@ void main() {
     when(mockSupabaseService.client).thenReturn(mockSupabaseClient);
     when(mockSupabaseClient.auth).thenReturn(mockGoTrueClient);
 
-    authRepository = AuthRepository();
+    authRepository = AuthRepository(supabaseService: mockSupabaseService, userRepository: mockUserRepository);
   });
 
   group('AuthRepository', () {
@@ -84,7 +84,7 @@ void main() {
 
     test('deleteAccount completes successfully', () async {
       when(mockSupabaseService.currentUser).thenReturn(tUser);
-      when(mockUserRepository.deleteUser(tUser.id)).thenAnswer((_) async => Future.value());
+      when(mockUserRepository.deleteUser(tUser.id)).thenAnswer((_) async => true);
       when(mockSupabaseService.deleteUser()).thenAnswer((_) async => {});
 
       await authRepository.deleteAccount();

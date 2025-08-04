@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../navigation/route_names.dart';
+import '../../../core/services/settings_service.dart';
 
 /// Screen for users to select their type (Trainer or Get Fit)
 class UserTypeSelectionScreen extends StatelessWidget {
@@ -95,12 +96,12 @@ class UserTypeSelectionScreen extends StatelessWidget {
           color: AppColors.surfaceDark,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: color.withOpacity(0.3),
+            color: color.withValues(alpha: 0.3),
             width: 2,
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha: 0.1),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -113,7 +114,7 @@ class UserTypeSelectionScreen extends StatelessWidget {
               width: 60,
               height: 60,
               decoration: BoxDecoration(
-                color: color.withOpacity(0.2),
+                color: color.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
@@ -161,15 +162,21 @@ class UserTypeSelectionScreen extends StatelessWidget {
     );
   }
 
-  void _handleTrainerSelection(BuildContext context) {
-    // TODO: Store user type preference
-    // For now, navigate to signup with trainer context
+  void _handleTrainerSelection(BuildContext context) async {
+    // Store user type preference
+    final settingsService = SettingsService();
+    await settingsService.setUserType('trainer');
+    
+    // Navigate to signup with trainer context
     context.go(RouteNames.signupPath);
   }
 
-  void _handleGetFitSelection(BuildContext context) {
-    // TODO: Store user type preference
-    // For now, navigate to signup with get fit context
+  void _handleGetFitSelection(BuildContext context) async {
+    // Store user type preference
+    final settingsService = SettingsService();
+    await settingsService.setUserType('get_fit');
+    
+    // Navigate to signup with get fit context
     context.go(RouteNames.signupPath);
   }
 } 

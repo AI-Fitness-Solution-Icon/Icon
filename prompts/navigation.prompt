@@ -1,0 +1,675 @@
+# Icon App - Navigation Implementation
+
+You are a senior Flutter engineer implementing the navigation system for the Icon fitness app using Go Router. Create a comprehensive routing system with authentication guards and proper navigation patterns.
+
+## Project Context
+
+The navigation system should provide:
+- Route configuration with Go Router
+- Authentication guards for protected routes
+- Named routes for consistent navigation
+- Deep linking support
+- Bottom navigation for main app sections
+- Proper route transitions and animations
+
+## Required Implementation
+
+### 1. Route Names
+
+Create `lib/navigation/route_names.dart`:
+
+```dart
+class RouteNames {
+  // Authentication Routes
+  static const String login = '/login';
+  static const String signup = '/signup';
+  static const String forgotPassword = '/forgot-password';
+  static const String resetPassword = '/reset-password';
+  
+  // Main App Routes
+  static const String home = '/home';
+  static const String dashboard = '/dashboard';
+  static const String workouts = '/workouts';
+  static const String aiCoach = '/ai-coach';
+  static const String profile = '/profile';
+  static const String settings = '/settings';
+  
+  // Workout Routes
+  static const String workoutList = '/workouts/list';
+  static const String workoutDetail = '/workouts/detail';
+  static const String workoutSession = '/workouts/session';
+  static const String exerciseLibrary = '/workouts/exercises';
+  static const String workoutHistory = '/workouts/history';
+  
+  // AI Coach Routes
+  static const String coachChat = '/ai-coach/chat';
+  static const String coachVoice = '/ai-coach/voice';
+  static const String coachRecommendations = '/ai-coach/recommendations';
+  static const String coachAnalysis = '/ai-coach/analysis';
+  
+  // Profile Routes
+  static const String userProfile = '/profile/user';
+  static const String editProfile = '/profile/edit';
+  static const String progress = '/profile/progress';
+  static const String achievements = '/profile/achievements';
+  
+  // Settings Routes
+  static const String appSettings = '/settings/app';
+  static const String notificationSettings = '/settings/notifications';
+  static const String privacySettings = '/settings/privacy';
+  static const String subscriptionSettings = '/settings/subscription';
+  static const String helpSupport = '/settings/help';
+  static const String about = '/settings/about';
+  
+  // Subscription Routes
+  static const String subscription = '/subscription';
+  static const String subscriptionPlans = '/subscription/plans';
+  static const String subscriptionManage = '/subscription/manage';
+  static const String paymentMethods = '/subscription/payment-methods';
+  
+  // Onboarding Routes
+  static const String onboarding = '/onboarding';
+  static const String onboardingWelcome = '/onboarding/welcome';
+  static const String onboardingGoals = '/onboarding/goals';
+  static const String onboardingProfile = '/onboarding/profile';
+  static const String onboardingComplete = '/onboarding/complete';
+  
+  // Utility Routes
+  static const String splash = '/splash';
+  static const String error = '/error';
+  static const String maintenance = '/maintenance';
+}
+```
+
+### 2. App Router
+
+Create `lib/navigation/app_router.dart`:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import '../features/auth/domain/providers/auth_provider.dart';
+import '../features/splash/screens/splash_screen.dart';
+import '../features/onboarding/screens/onboarding_screen.dart';
+import '../features/auth/presentation/screens/login_screen.dart';
+import '../features/auth/presentation/screens/signup_screen.dart';
+import '../features/auth/presentation/screens/forgot_password_screen.dart';
+import '../features/dashboard/screens/dashboard_screen.dart';
+import '../features/workout/presentation/screens/workout_list_screen.dart';
+import '../features/workout/presentation/screens/workout_detail_screen.dart';
+import '../features/workout/presentation/screens/workout_session_screen.dart';
+import '../features/ai_coach/presentation/screens/coach_chat_screen.dart';
+import '../features/ai_coach/presentation/screens/coach_voice_screen.dart';
+import '../features/profile/presentation/screens/profile_screen.dart';
+import '../features/settings/presentation/screens/settings_screen.dart';
+import '../features/subscription/presentation/screens/subscription_screen.dart';
+import '../core/screens/error_screen.dart';
+import 'route_names.dart';
+
+class AppRouter {
+  static final GoRouter router = GoRouter(
+    initialLocation: RouteNames.splash,
+    debugLogDiagnostics: true,
+    redirect: _handleRedirect,
+    errorBuilder: (context, state) => const ErrorScreen(),
+    routes: [
+      // Splash Screen
+      GoRoute(
+        path: RouteNames.splash,
+        name: 'splash',
+        builder: (context, state) => const SplashScreen(),
+      ),
+      
+      // Onboarding Routes
+      GoRoute(
+        path: RouteNames.onboarding,
+        name: 'onboarding',
+        builder: (context, state) => const OnboardingScreen(),
+      ),
+      
+      // Authentication Routes
+      GoRoute(
+        path: RouteNames.login,
+        name: 'login',
+        builder: (context, state) => const LoginScreen(),
+      ),
+      GoRoute(
+        path: RouteNames.signup,
+        name: 'signup',
+        builder: (context, state) => const SignupScreen(),
+      ),
+      GoRoute(
+        path: RouteNames.forgotPassword,
+        name: 'forgot-password',
+        builder: (context, state) => const ForgotPasswordScreen(),
+      ),
+      
+      // Main App Shell Route
+      ShellRoute(
+        builder: (context, state, child) => MainAppShell(child: child),
+        routes: [
+          // Dashboard
+          GoRoute(
+            path: RouteNames.dashboard,
+            name: 'dashboard',
+            builder: (context, state) => const DashboardScreen(),
+            routes: [
+              // Workout Routes
+              GoRoute(
+                path: 'workouts',
+                name: 'workouts',
+                builder: (context, state) => const WorkoutListScreen(),
+                routes: [
+                  GoRoute(
+                    path: 'detail/:id',
+                    name: 'workout-detail',
+                    builder: (context, state) => WorkoutDetailScreen(
+                      workoutId: state.pathParameters['id']!,
+                    ),
+                  ),
+                  GoRoute(
+                    path: 'session/:id',
+                    name: 'workout-session',
+                    builder: (context, state) => WorkoutSessionScreen(
+                      workoutId: state.pathParameters['id']!,
+                    ),
+                  ),
+                ],
+              ),
+              
+              // AI Coach Routes
+              GoRoute(
+                path: 'ai-coach',
+                name: 'ai-coach',
+                builder: (context, state) => const CoachChatScreen(),
+                routes: [
+                  GoRoute(
+                    path: 'voice',
+                    name: 'coach-voice',
+                    builder: (context, state) => const CoachVoiceScreen(),
+                  ),
+                ],
+              ),
+              
+              // Profile Routes
+              GoRoute(
+                path: 'profile',
+                name: 'profile',
+                builder: (context, state) => const ProfileScreen(),
+              ),
+              
+              // Settings Routes
+              GoRoute(
+                path: 'settings',
+                name: 'settings',
+                builder: (context, state) => const SettingsScreen(),
+              ),
+              
+              // Subscription Routes
+              GoRoute(
+                path: 'subscription',
+                name: 'subscription',
+                builder: (context, state) => const SubscriptionScreen(),
+              ),
+            ],
+          ),
+        ],
+      ),
+    ],
+  );
+
+  /// Handle route redirects based on authentication state
+  static String? _handleRedirect(BuildContext context, GoRouterState state) {
+    final authProvider = context.read<AuthProvider>();
+    
+    // Don't redirect if auth is not initialized
+    if (!authProvider.isInitialized) {
+      return null;
+    }
+    
+    final isAuthenticated = authProvider.isAuthenticated;
+    final isOnboarding = state.matchedLocation.startsWith(RouteNames.onboarding);
+    final isAuthRoute = state.matchedLocation.startsWith('/login') ||
+                       state.matchedLocation.startsWith('/signup') ||
+                       state.matchedLocation.startsWith('/forgot-password');
+    final isSplash = state.matchedLocation == RouteNames.splash;
+    
+    // If user is not authenticated
+    if (!isAuthenticated) {
+      // Allow access to auth routes and onboarding
+      if (isAuthRoute || isOnboarding || isSplash) {
+        return null;
+      }
+      // Redirect to login
+      return RouteNames.login;
+    }
+    
+    // If user is authenticated
+    if (isAuthenticated) {
+      // Redirect auth routes to dashboard
+      if (isAuthRoute) {
+        return RouteNames.dashboard;
+      }
+      // Allow access to all other routes
+      return null;
+    }
+    
+    return null;
+  }
+}
+
+/// Main app shell with bottom navigation
+class MainAppShell extends StatefulWidget {
+  final Widget child;
+  
+  const MainAppShell({super.key, required this.child});
+
+  @override
+  State<MainAppShell> createState() => _MainAppShellState();
+}
+
+class _MainAppShellState extends State<MainAppShell> {
+  int _currentIndex = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: widget.child,
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        currentIndex: _currentIndex,
+        onTap: _onTabTapped,
+        selectedItemColor: Theme.of(context).colorScheme.primary,
+        unselectedItemColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.dashboard),
+            label: 'Dashboard',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.fitness_center),
+            label: 'Workouts',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.psychology),
+            label: 'AI Coach',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profile',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'Settings',
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _onTabTapped(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+
+    switch (index) {
+      case 0:
+        context.goNamed('dashboard');
+        break;
+      case 1:
+        context.goNamed('workouts');
+        break;
+      case 2:
+        context.goNamed('ai-coach');
+        break;
+      case 3:
+        context.goNamed('profile');
+        break;
+      case 4:
+        context.goNamed('settings');
+        break;
+    }
+  }
+}
+```
+
+### 3. Navigation Service
+
+Create `lib/navigation/navigation_service.dart`:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'route_names.dart';
+
+class NavigationService {
+  static final NavigationService _instance = NavigationService._internal();
+  factory NavigationService() => _instance;
+  NavigationService._internal();
+
+  /// Navigate to a named route
+  static void navigateTo(BuildContext context, String routeName) {
+    context.goNamed(routeName);
+  }
+
+  /// Navigate to a route with parameters
+  static void navigateToWithParams(
+    BuildContext context,
+    String routeName,
+    Map<String, String> params,
+  ) {
+    context.goNamed(routeName, pathParameters: params);
+  }
+
+  /// Navigate to a route with query parameters
+  static void navigateToWithQuery(
+    BuildContext context,
+    String routeName,
+    Map<String, String> queryParams,
+  ) {
+    context.goNamed(routeName, queryParameters: queryParams);
+  }
+
+  /// Navigate and replace current route
+  static void navigateAndReplace(BuildContext context, String routeName) {
+    context.goNamed(routeName);
+  }
+
+  /// Navigate and clear all routes
+  static void navigateAndClearAll(BuildContext context, String routeName) {
+    context.goNamed(routeName);
+  }
+
+  /// Go back
+  static void goBack(BuildContext context) {
+    if (context.canPop()) {
+      context.pop();
+    }
+  }
+
+  /// Go back with result
+  static void goBackWithResult(BuildContext context, dynamic result) {
+    if (context.canPop()) {
+      context.pop(result);
+    }
+  }
+
+  /// Check if can go back
+  static bool canGoBack(BuildContext context) {
+    return context.canPop();
+  }
+
+  // Navigation helpers for specific routes
+  
+  /// Navigate to login
+  static void navigateToLogin(BuildContext context) {
+    navigateTo(context, 'login');
+  }
+
+  /// Navigate to signup
+  static void navigateToSignup(BuildContext context) {
+    navigateTo(context, 'signup');
+  }
+
+  /// Navigate to dashboard
+  static void navigateToDashboard(BuildContext context) {
+    navigateTo(context, 'dashboard');
+  }
+
+  /// Navigate to workout detail
+  static void navigateToWorkoutDetail(BuildContext context, String workoutId) {
+    navigateToWithParams(context, 'workout-detail', {'id': workoutId});
+  }
+
+  /// Navigate to workout session
+  static void navigateToWorkoutSession(BuildContext context, String workoutId) {
+    navigateToWithParams(context, 'workout-session', {'id': workoutId});
+  }
+
+  /// Navigate to AI coach chat
+  static void navigateToCoachChat(BuildContext context) {
+    navigateTo(context, 'ai-coach');
+  }
+
+  /// Navigate to AI coach voice
+  static void navigateToCoachVoice(BuildContext context) {
+    navigateTo(context, 'coach-voice');
+  }
+
+  /// Navigate to profile
+  static void navigateToProfile(BuildContext context) {
+    navigateTo(context, 'profile');
+  }
+
+  /// Navigate to settings
+  static void navigateToSettings(BuildContext context) {
+    navigateTo(context, 'settings');
+  }
+
+  /// Navigate to subscription
+  static void navigateToSubscription(BuildContext context) {
+    navigateTo(context, 'subscription');
+  }
+
+  /// Navigate to onboarding
+  static void navigateToOnboarding(BuildContext context) {
+    navigateTo(context, 'onboarding');
+  }
+
+  /// Navigate to forgot password
+  static void navigateToForgotPassword(BuildContext context) {
+    navigateTo(context, 'forgot-password');
+  }
+
+  /// Navigate to error screen
+  static void navigateToError(BuildContext context, {String? message}) {
+    navigateToWithQuery(context, 'error', {'message': message ?? 'An error occurred'});
+  }
+}
+```
+
+### 4. Route Guards
+
+Create `lib/navigation/route_guards.dart`:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../features/auth/domain/providers/auth_provider.dart';
+
+class RouteGuards {
+  /// Check if user is authenticated
+  static bool isAuthenticated(BuildContext context) {
+    final authProvider = context.read<AuthProvider>();
+    return authProvider.isAuthenticated;
+  }
+
+  /// Check if user has completed onboarding
+  static bool hasCompletedOnboarding(BuildContext context) {
+    // Implement onboarding completion check
+    return true; // Placeholder
+  }
+
+  /// Check if user has active subscription
+  static bool hasActiveSubscription(BuildContext context) {
+    // Implement subscription check
+    return true; // Placeholder
+  }
+
+  /// Check if user has verified email
+  static bool hasVerifiedEmail(BuildContext context) {
+    final authProvider = context.read<AuthProvider>();
+    return authProvider.user?.emailVerified ?? false;
+  }
+
+  /// Get required authentication level for route
+  static AuthLevel getRequiredAuthLevel(String routeName) {
+    switch (routeName) {
+      case '/login':
+      case '/signup':
+      case '/forgot-password':
+      case '/onboarding':
+      case '/splash':
+        return AuthLevel.none;
+      
+      case '/dashboard':
+      case '/workouts':
+      case '/ai-coach':
+      case '/profile':
+      case '/settings':
+        return AuthLevel.authenticated;
+      
+      case '/subscription':
+      case '/subscription/plans':
+      case '/subscription/manage':
+        return AuthLevel.subscribed;
+      
+      default:
+        return AuthLevel.authenticated;
+    }
+  }
+}
+
+enum AuthLevel {
+  none,
+  authenticated,
+  subscribed,
+  verified,
+}
+```
+
+### 5. Route Transitions
+
+Create `lib/navigation/route_transitions.dart`:
+
+```dart
+import 'package:flutter/material.dart';
+
+class RouteTransitions {
+  /// Slide transition from right
+  static PageRouteBuilder slideFromRight(Widget page) {
+    return PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) => page,
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        const begin = Offset(1.0, 0.0);
+        const end = Offset.zero;
+        const curve = Curves.easeInOut;
+
+        var tween = Tween(begin: begin, end: end).chain(
+          CurveTween(curve: curve),
+        );
+
+        return SlideTransition(
+          position: animation.drive(tween),
+          child: child,
+        );
+      },
+    );
+  }
+
+  /// Slide transition from bottom
+  static PageRouteBuilder slideFromBottom(Widget page) {
+    return PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) => page,
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        const begin = Offset(0.0, 1.0);
+        const end = Offset.zero;
+        const curve = Curves.easeInOut;
+
+        var tween = Tween(begin: begin, end: end).chain(
+          CurveTween(curve: curve),
+        );
+
+        return SlideTransition(
+          position: animation.drive(tween),
+          child: child,
+        );
+      },
+    );
+  }
+
+  /// Fade transition
+  static PageRouteBuilder fadeTransition(Widget page) {
+    return PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) => page,
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        return FadeTransition(
+          opacity: animation,
+          child: child,
+        );
+      },
+    );
+  }
+
+  /// Scale transition
+  static PageRouteBuilder scaleTransition(Widget page) {
+    return PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) => page,
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        return ScaleTransition(
+          scale: animation,
+          child: child,
+        );
+      },
+    );
+  }
+}
+```
+
+## Implementation Guidelines
+
+1. **Route Organization**: Use clear, hierarchical route structure
+2. **Authentication Guards**: Implement proper route protection
+3. **Named Routes**: Use consistent naming conventions
+4. **Deep Linking**: Support deep linking for external navigation
+5. **Bottom Navigation**: Implement proper tab navigation
+6. **Route Transitions**: Add smooth animations between routes
+7. **Error Handling**: Handle navigation errors gracefully
+
+## Usage Examples
+
+### Navigate to a route
+```dart
+// Using navigation service
+NavigationService.navigateTo(context, 'dashboard');
+
+// Using Go Router directly
+context.goNamed('dashboard');
+```
+
+### Navigate with parameters
+```dart
+NavigationService.navigateToWorkoutDetail(context, 'workout-123');
+```
+
+### Navigate and replace
+```dart
+NavigationService.navigateAndReplace(context, 'dashboard');
+```
+
+### Go back
+```dart
+NavigationService.goBack(context);
+```
+
+## Next Steps
+
+After implementing the navigation system:
+
+1. Create all screen components
+2. Implement route guards
+3. Add deep linking support
+4. Test navigation flows
+5. Add route transitions
+6. Implement error handling
+7. Add navigation analytics
+
+Remember to:
+- Test all navigation flows
+- Handle edge cases
+- Implement proper error handling
+- Add loading states
+- Optimize navigation performance
+- Follow platform conventions 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/services/deep_link_service.dart';
-import '../../../core/services/url_service.dart';
+
 
 /// Screen for testing deep link functionality
 class DeepLinkTestScreen extends StatefulWidget {
@@ -299,28 +299,32 @@ class _DeepLinkTestScreenState extends State<DeepLinkTestScreen> {
       final uri = Uri.parse(link);
       final success = await launchUrl(uri);
       
-      if (success) {
+      if (mounted) {
+        if (success) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Successfully opened: $link'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Failed to open: $link'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Successfully opened: $link'),
-            backgroundColor: Colors.green,
-          ),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to open: $link'),
+            content: Text('Error testing link: $e'),
             backgroundColor: Colors.red,
           ),
         );
       }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error testing link: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
     }
   }
 

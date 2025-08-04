@@ -33,7 +33,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _initializeSettings() async {
-    _settingsService = await SettingsService.create();
+    _settingsService = SettingsService();
     _settingsBloc = SettingsBloc(_settingsService);
     _settingsBloc.add(LoadSettings());
   }

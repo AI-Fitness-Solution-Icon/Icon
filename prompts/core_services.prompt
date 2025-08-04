@@ -1,0 +1,967 @@
+# Icon App - Core Services Implementation
+
+You are a senior Flutter engineer implementing the core services for the Icon fitness app. Create comprehensive service integrations for Supabase, OpenAI, Stripe, and Voice services following the established architecture patterns.
+
+## Project Context
+
+The Icon app requires robust service integrations for:
+- **Supabase**: Backend database, authentication, and real-time features
+- **OpenAI**: AI coaching and personalized recommendations
+- **Stripe**: Payment processing and subscription management
+- **Voice Services**: Speech-to-text and text-to-speech functionality
+
+## Required Services
+
+### 1. Supabase Service
+
+Create `lib/core/services/supabase_service.dart`:
+
+```dart
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:logger/logger.dart';
+
+/// Service for handling Supabase operations
+class SupabaseService {
+  static final SupabaseService _instance = SupabaseService._internal();
+  factory SupabaseService() => _instance;
+  SupabaseService._internal();
+
+  final Logger _logger = Logger();
+  late SupabaseClient _client;
+  late RealtimeChannel _realtimeChannel;
+
+  /// Get the Supabase client instance
+  SupabaseClient get client => _client;
+  
+  /// Get the current user
+  User? get currentUser => _client.auth.currentUser;
+  
+  /// Check if user is authenticated
+  bool get isAuthenticated => currentUser != null;
+
+  /// Initialize Supabase service
+  Future<void> initialize() async {
+    try {
+      final url = dotenv.env['SUPABASE_URL']!;
+      final anonKey = dotenv.env['SUPABASE_ANON_KEY']!;
+
+      await Supabase.initialize(
+        url: url,
+        anonKey: anonKey,
+        authOptions: const FlutterAuthClientOptions(
+          authFlowType: AuthFlowType.pkce,
+        ),
+      );
+
+      _client = Supabase.instance.client;
+      _setupRealtime();
+      
+      _logger.i('Supabase service initialized successfully');
+    } catch (e) {
+      _logger.e('Failed to initialize Supabase service: $e');
+      rethrow;
+    }
+  }
+
+  /// Set up realtime subscriptions
+  void _setupRealtime() {
+    _realtimeChannel = _client.channel('public');
+    
+    // Listen for authentication changes
+    _client.auth.onAuthStateChange.listen((data) {
+      final event = data.event;
+      final session = data.session;
+      
+      _logger.i('Auth state changed: $event');
+      
+      if (event == AuthChangeEvent.signedIn && session != null) {
+        _logger.i('User signed in: ${session.user.email}');
+      } else if (event == AuthChangeEvent.signedOut) {
+        _logger.i('User signed out');
+      }
+    });
+  }
+
+  /// Sign up with email and password
+  Future<AuthResponse> signUp({
+    required String email,
+    required String password,
+    Map<String, dynamic>? userData,
+  }) async {
+    try {
+      final response = await _client.auth.signUp(
+        email: email,
+        password: password,
+        data: userData,
+      );
+      
+      _logger.i('User signed up successfully: $email');
+      return response;
+    } catch (e) {
+      _logger.e('Sign up failed: $e');
+      rethrow;
+    }
+  }
+
+  /// Sign in with email and password
+  Future<AuthResponse> signIn({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      final response = await _client.auth.signInWithPassword(
+        email: email,
+        password: password,
+      );
+      
+      _logger.i('User signed in successfully: $email');
+      return response;
+    } catch (e) {
+      _logger.e('Sign in failed: $e');
+      rethrow;
+    }
+  }
+
+  /// Sign out
+  Future<void> signOut() async {
+    try {
+      await _client.auth.signOut();
+      _logger.i('User signed out successfully');
+    } catch (e) {
+      _logger.e('Sign out failed: $e');
+      rethrow;
+    }
+  }
+
+  /// Reset password
+  Future<void> resetPassword(String email) async {
+    try {
+      await _client.auth.resetPasswordForEmail(email);
+      _logger.i('Password reset email sent to: $email');
+    } catch (e) {
+      _logger.e('Password reset failed: $e');
+      rethrow;
+    }
+  }
+
+  /// Get user profile
+  Future<Map<String, dynamic>?> getUserProfile(String userId) async {
+    try {
+      final response = await _client
+          .from('profiles')
+          .select()
+          .eq('id', userId)
+          .single();
+      
+      return response;
+    } catch (e) {
+      _logger.e('Failed to get user profile: $e');
+      return null;
+    }
+  }
+
+  /// Update user profile
+  Future<void> updateUserProfile({
+    required String userId,
+    required Map<String, dynamic> data,
+  }) async {
+    try {
+      await _client
+          .from('profiles')
+          .update(data)
+          .eq('id', userId);
+      
+      _logger.i('User profile updated successfully');
+    } catch (e) {
+      _logger.e('Failed to update user profile: $e');
+      rethrow;
+    }
+  }
+
+  /// Subscribe to realtime changes
+  RealtimeChannel subscribeToTable(String table) {
+    return _client.channel('public:$table');
+  }
+
+  /// Disconnect realtime
+  Future<void> disconnect() async {
+    await _realtimeChannel.unsubscribe();
+  }
+}
+```
+
+### 2. OpenAI Service
+
+Create `lib/core/services/openai_service.dart`:
+
+```dart
+import 'package:dio/dio.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:logger/logger.dart';
+
+/// Service for handling OpenAI API operations
+class OpenAIService {
+  static final OpenAIService _instance = OpenAIService._internal();
+  factory OpenAIService() => _instance;
+  OpenAIService._internal();
+
+  final Logger _logger = Logger();
+  late Dio _dio;
+  late String _apiKey;
+
+  /// Initialize OpenAI service
+  Future<void> initialize() async {
+    try {
+      _apiKey = dotenv.env['OPENAI_API_KEY']!;
+      
+      _dio = Dio(BaseOptions(
+        baseUrl: 'https://api.openai.com/v1',
+        headers: {
+          'Authorization': 'Bearer $_apiKey',
+          'Content-Type': 'application/json',
+        },
+        connectTimeout: const Duration(seconds: 30),
+        receiveTimeout: const Duration(seconds: 30),
+      ));
+
+      // Add interceptors for logging
+      _dio.interceptors.add(LogInterceptor(
+        requestBody: true,
+        responseBody: true,
+        logPrint: (obj) => _logger.d(obj),
+      ));
+
+      _logger.i('OpenAI service initialized successfully');
+    } catch (e) {
+      _logger.e('Failed to initialize OpenAI service: $e');
+      rethrow;
+    }
+  }
+
+  /// Send chat completion request
+  Future<String> sendChatCompletion({
+    required List<Map<String, String>> messages,
+    String model = 'gpt-3.5-turbo',
+    double temperature = 0.7,
+    int maxTokens = 1000,
+  }) async {
+    try {
+      final response = await _dio.post('/chat/completions', data: {
+        'model': model,
+        'messages': messages,
+        'temperature': temperature,
+        'max_tokens': maxTokens,
+      });
+
+      final content = response.data['choices'][0]['message']['content'] as String;
+      _logger.i('Chat completion successful');
+      
+      return content;
+    } catch (e) {
+      _logger.e('Chat completion failed: $e');
+      rethrow;
+    }
+  }
+
+  /// Generate workout recommendation
+  Future<String> generateWorkoutRecommendation({
+    required String userLevel,
+    required List<String> goals,
+    required int duration,
+    String? equipment,
+  }) async {
+    final prompt = '''
+You are an AI fitness coach. Generate a personalized workout recommendation based on the following criteria:
+
+User Level: $userLevel
+Goals: ${goals.join(', ')}
+Duration: ${duration} minutes
+Equipment: ${equipment ?? 'Bodyweight only'}
+
+Provide a detailed workout plan with:
+1. Warm-up exercises
+2. Main workout exercises with sets, reps, and rest periods
+3. Cool-down exercises
+4. Tips and modifications
+
+Keep the response concise but informative.
+''';
+
+    return await sendChatCompletion(
+      messages: [
+        {'role': 'system', 'content': 'You are a professional fitness coach with expertise in creating personalized workout plans.'},
+        {'role': 'user', 'content': prompt},
+      ],
+      temperature: 0.8,
+    );
+  }
+
+  /// Generate exercise explanation
+  Future<String> explainExercise({
+    required String exerciseName,
+    required String userLevel,
+  }) async {
+    final prompt = '''
+Explain how to perform the exercise "$exerciseName" for a $userLevel level user.
+
+Include:
+1. Step-by-step instructions
+2. Proper form tips
+3. Common mistakes to avoid
+4. Modifications for different levels
+5. Safety considerations
+
+Keep the explanation clear and easy to follow.
+''';
+
+    return await sendChatCompletion(
+      messages: [
+        {'role': 'system', 'content': 'You are a certified personal trainer explaining exercises.'},
+        {'role': 'user', 'content': prompt},
+      ],
+      temperature: 0.7,
+    );
+  }
+
+  /// Generate motivational message
+  Future<String> generateMotivationalMessage({
+    required String userMood,
+    required String workoutType,
+  }) async {
+    final prompt = '''
+Generate a motivational message for a user who is feeling $userMood and about to do a $workoutType workout.
+
+The message should be:
+- Encouraging and positive
+- Specific to their mood and workout type
+- Brief but impactful
+- Include actionable advice
+
+Keep it under 100 words.
+''';
+
+    return await sendChatCompletion(
+      messages: [
+        {'role': 'system', 'content': 'You are a motivational fitness coach who helps people overcome challenges and achieve their goals.'},
+        {'role': 'user', 'content': prompt},
+      ],
+      temperature: 0.9,
+    );
+  }
+
+  /// Analyze workout performance
+  Future<String> analyzeWorkoutPerformance({
+    required Map<String, dynamic> workoutData,
+    required String userGoal,
+  }) async {
+    final prompt = '''
+Analyze this workout performance and provide feedback:
+
+Workout Data: $workoutData
+User Goal: $userGoal
+
+Provide analysis on:
+1. Performance assessment
+2. Progress towards goals
+3. Areas for improvement
+4. Recommendations for next workout
+5. Motivation and encouragement
+
+Keep the analysis constructive and actionable.
+''';
+
+    return await sendChatCompletion(
+      messages: [
+        {'role': 'system', 'content': 'You are a fitness coach analyzing workout performance and providing constructive feedback.'},
+        {'role': 'user', 'content': prompt},
+      ],
+      temperature: 0.6,
+    );
+  }
+}
+```
+
+### 3. Stripe Service
+
+Create `lib/core/services/stripe_service.dart`:
+
+```dart
+import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:logger/logger.dart';
+
+/// Service for handling Stripe payment operations
+class StripeService {
+  static final StripeService _instance = StripeService._internal();
+  factory StripeService() => _instance;
+  StripeService._internal();
+
+  final Logger _logger = Logger();
+  late String _publishableKey;
+
+  /// Initialize Stripe service
+  Future<void> initialize() async {
+    try {
+      _publishableKey = dotenv.env['STRIPE_PUBLISHABLE_KEY']!;
+      
+      Stripe.publishableKey = _publishableKey;
+      
+      // Configure Stripe settings
+      Stripe.merchantIdentifier = 'merchant.com.icon.app';
+      
+      _logger.i('Stripe service initialized successfully');
+    } catch (e) {
+      _logger.e('Failed to initialize Stripe service: $e');
+      rethrow;
+    }
+  }
+
+  /// Create payment intent
+  Future<PaymentIntent> createPaymentIntent({
+    required int amount,
+    required String currency,
+    String? customerId,
+  }) async {
+    try {
+      final paymentIntent = await Stripe.instance.createPaymentIntent(
+        params: CreatePaymentIntentParams(
+          amount: amount.toString(),
+          currency: currency,
+          customerId: customerId,
+        ),
+      );
+      
+      _logger.i('Payment intent created successfully');
+      return paymentIntent;
+    } catch (e) {
+      _logger.e('Failed to create payment intent: $e');
+      rethrow;
+    }
+  }
+
+  /// Confirm payment
+  Future<void> confirmPayment({
+    required String paymentIntentClientSecret,
+    required PaymentMethodParams paymentMethodParams,
+  }) async {
+    try {
+      await Stripe.instance.confirmPayment(
+        paymentIntentClientSecret,
+        paymentMethodParams,
+      );
+      
+      _logger.i('Payment confirmed successfully');
+    } catch (e) {
+      _logger.e('Payment confirmation failed: $e');
+      rethrow;
+    }
+  }
+
+  /// Create subscription
+  Future<Subscription> createSubscription({
+    required String customerId,
+    required String priceId,
+  }) async {
+    try {
+      // This would typically be done through your backend
+      // For now, we'll create a mock subscription
+      final subscription = Subscription(
+        id: 'sub_${DateTime.now().millisecondsSinceEpoch}',
+        customerId: customerId,
+        priceId: priceId,
+        status: 'active',
+        currentPeriodStart: DateTime.now(),
+        currentPeriodEnd: DateTime.now().add(const Duration(days: 30)),
+      );
+      
+      _logger.i('Subscription created successfully');
+      return subscription;
+    } catch (e) {
+      _logger.e('Failed to create subscription: $e');
+      rethrow;
+    }
+  }
+
+  /// Cancel subscription
+  Future<void> cancelSubscription(String subscriptionId) async {
+    try {
+      // This would typically be done through your backend
+      _logger.i('Subscription cancelled successfully: $subscriptionId');
+    } catch (e) {
+      _logger.e('Failed to cancel subscription: $e');
+      rethrow;
+    }
+  }
+
+  /// Get available plans
+  Future<List<SubscriptionPlan>> getAvailablePlans() async {
+    try {
+      // Mock subscription plans
+      return [
+        SubscriptionPlan(
+          id: 'basic_monthly',
+          name: 'Basic Monthly',
+          price: 9.99,
+          currency: 'USD',
+          interval: 'month',
+          features: [
+            'Unlimited workouts',
+            'Basic AI coaching',
+            'Progress tracking',
+          ],
+        ),
+        SubscriptionPlan(
+          id: 'premium_monthly',
+          name: 'Premium Monthly',
+          price: 19.99,
+          currency: 'USD',
+          interval: 'month',
+          features: [
+            'Unlimited workouts',
+            'Advanced AI coaching',
+            'Voice interaction',
+            'Personalized plans',
+            'Priority support',
+          ],
+        ),
+        SubscriptionPlan(
+          id: 'premium_yearly',
+          name: 'Premium Yearly',
+          price: 199.99,
+          currency: 'USD',
+          interval: 'year',
+          features: [
+            'Unlimited workouts',
+            'Advanced AI coaching',
+            'Voice interaction',
+            'Personalized plans',
+            'Priority support',
+            '2 months free',
+          ],
+        ),
+      ];
+    } catch (e) {
+      _logger.e('Failed to get available plans: $e');
+      rethrow;
+    }
+  }
+}
+
+/// Subscription plan model
+class SubscriptionPlan {
+  final String id;
+  final String name;
+  final double price;
+  final String currency;
+  final String interval;
+  final List<String> features;
+
+  SubscriptionPlan({
+    required this.id,
+    required this.name,
+    required this.price,
+    required this.currency,
+    required this.interval,
+    required this.features,
+  });
+}
+
+/// Subscription model
+class Subscription {
+  final String id;
+  final String customerId;
+  final String priceId;
+  final String status;
+  final DateTime currentPeriodStart;
+  final DateTime currentPeriodEnd;
+
+  Subscription({
+    required this.id,
+    required this.customerId,
+    required this.priceId,
+    required this.status,
+    required this.currentPeriodStart,
+    required this.currentPeriodEnd,
+  });
+}
+```
+
+### 4. Voice Service
+
+Create `lib/core/services/voice_service.dart`:
+
+```dart
+import 'package:speech_to_text/speech_to_text.dart';
+import 'package:flutter_tts/flutter_tts.dart';
+import 'package:logger/logger.dart';
+
+/// Service for handling voice interactions
+class VoiceService {
+  static final VoiceService _instance = VoiceService._internal();
+  factory VoiceService() => _instance;
+  VoiceService._internal();
+
+  final Logger _logger = Logger();
+  final SpeechToText _speechToText = SpeechToText();
+  final FlutterTts _flutterTts = FlutterTts();
+  
+  bool _isListening = false;
+  bool _isSpeaking = false;
+
+  /// Get listening status
+  bool get isListening => _isListening;
+  
+  /// Get speaking status
+  bool get isSpeaking => _isSpeaking;
+
+  /// Initialize voice service
+  Future<void> initialize() async {
+    try {
+      // Initialize speech to text
+      final available = await _speechToText.initialize(
+        onError: (error) => _logger.e('Speech to text error: $error'),
+        onStatus: (status) => _logger.i('Speech to text status: $status'),
+      );
+
+      if (!available) {
+        throw Exception('Speech to text not available');
+      }
+
+      // Initialize text to speech
+      await _flutterTts.setLanguage('en-US');
+      await _flutterTts.setSpeechRate(0.5);
+      await _flutterTts.setVolume(1.0);
+      await _flutterTts.setPitch(1.0);
+
+      _flutterTts.setStartHandler(() {
+        _isSpeaking = true;
+        _logger.i('TTS started');
+      });
+
+      _flutterTts.setCompletionHandler(() {
+        _isSpeaking = false;
+        _logger.i('TTS completed');
+      });
+
+      _flutterTts.setErrorHandler((msg) {
+        _isSpeaking = false;
+        _logger.e('TTS error: $msg');
+      });
+
+      _logger.i('Voice service initialized successfully');
+    } catch (e) {
+      _logger.e('Failed to initialize voice service: $e');
+      rethrow;
+    }
+  }
+
+  /// Start listening for speech
+  Future<void> startListening({
+    required Function(String text) onResult,
+    required Function() onError,
+  }) async {
+    try {
+      if (_isListening) return;
+
+      await _speechToText.listen(
+        onResult: (result) {
+          if (result.finalResult) {
+            _isListening = false;
+            onResult(result.recognizedWords);
+            _logger.i('Speech recognized: ${result.recognizedWords}');
+          }
+        },
+        listenFor: const Duration(seconds: 30),
+        pauseFor: const Duration(seconds: 3),
+        partialResults: true,
+        localeId: 'en_US',
+        cancelOnError: true,
+        listenMode: ListenMode.confirmation,
+      );
+
+      _isListening = true;
+      _logger.i('Started listening for speech');
+    } catch (e) {
+      _isListening = false;
+      _logger.e('Failed to start listening: $e');
+      onError();
+    }
+  }
+
+  /// Stop listening
+  Future<void> stopListening() async {
+    try {
+      await _speechToText.stop();
+      _isListening = false;
+      _logger.i('Stopped listening for speech');
+    } catch (e) {
+      _logger.e('Failed to stop listening: $e');
+    }
+  }
+
+  /// Speak text
+  Future<void> speak(String text) async {
+    try {
+      if (_isSpeaking) {
+        await _flutterTts.stop();
+      }
+
+      await _flutterTts.speak(text);
+      _logger.i('Speaking text: $text');
+    } catch (e) {
+      _logger.e('Failed to speak text: $e');
+      rethrow;
+    }
+  }
+
+  /// Stop speaking
+  Future<void> stopSpeaking() async {
+    try {
+      await _flutterTts.stop();
+      _isSpeaking = false;
+      _logger.i('Stopped speaking');
+    } catch (e) {
+      _logger.e('Failed to stop speaking: $e');
+    }
+  }
+
+  /// Set voice settings
+  Future<void> setVoiceSettings({
+    double? speechRate,
+    double? volume,
+    double? pitch,
+    String? language,
+  }) async {
+    try {
+      if (speechRate != null) await _flutterTts.setSpeechRate(speechRate);
+      if (volume != null) await _flutterTts.setVolume(volume);
+      if (pitch != null) await _flutterTts.setPitch(pitch);
+      if (language != null) await _flutterTts.setLanguage(language);
+
+      _logger.i('Voice settings updated');
+    } catch (e) {
+      _logger.e('Failed to update voice settings: $e');
+    }
+  }
+
+  /// Get available languages
+  Future<List<Map<String, String>>> getAvailableLanguages() async {
+    try {
+      final languages = await _flutterTts.getLanguages;
+      return languages.cast<Map<String, String>>();
+    } catch (e) {
+      _logger.e('Failed to get available languages: $e');
+      return [];
+    }
+  }
+
+  /// Check if speech recognition is available
+  Future<bool> isSpeechRecognitionAvailable() async {
+    try {
+      return await _speechToText.initialize();
+    } catch (e) {
+      _logger.e('Failed to check speech recognition availability: $e');
+      return false;
+    }
+  }
+
+  /// Dispose resources
+  void dispose() {
+    _speechToText.cancel();
+    _flutterTts.stop();
+  }
+}
+```
+
+### 5. Analytics Service
+
+Create `lib/core/services/analytics_service.dart`:
+
+```dart
+import 'package:logger/logger.dart';
+
+/// Service for handling analytics and tracking
+class AnalyticsService {
+  static final AnalyticsService _instance = AnalyticsService._internal();
+  factory AnalyticsService() => _instance;
+  AnalyticsService._internal();
+
+  final Logger _logger = Logger();
+
+  /// Initialize analytics service
+  Future<void> initialize() async {
+    try {
+      // Initialize analytics providers here
+      _logger.i('Analytics service initialized successfully');
+    } catch (e) {
+      _logger.e('Failed to initialize analytics service: $e');
+    }
+  }
+
+  /// Track user event
+  void trackEvent({
+    required String eventName,
+    Map<String, dynamic>? parameters,
+  }) {
+    try {
+      _logger.i('Tracking event: $eventName with parameters: $parameters');
+      
+      // Send to analytics providers
+      // Example: Firebase Analytics, Mixpanel, etc.
+    } catch (e) {
+      _logger.e('Failed to track event: $e');
+    }
+  }
+
+  /// Track user property
+  void setUserProperty({
+    required String propertyName,
+    required dynamic value,
+  }) {
+    try {
+      _logger.i('Setting user property: $propertyName = $value');
+      
+      // Set user property in analytics providers
+    } catch (e) {
+      _logger.e('Failed to set user property: $e');
+    }
+  }
+
+  /// Track screen view
+  void trackScreenView({
+    required String screenName,
+    Map<String, dynamic>? parameters,
+  }) {
+    trackEvent(
+      eventName: 'screen_view',
+      parameters: {
+        'screen_name': screenName,
+        ...?parameters,
+      },
+    );
+  }
+
+  /// Track workout completion
+  void trackWorkoutCompletion({
+    required String workoutType,
+    required int duration,
+    required int exercisesCompleted,
+  }) {
+    trackEvent(
+      eventName: 'workout_completed',
+      parameters: {
+        'workout_type': workoutType,
+        'duration_minutes': duration,
+        'exercises_completed': exercisesCompleted,
+      },
+    );
+  }
+
+  /// Track AI coach interaction
+  void trackAICoachInteraction({
+    required String interactionType,
+    required String userInput,
+    String? aiResponse,
+  }) {
+    trackEvent(
+      eventName: 'ai_coach_interaction',
+      parameters: {
+        'interaction_type': interactionType,
+        'user_input': userInput,
+        'ai_response': aiResponse,
+      },
+    );
+  }
+
+  /// Track subscription event
+  void trackSubscriptionEvent({
+    required String eventType,
+    required String planId,
+    double? amount,
+  }) {
+    trackEvent(
+      eventName: 'subscription_$eventType',
+      parameters: {
+        'plan_id': planId,
+        'amount': amount,
+      },
+    );
+  }
+}
+```
+
+## Implementation Guidelines
+
+1. **Singleton Pattern**: All services use singleton pattern for consistent state
+2. **Error Handling**: Comprehensive error handling with logging
+3. **Async Operations**: Proper async/await usage
+4. **Configuration**: Environment-based configuration
+5. **Logging**: Detailed logging for debugging
+6. **Type Safety**: Strong typing throughout
+
+## Usage Examples
+
+### Initialize Services
+```dart
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  await dotenv.load(fileName: ".env");
+  
+  // Initialize all services
+  await SupabaseService().initialize();
+  await OpenAIService().initialize();
+  await StripeService().initialize();
+  await VoiceService().initialize();
+  await AnalyticsService().initialize();
+  
+  runApp(const MyApp());
+}
+```
+
+### Use Services in Providers
+```dart
+class WorkoutProvider extends ChangeNotifier {
+  final OpenAIService _aiService = OpenAIService();
+  final AnalyticsService _analytics = AnalyticsService();
+
+  Future<String> getWorkoutRecommendation() async {
+    try {
+      final recommendation = await _aiService.generateWorkoutRecommendation(
+        userLevel: 'intermediate',
+        goals: ['strength', 'endurance'],
+        duration: 45,
+      );
+      
+      _analytics.trackEvent(
+        eventName: 'workout_recommendation_requested',
+        parameters: {'user_level': 'intermediate'},
+      );
+      
+      return recommendation;
+    } catch (e) {
+      // Handle error
+      rethrow;
+    }
+  }
+}
+```
+
+## Next Steps
+
+After implementing core services:
+
+1. Create repositories that use these services
+2. Implement providers for state management
+3. Create UI components that consume the providers
+4. Add comprehensive error handling
+5. Implement caching strategies
+6. Add unit tests for all services
+
+Remember to:
+- Handle service initialization errors gracefully
+- Implement proper cleanup in dispose methods
+- Add retry logic for network operations
+- Cache responses where appropriate
+- Monitor service performance 

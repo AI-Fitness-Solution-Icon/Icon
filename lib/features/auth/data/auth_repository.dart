@@ -10,13 +10,19 @@ import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
 
 /// Repository for authentication operations
 class AuthRepository {
-  final SupabaseService _supabaseService = SupabaseService.instance;
+  late final SupabaseService _supabaseService;
+  late final UserRepository _userRepository;
+
+  AuthRepository({SupabaseService? supabaseService, UserRepository? userRepository}) {
+    _supabaseService = supabaseService ?? SupabaseService.instance;
+    _userRepository = userRepository ?? UserRepository();
+  }
 
   /// Sign in with email and password
   Future<supabase.User?> signInWithEmail(String email, String password) async {
     try {
       AppPrint.printInfo('Signing in user: $email');
-      final response = await Supabase.instance.client.auth.signInWithPassword(
+      final response = await _supabaseService.client.auth.signInWithPassword(
       email: email,
       password: password,
     );
@@ -36,7 +42,7 @@ class AuthRepository {
   Future<Map<String, dynamic>> signUpWithEmail(String email, String password) async {
     try {
       AppPrint.printInfo('Signing up user: $email');
-      final AuthResponse response = await Supabase.instance.client.auth.signUp(
+      final AuthResponse response = await _supabaseService.client.auth.signUp(
         email: email,
         password: password,
         emailRedirectTo: "icon://login-callback",
@@ -86,7 +92,7 @@ class AuthRepository {
   Future<void> signOut() async {
     try {
       AppPrint.printInfo('Signing out user');
-      await Supabase.instance.client.auth.signOut();
+      await _supabaseService.client.auth.signOut();
     } catch (e) {
       AppPrint.printError('Sign out failed: $e');
       rethrow;
@@ -136,7 +142,7 @@ class AuthRepository {
       
       // Verify current password by attempting to sign in with current credentials
       // This is a common pattern to verify the current password before changing it
-      await Supabase.instance.client.auth.signInWithPassword(
+      await _supabaseService.client.auth.signInWithPassword(
         email: currentUser.email!,
         password: currentPassword,
       );
@@ -162,8 +168,7 @@ class AuthRepository {
       }
 
       // Delete user data from the database first
-      final userRepository = UserRepository();
-      await userRepository.deleteUser(currentUser.id);
+      await _userRepository.deleteUser(currentUser.id);
       
       // Delete the user account from Supabase
       await _supabaseService.deleteUser();

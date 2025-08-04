@@ -293,10 +293,12 @@ class _HelpScreenState extends State<HelpScreen> {
       subject: 'ICON App Feedback',
       body: 'Please provide your feedback here:\n\n',
     ).then((success) {
-      if (success) {
-        ToastUtil.showSuccess(context, 'Email client opened successfully');
-      } else {
-        ToastUtil.showError(context, 'Failed to open email client. Please check your email app.');
+      if (mounted) {
+        if (success) {
+          ToastUtil.showSuccess(context, 'Email client opened successfully');
+        } else {
+          ToastUtil.showError(context, 'Failed to open email client. Please check your email app.');
+        }
       }
     });
   }
@@ -311,10 +313,12 @@ class _HelpScreenState extends State<HelpScreen> {
       subject: 'ICON App Support',
       body: 'Hello,\n\nI need help with the following issue:\n\n',
     ).then((success) {
-      if (success) {
-        ToastUtil.showSuccess(context, 'Email client opened successfully');
-      } else {
-        ToastUtil.showError(context, 'Failed to open email client. Please check your email app.');
+      if (mounted) {
+        if (success) {
+          ToastUtil.showSuccess(context, 'Email client opened successfully');
+        } else {
+          ToastUtil.showError(context, 'Failed to open email client. Please check your email app.');
+        }
       }
     });
   }

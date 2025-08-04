@@ -11,14 +11,14 @@ class DeepLinkUtils {
     String? title,
     String? text,
   }) async {
-    final link = DeepLinkService.generateDeepLink(
-      path: '/profile',
-      queryParameters: {
-        'userId': userId,
-        if (section != null) 'section': section,
-      },
-      useHttps: true, // Use universal links for sharing
-    );
+    // final link = DeepLinkService.generateDeepLink(
+    //   path: '/profile',
+    //   queryParameters: {
+    //     'userId': userId,
+    //     if (section != null) 'section': section,
+    //   },
+    //   useHttps: true, // Use universal links for sharing
+    // );
 
     await Share.share(
       text ?? 'Check out this profile!',
@@ -33,14 +33,14 @@ class DeepLinkUtils {
     String? title,
     String? text,
   }) async {
-    final link = DeepLinkService.generateDeepLink(
-      path: '/badge',
-      queryParameters: {
-        'badgeId': badgeId,
-        if (action != null) 'action': action,
-      },
-      useHttps: true,
-    );
+    // final link = DeepLinkService.generateDeepLink(
+    //   path: '/badge',
+    //   queryParameters: {
+    //     'badgeId': badgeId,
+    //     if (action != null) 'action': action,
+    //   },
+    //   useHttps: true,
+    // );
 
     await Share.share(
       text ?? 'Check out this badge!',

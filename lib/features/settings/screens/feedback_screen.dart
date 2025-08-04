@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/services/feedback_service.dart';
 
 /// Feedback form screen for users to send feedback
 class FeedbackScreen extends StatefulWidget {
@@ -44,17 +45,36 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
     });
 
     try {
-      // TODO: Submit feedback to API
-      await Future.delayed(const Duration(seconds: 2)); // Simulate API call
+      // Submit feedback to API
+      final feedbackService = FeedbackService();
+      final success = await feedbackService.submitFeedback(
+        type: _selectedCategory.toLowerCase().replaceAll(' ', '_'),
+        subject: _subjectController.text.trim(),
+        message: _messageController.text.trim(),
+        email: _emailController.text.trim().isNotEmpty ? _emailController.text.trim() : null,
+        metadata: {
+          'include_system_info': _includeSystemInfo,
+          'category': _selectedCategory,
+        },
+      );
       
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Thank you for your feedback! We\'ll review it shortly.'),
-            backgroundColor: Colors.green,
-          ),
-        );
-        Navigator.of(context).pop();
+        if (success) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Thank you for your feedback! We\'ll review it shortly.'),
+              backgroundColor: Colors.green,
+            ),
+          );
+          Navigator.of(context).pop();
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Failed to submit feedback. Please try again.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
       }
     } catch (e) {
       if (mounted) {

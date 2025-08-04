@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/utils/app_print.dart';
+import '../../../core/services/settings_service.dart';
 
 /// Notification settings screen for managing notification preferences
 class NotificationSettingsScreen extends StatefulWidget {
@@ -11,6 +12,8 @@ class NotificationSettingsScreen extends StatefulWidget {
 }
 
 class _NotificationSettingsScreenState extends State<NotificationSettingsScreen> {
+  late final SettingsService _settingsService;
+  
   bool _pushNotificationsEnabled = true;
   bool _emailNotificationsEnabled = true;
   bool _workoutRemindersEnabled = true;
@@ -18,6 +21,51 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
   bool _weeklyReportsEnabled = true;
   bool _promotionalNotificationsEnabled = false;
   bool _isLoading = false;
+  
+  // Time picker state
+  TimeOfDay _quietHoursStart = const TimeOfDay(hour: 22, minute: 0);
+  TimeOfDay _quietHoursEnd = const TimeOfDay(hour: 8, minute: 0);
+
+  @override
+  void initState() {
+    super.initState();
+    _settingsService = SettingsService();
+    _loadSettings();
+  }
+
+  Future<void> _loadSettings() async {
+    try {
+      setState(() {
+        _pushNotificationsEnabled = _settingsService.notificationEnabled;
+        _workoutRemindersEnabled = _settingsService.workoutReminders;
+        _achievementNotificationsEnabled = _settingsService.progressUpdates;
+        _weeklyReportsEnabled = _settingsService.motivationalMessages;
+        
+        // Load quiet hours
+        final startTime = _settingsService.quietHoursStart;
+        final endTime = _settingsService.quietHoursEnd;
+        
+        _quietHoursStart = _parseTimeString(startTime);
+        _quietHoursEnd = _parseTimeString(endTime);
+      });
+    } catch (e) {
+      AppPrint.printError('Failed to load settings: $e');
+    }
+  }
+
+  TimeOfDay _parseTimeString(String timeString) {
+    final parts = timeString.split(':');
+    if (parts.length == 2) {
+      final hour = int.tryParse(parts[0]) ?? 0;
+      final minute = int.tryParse(parts[1]) ?? 0;
+      return TimeOfDay(hour: hour, minute: minute);
+    }
+    return const TimeOfDay(hour: 22, minute: 0);
+  }
+
+  String _formatTimeOfDay(TimeOfDay time) {
+    return '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -291,10 +339,12 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
                 Expanded(
                   child: _buildTimePicker(
                     label: 'Start Time',
-                    time: const TimeOfDay(hour: 22, minute: 0),
+                    time: _quietHoursStart,
                     onChanged: (time) {
-                      // TODO: Implement time picker
-                      AppPrint.printInfo('Start time: $time');
+                      setState(() {
+                        _quietHoursStart = time;
+                      });
+                      _saveSettings();
                     },
                   ),
                 ),
@@ -302,10 +352,12 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
                 Expanded(
                   child: _buildTimePicker(
                     label: 'End Time',
-                    time: const TimeOfDay(hour: 8, minute: 0),
+                    time: _quietHoursEnd,
                     onChanged: (time) {
-                      // TODO: Implement time picker
-                      AppPrint.printInfo('End time: $time');
+                      setState(() {
+                        _quietHoursEnd = time;
+                      });
+                      _saveSettings();
                     },
                   ),
                 ),
@@ -363,8 +415,29 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
   }
 
   Future<void> _saveSettings() async {
-    // TODO: Implement settings save logic
-    AppPrint.printInfo('Saving notification settings...');
+    try {
+      await _settingsService.saveNotificationSettings(
+        notificationEnabled: _pushNotificationsEnabled,
+        workoutReminders: _workoutRemindersEnabled,
+        progressUpdates: _achievementNotificationsEnabled,
+        motivationalMessages: _weeklyReportsEnabled,
+        quietHoursEnabled: true, // Always enabled for now
+        quietHoursStart: _formatTimeOfDay(_quietHoursStart),
+        quietHoursEnd: _formatTimeOfDay(_quietHoursEnd),
+      );
+      
+      AppPrint.printInfo('Notification settings saved successfully');
+    } catch (e) {
+      AppPrint.printError('Failed to save notification settings: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to save settings: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   Future<void> _saveAllSettings() async {
@@ -373,11 +446,17 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
     });
 
     try {
-      // TODO: Implement settings save logic
-      AppPrint.printInfo('Saving all notification settings...');
+      await _settingsService.saveNotificationSettings(
+        notificationEnabled: _pushNotificationsEnabled,
+        workoutReminders: _workoutRemindersEnabled,
+        progressUpdates: _achievementNotificationsEnabled,
+        motivationalMessages: _weeklyReportsEnabled,
+        quietHoursEnabled: true, // Always enabled for now
+        quietHoursStart: _formatTimeOfDay(_quietHoursStart),
+        quietHoursEnd: _formatTimeOfDay(_quietHoursEnd),
+      );
       
-      // Simulate API call
-      await Future.delayed(const Duration(seconds: 1));
+      AppPrint.printInfo('All notification settings saved successfully');
       
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

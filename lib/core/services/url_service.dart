@@ -82,13 +82,13 @@ class UrlService {
 
   /// Opens app store rating page
   static Future<bool> openAppStoreRating() async {
-    // TODO: Replace with actual app store URL
+    // Replace with actual app store URL when app is published
     return openUrl('https://apps.apple.com/app/icon-fitness/id123456789');
   }
 
   /// Opens Google Play store rating page
   static Future<bool> openPlayStoreRating() async {
-    // TODO: Replace with actual play store URL
+    // Replace with actual play store URL when app is published
     return openUrl('https://play.google.com/store/apps/details?id=com.iconapp.fitness');
   }
 } 

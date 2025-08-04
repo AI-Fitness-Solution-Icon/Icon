@@ -36,29 +36,14 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
   }
 
   Future<void> _loadSettings() async {
-    _settingsService = await SettingsService.create();
+    _settingsService = SettingsService();
     
     setState(() {
-      _biometricAuthEnabled = false; // Will be loaded from settings
-      _twoFactorAuthEnabled = false; // Will be loaded from settings
-      _dataSharingEnabled = true; // Will be loaded from settings
-      _analyticsEnabled = true; // Will be loaded from settings
-      _locationServicesEnabled = true; // Will be loaded from settings
-    });
-
-    // Load actual settings
-    final biometricAuth = await _settingsService.isBiometricAuthEnabled();
-    final twoFactorAuth = await _settingsService.isTwoFactorAuthEnabled();
-    final dataSharing = await _settingsService.isDataSharingEnabled();
-    final analytics = await _settingsService.isAnalyticsEnabled();
-    final locationServices = await _settingsService.isLocationServicesEnabled();
-
-    setState(() {
-      _biometricAuthEnabled = biometricAuth;
-      _twoFactorAuthEnabled = twoFactorAuth;
-      _dataSharingEnabled = dataSharing;
-      _analyticsEnabled = analytics;
-      _locationServicesEnabled = locationServices;
+      _biometricAuthEnabled = _settingsService.isBiometricAuthEnabled;
+      _twoFactorAuthEnabled = _settingsService.isTwoFactorAuthEnabled;
+      _dataSharingEnabled = _settingsService.isDataSharingEnabled;
+      _analyticsEnabled = _settingsService.isAnalyticsEnabled;
+      _locationServicesEnabled = _settingsService.isLocationServicesEnabled;
     });
   }
 
@@ -490,11 +475,11 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
     
     try {
       await _settingsService.savePrivacySettings(
-        biometricAuth: _biometricAuthEnabled,
-        twoFactorAuth: _twoFactorAuthEnabled,
-        dataSharing: _dataSharingEnabled,
-        analytics: _analyticsEnabled,
-        locationServices: _locationServicesEnabled,
+        biometricAuthEnabled: _biometricAuthEnabled,
+        twoFactorAuthEnabled: _twoFactorAuthEnabled,
+        dataSharingEnabled: _dataSharingEnabled,
+        analyticsEnabled: _analyticsEnabled,
+        locationServicesEnabled: _locationServicesEnabled,
       );
       
       AppPrint.printInfo('Privacy settings saved successfully');
@@ -521,11 +506,11 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
       AppPrint.printInfo('Saving all privacy settings...');
       
       await _settingsService.savePrivacySettings(
-        biometricAuth: _biometricAuthEnabled,
-        twoFactorAuth: _twoFactorAuthEnabled,
-        dataSharing: _dataSharingEnabled,
-        analytics: _analyticsEnabled,
-        locationServices: _locationServicesEnabled,
+        biometricAuthEnabled: _biometricAuthEnabled,
+        twoFactorAuthEnabled: _twoFactorAuthEnabled,
+        dataSharingEnabled: _dataSharingEnabled,
+        analyticsEnabled: _analyticsEnabled,
+        locationServicesEnabled: _locationServicesEnabled,
       );
       
       if (mounted) {

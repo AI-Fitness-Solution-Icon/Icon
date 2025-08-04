@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/services/settings_service.dart';
 
 /// Fitness goals screen for setting and tracking fitness objectives
 class FitnessGoalsScreen extends StatefulWidget {

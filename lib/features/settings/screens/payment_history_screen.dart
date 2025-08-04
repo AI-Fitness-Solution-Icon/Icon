@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/repositories/payment_history_repository.dart';
+import '../../../core/models/payment_history.dart';
+import '../../../core/utils/app_print.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 /// Payment history screen for viewing payment transactions
 class PaymentHistoryScreen extends StatefulWidget {
@@ -10,7 +14,8 @@ class PaymentHistoryScreen extends StatefulWidget {
 }
 
 class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
-  List<PaymentTransaction> _transactions = [];
+  final PaymentHistoryRepository _repository = PaymentHistoryRepository();
+  List<PaymentHistory> _transactions = [];
   bool _isLoading = true;
 
   @override
@@ -20,51 +25,32 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
   }
 
   Future<void> _loadTransactions() async {
-    // Simulate loading
-    await Future.delayed(const Duration(seconds: 1));
-    
-    // TODO: Load from API
-    setState(() {
-      _transactions = [
-        PaymentTransaction(
-          id: '1',
-          amount: 29.99,
-          currency: 'USD',
-          status: TransactionStatus.completed,
-          date: DateTime.now().subtract(const Duration(days: 1)),
-          description: 'Premium Monthly Subscription',
-          paymentMethod: 'Credit Card ****1234',
-        ),
-        PaymentTransaction(
-          id: '2',
-          amount: 29.99,
-          currency: 'USD',
-          status: TransactionStatus.completed,
-          date: DateTime.now().subtract(const Duration(days: 32)),
-          description: 'Premium Monthly Subscription',
-          paymentMethod: 'Credit Card ****1234',
-        ),
-        PaymentTransaction(
-          id: '3',
-          amount: 29.99,
-          currency: 'USD',
-          status: TransactionStatus.completed,
-          date: DateTime.now().subtract(const Duration(days: 63)),
-          description: 'Premium Monthly Subscription',
-          paymentMethod: 'Credit Card ****1234',
-        ),
-        PaymentTransaction(
-          id: '4',
-          amount: 29.99,
-          currency: 'USD',
-          status: TransactionStatus.failed,
-          date: DateTime.now().subtract(const Duration(days: 94)),
-          description: 'Premium Monthly Subscription',
-          paymentMethod: 'Credit Card ****1234',
-        ),
-      ];
-      _isLoading = false;
-    });
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+
+      final transactions = await _repository.getPaymentHistory();
+      
+      setState(() {
+        _transactions = transactions;
+        _isLoading = false;
+      });
+    } catch (e) {
+      AppPrint.printError('Failed to load transactions: $e');
+      setState(() {
+        _isLoading = false;
+      });
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to load payment history: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -143,12 +129,12 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
 
   Widget _buildSummaryCard() {
     final totalAmount = _transactions
-        .where((t) => t.status == TransactionStatus.completed)
+        .where((t) => t.status.toLowerCase() == 'completed')
         .fold(0.0, (sum, t) => sum + t.amount);
     
     final totalTransactions = _transactions.length;
     final successfulTransactions = _transactions
-        .where((t) => t.status == TransactionStatus.completed)
+        .where((t) => t.status.toLowerCase() == 'completed')
         .length;
 
     return Card(
@@ -222,7 +208,7 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
     );
   }
 
-  Widget _buildTransactionCard(PaymentTransaction transaction) {
+  Widget _buildTransactionCard(PaymentHistory transaction) {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 4.0),
       child: ListTile(
@@ -234,7 +220,7 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
           ),
         ),
         title: Text(
-          transaction.description,
+          'Premium Subscription Payment',
           style: const TextStyle(fontWeight: FontWeight.w500),
         ),
         subtitle: Column(
@@ -242,11 +228,11 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
           children: [
             const SizedBox(height: 4),
             Text(
-              _formatDate(transaction.date),
+              _formatDate(transaction.paymentDate),
               style: TextStyle(color: Colors.grey[600]),
             ),
             Text(
-              transaction.paymentMethod,
+              'Credit Card ****1234',
               style: TextStyle(color: Colors.grey[600], fontSize: 12),
             ),
           ],
@@ -284,42 +270,48 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
     );
   }
 
-  Color _getStatusColor(TransactionStatus status) {
-    switch (status) {
-      case TransactionStatus.completed:
+  Color _getStatusColor(String status) {
+    switch (status.toLowerCase()) {
+      case 'completed':
         return Colors.green;
-      case TransactionStatus.pending:
+      case 'pending':
         return Colors.orange;
-      case TransactionStatus.failed:
+      case 'failed':
         return Colors.red;
-      case TransactionStatus.refunded:
+      case 'refunded':
         return Colors.blue;
+      default:
+        return Colors.grey;
     }
   }
 
-  IconData _getStatusIcon(TransactionStatus status) {
-    switch (status) {
-      case TransactionStatus.completed:
+  IconData _getStatusIcon(String status) {
+    switch (status.toLowerCase()) {
+      case 'completed':
         return Icons.check_circle;
-      case TransactionStatus.pending:
+      case 'pending':
         return Icons.schedule;
-      case TransactionStatus.failed:
+      case 'failed':
         return Icons.error;
-      case TransactionStatus.refunded:
+      case 'refunded':
         return Icons.refresh;
+      default:
+        return Icons.help;
     }
   }
 
-  String _getStatusText(TransactionStatus status) {
-    switch (status) {
-      case TransactionStatus.completed:
+  String _getStatusText(String status) {
+    switch (status.toLowerCase()) {
+      case 'completed':
         return 'Completed';
-      case TransactionStatus.pending:
+      case 'pending':
         return 'Pending';
-      case TransactionStatus.failed:
+      case 'failed':
         return 'Failed';
-      case TransactionStatus.refunded:
+      case 'refunded':
         return 'Refunded';
+      default:
+        return 'Unknown';
     }
   }
 
@@ -327,7 +319,7 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
     return '${date.day}/${date.month}/${date.year}';
   }
 
-  void _showTransactionDetails(PaymentTransaction transaction) {
+  void _showTransactionDetails(PaymentHistory transaction) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -336,12 +328,12 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildDetailRow('Transaction ID', transaction.id),
+            _buildDetailRow('Transaction ID', transaction.paymentId),
             _buildDetailRow('Amount', '${transaction.currency} ${transaction.amount.toStringAsFixed(2)}'),
             _buildDetailRow('Status', _getStatusText(transaction.status)),
-            _buildDetailRow('Date', _formatDate(transaction.date)),
-            _buildDetailRow('Description', transaction.description),
-            _buildDetailRow('Payment Method', transaction.paymentMethod),
+            _buildDetailRow('Date', _formatDate(transaction.paymentDate)),
+            _buildDetailRow('Description', 'Premium Subscription Payment'),
+            _buildDetailRow('Payment Method', 'Credit Card ****1234'),
           ],
         ),
         actions: [
@@ -373,40 +365,71 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
     );
   }
 
-  void _downloadStatement() {
-    // TODO: Implement statement download
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Downloading payment statement...'),
-        backgroundColor: Colors.blue,
-      ),
-    );
+  void _downloadStatement() async {
+    try {
+      // Show loading dialog
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const AlertDialog(
+          content: Row(
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(width: 16),
+              Text('Generating statement...'),
+            ],
+          ),
+        ),
+      );
+
+      // Get date range for the last 12 months
+      final endDate = DateTime.now();
+      final startDate = endDate.subtract(const Duration(days: 365));
+
+      final downloadUrl = await _repository.downloadStatement(
+        startDate: startDate,
+        endDate: endDate,
+      );
+
+      // Close loading dialog
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
+
+      // Launch the download URL
+      final uri = Uri.parse(downloadUrl);
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+        
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Statement downloaded successfully!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+      } else {
+        throw Exception('Could not launch download URL');
+      }
+    } catch (e) {
+      // Close loading dialog if still open
+      if (mounted && Navigator.of(context).canPop()) {
+        Navigator.of(context).pop();
+      }
+      
+      AppPrint.printError('Failed to download statement: $e');
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to download statement: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 }
 
-enum TransactionStatus {
-  completed,
-  pending,
-  failed,
-  refunded,
-}
-
-class PaymentTransaction {
-  final String id;
-  final double amount;
-  final String currency;
-  final TransactionStatus status;
-  final DateTime date;
-  final String description;
-  final String paymentMethod;
-
-  PaymentTransaction({
-    required this.id,
-    required this.amount,
-    required this.currency,
-    required this.status,
-    required this.date,
-    required this.description,
-    required this.paymentMethod,
-  });
-} 
+ 

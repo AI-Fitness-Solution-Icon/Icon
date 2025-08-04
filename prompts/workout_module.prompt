@@ -1,0 +1,802 @@
+# Icon App - Workout Module Implementation
+
+You are a senior Flutter engineer implementing the workout management module for the Icon fitness app. Create comprehensive workout tracking, exercise management, and progress monitoring features.
+
+## Project Context
+
+The workout module should provide:
+- Workout creation and management
+- Exercise library and tracking
+- Real-time workout sessions
+- Progress monitoring and analytics
+- Workout history and statistics
+- Integration with AI coach recommendations
+
+## Required Implementation
+
+### 1. Workout Models
+
+Create `lib/features/workout/data/models/workout_model.dart`:
+
+```dart
+class WorkoutModel {
+  final String id;
+  final String name;
+  final String description;
+  final String category;
+  final String difficulty;
+  final int estimatedDuration; // in minutes
+  final List<ExerciseModel> exercises;
+  final Map<String, dynamic> metadata;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+
+  WorkoutModel({
+    required this.id,
+    required this.name,
+    required this.description,
+    required this.category,
+    required this.difficulty,
+    required this.estimatedDuration,
+    required this.exercises,
+    this.metadata = const {},
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  factory WorkoutModel.fromJson(Map<String, dynamic> json) {
+    return WorkoutModel(
+      id: json['id'] as String,
+      name: json['name'] as String,
+      description: json['description'] as String,
+      category: json['category'] as String,
+      difficulty: json['difficulty'] as String,
+      estimatedDuration: json['estimated_duration'] as int,
+      exercises: (json['exercises'] as List)
+          .map((e) => ExerciseModel.fromJson(e))
+          .toList(),
+      metadata: json['metadata'] as Map<String, dynamic>? ?? {},
+      createdAt: DateTime.parse(json['created_at'] as String),
+      updatedAt: DateTime.parse(json['updated_at'] as String),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'description': description,
+      'category': category,
+      'difficulty': difficulty,
+      'estimated_duration': estimatedDuration,
+      'exercises': exercises.map((e) => e.toJson()).toList(),
+      'metadata': metadata,
+      'created_at': createdAt.toIso8601String(),
+      'updated_at': updatedAt.toIso8601String(),
+    };
+  }
+}
+```
+
+Create `lib/features/workout/data/models/exercise_model.dart`:
+
+```dart
+class ExerciseModel {
+  final String id;
+  final String name;
+  final String description;
+  final String category;
+  final String muscleGroup;
+  final String equipment;
+  final String difficulty;
+  final String? videoUrl;
+  final String? imageUrl;
+  final List<String> instructions;
+  final Map<String, dynamic> metadata;
+
+  ExerciseModel({
+    required this.id,
+    required this.name,
+    required this.description,
+    required this.category,
+    required this.muscleGroup,
+    required this.equipment,
+    required this.difficulty,
+    this.videoUrl,
+    this.imageUrl,
+    required this.instructions,
+    this.metadata = const {},
+  });
+
+  factory ExerciseModel.fromJson(Map<String, dynamic> json) {
+    return ExerciseModel(
+      id: json['id'] as String,
+      name: json['name'] as String,
+      description: json['description'] as String,
+      category: json['category'] as String,
+      muscleGroup: json['muscle_group'] as String,
+      equipment: json['equipment'] as String,
+      difficulty: json['difficulty'] as String,
+      videoUrl: json['video_url'] as String?,
+      imageUrl: json['image_url'] as String?,
+      instructions: (json['instructions'] as List).cast<String>(),
+      metadata: json['metadata'] as Map<String, dynamic>? ?? {},
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'description': description,
+      'category': category,
+      'muscle_group': muscleGroup,
+      'equipment': equipment,
+      'difficulty': difficulty,
+      'video_url': videoUrl,
+      'image_url': imageUrl,
+      'instructions': instructions,
+      'metadata': metadata,
+    };
+  }
+}
+```
+
+Create `lib/features/workout/data/models/workout_session_model.dart`:
+
+```dart
+class WorkoutSessionModel {
+  final String id;
+  final String workoutId;
+  final String userId;
+  final DateTime startTime;
+  final DateTime? endTime;
+  final String status; // 'in_progress', 'completed', 'paused', 'cancelled'
+  final List<ExerciseSetModel> completedSets;
+  final int totalDuration; // in seconds
+  final Map<String, dynamic> metrics;
+  final String? notes;
+
+  WorkoutSessionModel({
+    required this.id,
+    required this.workoutId,
+    required this.userId,
+    required this.startTime,
+    this.endTime,
+    required this.status,
+    required this.completedSets,
+    required this.totalDuration,
+    this.metrics = const {},
+    this.notes,
+  });
+
+  factory WorkoutSessionModel.fromJson(Map<String, dynamic> json) {
+    return WorkoutSessionModel(
+      id: json['id'] as String,
+      workoutId: json['workout_id'] as String,
+      userId: json['user_id'] as String,
+      startTime: DateTime.parse(json['start_time'] as String),
+      endTime: json['end_time'] != null 
+          ? DateTime.parse(json['end_time'] as String)
+          : null,
+      status: json['status'] as String,
+      completedSets: (json['completed_sets'] as List)
+          .map((e) => ExerciseSetModel.fromJson(e))
+          .toList(),
+      totalDuration: json['total_duration'] as int,
+      metrics: json['metrics'] as Map<String, dynamic>? ?? {},
+      notes: json['notes'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'workout_id': workoutId,
+      'user_id': userId,
+      'start_time': startTime.toIso8601String(),
+      'end_time': endTime?.toIso8601String(),
+      'status': status,
+      'completed_sets': completedSets.map((e) => e.toJson()).toList(),
+      'total_duration': totalDuration,
+      'metrics': metrics,
+      'notes': notes,
+    };
+  }
+
+  bool get isCompleted => status == 'completed';
+  bool get isInProgress => status == 'in_progress';
+  bool get isPaused => status == 'paused';
+  
+  int get durationInMinutes => totalDuration ~/ 60;
+}
+```
+
+Create `lib/features/workout/data/models/exercise_set_model.dart`:
+
+```dart
+class ExerciseSetModel {
+  final String id;
+  final String exerciseId;
+  final int setNumber;
+  final int? reps;
+  final double? weight; // in kg
+  final int? duration; // in seconds
+  final int? restTime; // in seconds
+  final bool isCompleted;
+  final String? notes;
+
+  ExerciseSetModel({
+    required this.id,
+    required this.exerciseId,
+    required this.setNumber,
+    this.reps,
+    this.weight,
+    this.duration,
+    this.restTime,
+    required this.isCompleted,
+    this.notes,
+  });
+
+  factory ExerciseSetModel.fromJson(Map<String, dynamic> json) {
+    return ExerciseSetModel(
+      id: json['id'] as String,
+      exerciseId: json['exercise_id'] as String,
+      setNumber: json['set_number'] as int,
+      reps: json['reps'] as int?,
+      weight: json['weight']?.toDouble(),
+      duration: json['duration'] as int?,
+      restTime: json['rest_time'] as int?,
+      isCompleted: json['is_completed'] as bool,
+      notes: json['notes'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'exercise_id': exerciseId,
+      'set_number': setNumber,
+      'reps': reps,
+      'weight': weight,
+      'duration': duration,
+      'rest_time': restTime,
+      'is_completed': isCompleted,
+      'notes': notes,
+    };
+  }
+
+  ExerciseSetModel copyWith({
+    String? id,
+    String? exerciseId,
+    int? setNumber,
+    int? reps,
+    double? weight,
+    int? duration,
+    int? restTime,
+    bool? isCompleted,
+    String? notes,
+  }) {
+    return ExerciseSetModel(
+      id: id ?? this.id,
+      exerciseId: exerciseId ?? this.exerciseId,
+      setNumber: setNumber ?? this.setNumber,
+      reps: reps ?? this.reps,
+      weight: weight ?? this.weight,
+      duration: duration ?? this.duration,
+      restTime: restTime ?? this.restTime,
+      isCompleted: isCompleted ?? this.isCompleted,
+      notes: notes ?? this.notes,
+    );
+  }
+}
+```
+
+### 2. Workout Repository
+
+Create `lib/features/workout/data/repositories/workout_repository.dart`:
+
+```dart
+import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../../core/services/supabase_service.dart';
+import '../models/workout_model.dart';
+import '../models/exercise_model.dart';
+import '../models/workout_session_model.dart';
+import '../models/exercise_set_model.dart';
+
+class WorkoutRepository {
+  final SupabaseService _supabaseService = SupabaseService();
+
+  /// Get all workouts
+  Future<List<WorkoutModel>> getWorkouts({
+    String? category,
+    String? difficulty,
+    int? limit,
+  }) async {
+    try {
+      var query = _supabaseService.client
+          .from('workouts')
+          .select('*, exercises(*)');
+
+      if (category != null) {
+        query = query.eq('category', category);
+      }
+      if (difficulty != null) {
+        query = query.eq('difficulty', difficulty);
+      }
+      if (limit != null) {
+        query = query.limit(limit);
+      }
+
+      final response = await query;
+      
+      return (response as List)
+          .map((json) => WorkoutModel.fromJson(json))
+          .toList();
+    } catch (e) {
+      throw Exception('Failed to fetch workouts: $e');
+    }
+  }
+
+  /// Get workout by ID
+  Future<WorkoutModel?> getWorkoutById(String workoutId) async {
+    try {
+      final response = await _supabaseService.client
+          .from('workouts')
+          .select('*, exercises(*)')
+          .eq('id', workoutId)
+          .single();
+
+      return WorkoutModel.fromJson(response);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /// Get user's workout sessions
+  Future<List<WorkoutSessionModel>> getUserWorkoutSessions({
+    String? userId,
+    int? limit,
+  }) async {
+    try {
+      final currentUserId = userId ?? _supabaseService.currentUser?.id;
+      if (currentUserId == null) throw Exception('User not authenticated');
+
+      var query = _supabaseService.client
+          .from('workout_sessions')
+          .select('*, workout:workouts(*)')
+          .eq('user_id', currentUserId)
+          .order('start_time', ascending: false);
+
+      if (limit != null) {
+        query = query.limit(limit);
+      }
+
+      final response = await query;
+      
+      return (response as List)
+          .map((json) => WorkoutSessionModel.fromJson(json))
+          .toList();
+    } catch (e) {
+      throw Exception('Failed to fetch workout sessions: $e');
+    }
+  }
+
+  /// Create workout session
+  Future<WorkoutSessionModel> createWorkoutSession({
+    required String workoutId,
+    String? userId,
+  }) async {
+    try {
+      final currentUserId = userId ?? _supabaseService.currentUser?.id;
+      if (currentUserId == null) throw Exception('User not authenticated');
+
+      final response = await _supabaseService.client
+          .from('workout_sessions')
+          .insert({
+            'workout_id': workoutId,
+            'user_id': currentUserId,
+            'start_time': DateTime.now().toIso8601String(),
+            'status': 'in_progress',
+            'completed_sets': [],
+            'total_duration': 0,
+            'metrics': {},
+          })
+          .select()
+          .single();
+
+      return WorkoutSessionModel.fromJson(response);
+    } catch (e) {
+      throw Exception('Failed to create workout session: $e');
+    }
+  }
+
+  /// Update workout session
+  Future<void> updateWorkoutSession({
+    required String sessionId,
+    required Map<String, dynamic> data,
+  }) async {
+    try {
+      await _supabaseService.client
+          .from('workout_sessions')
+          .update(data)
+          .eq('id', sessionId);
+    } catch (e) {
+      throw Exception('Failed to update workout session: $e');
+    }
+  }
+
+  /// Complete workout session
+  Future<void> completeWorkoutSession({
+    required String sessionId,
+    required List<ExerciseSetModel> completedSets,
+    required int totalDuration,
+    Map<String, dynamic>? metrics,
+    String? notes,
+  }) async {
+    try {
+      await _supabaseService.client
+          .from('workout_sessions')
+          .update({
+            'end_time': DateTime.now().toIso8601String(),
+            'status': 'completed',
+            'completed_sets': completedSets.map((e) => e.toJson()).toList(),
+            'total_duration': totalDuration,
+            'metrics': metrics ?? {},
+            'notes': notes,
+          })
+          .eq('id', sessionId);
+    } catch (e) {
+      throw Exception('Failed to complete workout session: $e');
+    }
+  }
+
+  /// Get exercises by category
+  Future<List<ExerciseModel>> getExercisesByCategory(String category) async {
+    try {
+      final response = await _supabaseService.client
+          .from('exercises')
+          .select()
+          .eq('category', category);
+
+      return (response as List)
+          .map((json) => ExerciseModel.fromJson(json))
+          .toList();
+    } catch (e) {
+      throw Exception('Failed to fetch exercises: $e');
+    }
+  }
+
+  /// Get exercise by ID
+  Future<ExerciseModel?> getExerciseById(String exerciseId) async {
+    try {
+      final response = await _supabaseService.client
+          .from('exercises')
+          .select()
+          .eq('id', exerciseId)
+          .single();
+
+      return ExerciseModel.fromJson(response);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /// Search exercises
+  Future<List<ExerciseModel>> searchExercises(String query) async {
+    try {
+      final response = await _supabaseService.client
+          .from('exercises')
+          .select()
+          .or('name.ilike.%$query%,description.ilike.%$query%')
+          .limit(20);
+
+      return (response as List)
+          .map((json) => ExerciseModel.fromJson(json))
+          .toList();
+    } catch (e) {
+      throw Exception('Failed to search exercises: $e');
+    }
+  }
+}
+```
+
+### 3. Workout Provider
+
+Create `lib/features/workout/domain/providers/workout_provider.dart`:
+
+```dart
+import 'package:flutter/material.dart';
+import '../../data/models/workout_model.dart';
+import '../../data/models/exercise_model.dart';
+import '../../data/models/workout_session_model.dart';
+import '../../data/models/exercise_set_model.dart';
+import '../../data/repositories/workout_repository.dart';
+
+class WorkoutProvider extends ChangeNotifier {
+  final WorkoutRepository _workoutRepository = WorkoutRepository();
+  
+  List<WorkoutModel> _workouts = [];
+  List<ExerciseModel> _exercises = [];
+  List<WorkoutSessionModel> _workoutSessions = [];
+  WorkoutSessionModel? _currentSession;
+  bool _isLoading = false;
+  String? _error;
+
+  // Getters
+  List<WorkoutModel> get workouts => _workouts;
+  List<ExerciseModel> get exercises => _exercises;
+  List<WorkoutSessionModel> get workoutSessions => _workoutSessions;
+  WorkoutSessionModel? get currentSession => _currentSession;
+  bool get isLoading => _isLoading;
+  String? get error => _error;
+  bool get hasActiveSession => _currentSession?.isInProgress ?? false;
+
+  /// Load workouts
+  Future<void> loadWorkouts({
+    String? category,
+    String? difficulty,
+  }) async {
+    try {
+      _setLoading(true);
+      _clearError();
+
+      _workouts = await _workoutRepository.getWorkouts(
+        category: category,
+        difficulty: difficulty,
+      );
+      
+      notifyListeners();
+    } catch (e) {
+      _setError('Failed to load workouts: $e');
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  /// Load workout sessions
+  Future<void> loadWorkoutSessions({int? limit}) async {
+    try {
+      _setLoading(true);
+      _clearError();
+
+      _workoutSessions = await _workoutRepository.getUserWorkoutSessions(
+        limit: limit,
+      );
+      
+      notifyListeners();
+    } catch (e) {
+      _setError('Failed to load workout sessions: $e');
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  /// Start workout session
+  Future<bool> startWorkoutSession(String workoutId) async {
+    try {
+      _setLoading(true);
+      _clearError();
+
+      _currentSession = await _workoutRepository.createWorkoutSession(
+        workoutId: workoutId,
+      );
+      
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _setError('Failed to start workout session: $e');
+      return false;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  /// Complete workout session
+  Future<bool> completeWorkoutSession({
+    required List<ExerciseSetModel> completedSets,
+    required int totalDuration,
+    Map<String, dynamic>? metrics,
+    String? notes,
+  }) async {
+    try {
+      if (_currentSession == null) {
+        _setError('No active workout session');
+        return false;
+      }
+
+      await _workoutRepository.completeWorkoutSession(
+        sessionId: _currentSession!.id,
+        completedSets: completedSets,
+        totalDuration: totalDuration,
+        metrics: metrics,
+        notes: notes,
+      );
+
+      // Reload workout sessions
+      await loadWorkoutSessions();
+      
+      _currentSession = null;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _setError('Failed to complete workout session: $e');
+      return false;
+    }
+  }
+
+  /// Pause workout session
+  Future<void> pauseWorkoutSession() async {
+    if (_currentSession != null) {
+      await _workoutRepository.updateWorkoutSession(
+        sessionId: _currentSession!.id,
+        data: {'status': 'paused'},
+      );
+      
+      _currentSession = _currentSession!.copyWith(status: 'paused');
+      notifyListeners();
+    }
+  }
+
+  /// Resume workout session
+  Future<void> resumeWorkoutSession() async {
+    if (_currentSession != null) {
+      await _workoutRepository.updateWorkoutSession(
+        sessionId: _currentSession!.id,
+        data: {'status': 'in_progress'},
+      );
+      
+      _currentSession = _currentSession!.copyWith(status: 'in_progress');
+      notifyListeners();
+    }
+  }
+
+  /// Cancel workout session
+  Future<void> cancelWorkoutSession() async {
+    if (_currentSession != null) {
+      await _workoutRepository.updateWorkoutSession(
+        sessionId: _currentSession!.id,
+        data: {
+          'status': 'cancelled',
+          'end_time': DateTime.now().toIso8601String(),
+        },
+      );
+      
+      _currentSession = null;
+      notifyListeners();
+    }
+  }
+
+  /// Load exercises by category
+  Future<void> loadExercisesByCategory(String category) async {
+    try {
+      _setLoading(true);
+      _clearError();
+
+      _exercises = await _workoutRepository.getExercisesByCategory(category);
+      
+      notifyListeners();
+    } catch (e) {
+      _setError('Failed to load exercises: $e');
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  /// Search exercises
+  Future<void> searchExercises(String query) async {
+    try {
+      _setLoading(true);
+      _clearError();
+
+      _exercises = await _workoutRepository.searchExercises(query);
+      
+      notifyListeners();
+    } catch (e) {
+      _setError('Failed to search exercises: $e');
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  /// Get workout by ID
+  Future<WorkoutModel?> getWorkoutById(String workoutId) async {
+    try {
+      return await _workoutRepository.getWorkoutById(workoutId);
+    } catch (e) {
+      _setError('Failed to get workout: $e');
+      return null;
+    }
+  }
+
+  /// Get exercise by ID
+  Future<ExerciseModel?> getExerciseById(String exerciseId) async {
+    try {
+      return await _workoutRepository.getExerciseById(exerciseId);
+    } catch (e) {
+      _setError('Failed to get exercise: $e');
+      return null;
+    }
+  }
+
+  /// Clear error
+  void clearError() {
+    _clearError();
+  }
+
+  // Private methods
+  void _setLoading(bool loading) {
+    _isLoading = loading;
+    notifyListeners();
+  }
+
+  void _setError(String error) {
+    _error = error;
+    notifyListeners();
+  }
+
+  void _clearError() {
+    _error = null;
+    notifyListeners();
+  }
+}
+
+// Extension for WorkoutSessionModel
+extension WorkoutSessionModelExtension on WorkoutSessionModel {
+  WorkoutSessionModel copyWith({
+    String? id,
+    String? workoutId,
+    String? userId,
+    DateTime? startTime,
+    DateTime? endTime,
+    String? status,
+    List<ExerciseSetModel>? completedSets,
+    int? totalDuration,
+    Map<String, dynamic>? metrics,
+    String? notes,
+  }) {
+    return WorkoutSessionModel(
+      id: id ?? this.id,
+      workoutId: workoutId ?? this.workoutId,
+      userId: userId ?? this.userId,
+      startTime: startTime ?? this.startTime,
+      endTime: endTime ?? this.endTime,
+      status: status ?? this.status,
+      completedSets: completedSets ?? this.completedSets,
+      totalDuration: totalDuration ?? this.totalDuration,
+      metrics: metrics ?? this.metrics,
+      notes: notes ?? this.notes,
+    );
+  }
+}
+```
+
+## Implementation Guidelines
+
+1. **State Management**: Use Provider with ChangeNotifier
+2. **Real-time Updates**: Implement real-time workout tracking
+3. **Data Persistence**: Save workout data to Supabase
+4. **Error Handling**: Comprehensive error handling
+5. **Performance**: Optimize for large datasets
+6. **Offline Support**: Handle offline scenarios
+7. **Analytics**: Track workout metrics and progress
+
+## Next Steps
+
+After implementing the workout module:
+
+1. Create workout list screen
+2. Implement workout detail screen
+3. Add active workout session screen
+4. Create exercise library screen
+5. Add workout history screen
+6. Implement progress analytics
+7. Add workout sharing features
+
+Remember to:
+- Handle real-time workout tracking
+- Implement proper data validation
+- Add comprehensive error handling
+- Optimize for performance
+- Test all workout flows
+- Add progress tracking 

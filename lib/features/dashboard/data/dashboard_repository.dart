@@ -8,7 +8,11 @@ import '../models/workout_challenge.dart';
 
 /// Repository for dashboard data operations
 class DashboardRepository {
-  final SupabaseService _supabaseService = SupabaseService.instance;
+  // late final SupabaseService _supabaseService;
+
+  DashboardRepository({SupabaseService? supabaseService}) {
+    // _supabaseService = supabaseService ?? SupabaseService.instance;
+  }
 
   /// Get goals for a specific date
   Future<List<Goal>> getGoals(DateTime date) async {

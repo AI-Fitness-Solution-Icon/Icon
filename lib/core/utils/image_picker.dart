@@ -279,7 +279,7 @@ class ImagePickerUtil {
                 onTap: () async {
                   Navigator.of(context).pop();
                   final File? image = await pickImageFromGallery();
-                  if (image != null) {
+                  if (image != null && context.mounted) {
                     Navigator.of(context).pop(image);
                   }
                 },
@@ -290,7 +290,7 @@ class ImagePickerUtil {
                 onTap: () async {
                   Navigator.of(context).pop();
                   final File? image = await takePhotoWithCamera();
-                  if (image != null) {
+                  if (image != null && context.mounted) {
                     Navigator.of(context).pop(image);
                   }
                 },

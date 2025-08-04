@@ -38,7 +38,7 @@ class MuscleGroup extends Equatable {
         (json['size']['width'] as num).toDouble(),
         (json['size']['height'] as num).toDouble(),
       ),
-      color: Color(json['color'] as int),
+      color: Color((json['color'] as num).toInt()),
       intensity: (json['intensity'] as num?)?.toDouble() ?? 1.0,
     );
   }
@@ -57,7 +57,7 @@ class MuscleGroup extends Equatable {
         'width': size.width,
         'height': size.height,
       },
-      'color': color.value,
+      'color': color.toARGB32(),
       'intensity': intensity,
     };
   }

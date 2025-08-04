@@ -1,0 +1,858 @@
+# Icon App - Authentication Module Implementation
+
+You are a senior Flutter engineer implementing the authentication module for the Icon fitness app. Create a comprehensive authentication system using Supabase Auth with proper state management and UI components.
+
+## Project Context
+
+The authentication module should provide:
+- Email/password sign up and login
+- Social authentication (Google, Apple)
+- Password reset functionality
+- Persistent sessions
+- User profile management
+- Proper error handling and validation
+
+## Required Implementation
+
+### 1. Authentication Models
+
+Create `lib/features/auth/data/models/user_model.dart`:
+
+```dart
+class UserModel {
+  final String id;
+  final String email;
+  final String? fullName;
+  final String? avatarUrl;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final bool emailVerified;
+  final Map<String, dynamic> metadata;
+
+  UserModel({
+    required this.id,
+    required this.email,
+    this.fullName,
+    this.avatarUrl,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.emailVerified,
+    this.metadata = const {},
+  });
+
+  factory UserModel.fromJson(Map<String, dynamic> json) {
+    return UserModel(
+      id: json['id'] as String,
+      email: json['email'] as String,
+      fullName: json['full_name'] as String?,
+      avatarUrl: json['avatar_url'] as String?,
+      createdAt: DateTime.parse(json['created_at'] as String),
+      updatedAt: DateTime.parse(json['updated_at'] as String),
+      emailVerified: json['email_verified'] as bool? ?? false,
+      metadata: json['metadata'] as Map<String, dynamic>? ?? {},
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'email': email,
+      'full_name': fullName,
+      'avatar_url': avatarUrl,
+      'created_at': createdAt.toIso8601String(),
+      'updated_at': updatedAt.toIso8601String(),
+      'email_verified': emailVerified,
+      'metadata': metadata,
+    };
+  }
+
+  UserModel copyWith({
+    String? id,
+    String? email,
+    String? fullName,
+    String? avatarUrl,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    bool? emailVerified,
+    Map<String, dynamic>? metadata,
+  }) {
+    return UserModel(
+      id: id ?? this.id,
+      email: email ?? this.email,
+      fullName: fullName ?? this.fullName,
+      avatarUrl: avatarUrl ?? this.avatarUrl,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      emailVerified: emailVerified ?? this.emailVerified,
+      metadata: metadata ?? this.metadata,
+    );
+  }
+}
+```
+
+### 2. Authentication Repository
+
+Create `lib/features/auth/data/repositories/auth_repository.dart`:
+
+```dart
+import 'package:supabase_flutter/supabase_flutter.dart';
+import '../models/user_model.dart';
+import '../../../../core/services/supabase_service.dart';
+
+class AuthRepository {
+  final SupabaseService _supabaseService = SupabaseService();
+
+  /// Get current user
+  UserModel? get currentUser {
+    final user = _supabaseService.currentUser;
+    if (user == null) return null;
+    
+    return UserModel(
+      id: user.id,
+      email: user.email ?? '',
+      fullName: user.userMetadata?['full_name'] as String?,
+      avatarUrl: user.userMetadata?['avatar_url'] as String?,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+      emailVerified: user.emailConfirmedAt != null,
+      metadata: user.userMetadata ?? {},
+    );
+  }
+
+  /// Check if user is authenticated
+  bool get isAuthenticated => _supabaseService.isAuthenticated;
+
+  /// Sign up with email and password
+  Future<AuthResponse> signUp({
+    required String email,
+    required String password,
+    String? fullName,
+  }) async {
+    try {
+      final response = await _supabaseService.signUp(
+        email: email,
+        password: password,
+        userData: {
+          if (fullName != null) 'full_name': fullName,
+        },
+      );
+      
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  /// Sign in with email and password
+  Future<AuthResponse> signIn({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      final response = await _supabaseService.signIn(
+        email: email,
+        password: password,
+      );
+      
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  /// Sign in with Google
+  Future<AuthResponse> signInWithGoogle() async {
+    try {
+      final response = await _supabaseService.client.auth.signInWithOAuth(
+        Provider.google,
+        redirectTo: 'io.supabase.flutter://login-callback/',
+      );
+      
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  /// Sign in with Apple
+  Future<AuthResponse> signInWithApple() async {
+    try {
+      final response = await _supabaseService.client.auth.signInWithOAuth(
+        Provider.apple,
+        redirectTo: 'io.supabase.flutter://login-callback/',
+      );
+      
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  /// Sign out
+  Future<void> signOut() async {
+    try {
+      await _supabaseService.signOut();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  /// Reset password
+  Future<void> resetPassword(String email) async {
+    try {
+      await _supabaseService.resetPassword(email);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  /// Update user profile
+  Future<void> updateProfile({
+    required String fullName,
+    String? avatarUrl,
+  }) async {
+    try {
+      final user = currentUser;
+      if (user == null) throw Exception('User not authenticated');
+
+      await _supabaseService.updateUserProfile(
+        userId: user.id,
+        data: {
+          'full_name': fullName,
+          if (avatarUrl != null) 'avatar_url': avatarUrl,
+        },
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  /// Get user profile from database
+  Future<UserModel?> getUserProfile(String userId) async {
+    try {
+      final data = await _supabaseService.getUserProfile(userId);
+      if (data == null) return null;
+      
+      return UserModel.fromJson(data);
+    } catch (e) {
+      rethrow;
+    }
+  }
+}
+```
+
+### 3. Authentication Provider
+
+Create `lib/features/auth/domain/providers/auth_provider.dart`:
+
+```dart
+import 'package:flutter/material.dart';
+import '../../data/models/user_model.dart';
+import '../../data/repositories/auth_repository.dart';
+
+class AuthProvider extends ChangeNotifier {
+  final AuthRepository _authRepository = AuthRepository();
+  
+  UserModel? _user;
+  bool _isLoading = false;
+  String? _error;
+  bool _isInitialized = false;
+
+  /// Get current user
+  UserModel? get user => _user;
+  
+  /// Check if user is authenticated
+  bool get isAuthenticated => _user != null;
+  
+  /// Get loading state
+  bool get isLoading => _isLoading;
+  
+  /// Get error message
+  String? get error => _error;
+  
+  /// Check if auth is initialized
+  bool get isInitialized => _isInitialized;
+
+  /// Initialize authentication state
+  Future<void> initialize() async {
+    try {
+      _isLoading = true;
+      notifyListeners();
+
+      _user = _authRepository.currentUser;
+      _isInitialized = true;
+      
+      _clearError();
+    } catch (e) {
+      _setError('Failed to initialize authentication: $e');
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  /// Sign up with email and password
+  Future<bool> signUp({
+    required String email,
+    required String password,
+    required String confirmPassword,
+    String? fullName,
+  }) async {
+    try {
+      _setLoading(true);
+      _clearError();
+
+      // Validate inputs
+      if (!_validateEmail(email)) {
+        _setError('Please enter a valid email address');
+        return false;
+      }
+
+      if (!_validatePassword(password)) {
+        _setError('Password must be at least 8 characters long');
+        return false;
+      }
+
+      if (password != confirmPassword) {
+        _setError('Passwords do not match');
+        return false;
+      }
+
+      final response = await _authRepository.signUp(
+        email: email,
+        password: password,
+        fullName: fullName,
+      );
+
+      if (response.user != null) {
+        _user = UserModel(
+          id: response.user!.id,
+          email: response.user!.email ?? '',
+          fullName: fullName,
+          createdAt: response.user!.createdAt,
+          updatedAt: response.user!.updatedAt,
+          emailVerified: response.user!.emailConfirmedAt != null,
+          metadata: response.user!.userMetadata ?? {},
+        );
+        
+        notifyListeners();
+        return true;
+      }
+
+      return false;
+    } catch (e) {
+      _setError(_getAuthErrorMessage(e));
+      return false;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  /// Sign in with email and password
+  Future<bool> signIn({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      _setLoading(true);
+      _clearError();
+
+      if (!_validateEmail(email)) {
+        _setError('Please enter a valid email address');
+        return false;
+      }
+
+      if (password.isEmpty) {
+        _setError('Please enter your password');
+        return false;
+      }
+
+      final response = await _authRepository.signIn(
+        email: email,
+        password: password,
+      );
+
+      if (response.user != null) {
+        _user = UserModel(
+          id: response.user!.id,
+          email: response.user!.email ?? '',
+          fullName: response.user!.userMetadata?['full_name'] as String?,
+          avatarUrl: response.user!.userMetadata?['avatar_url'] as String?,
+          createdAt: response.user!.createdAt,
+          updatedAt: response.user!.updatedAt,
+          emailVerified: response.user!.emailConfirmedAt != null,
+          metadata: response.user!.userMetadata ?? {},
+        );
+        
+        notifyListeners();
+        return true;
+      }
+
+      return false;
+    } catch (e) {
+      _setError(_getAuthErrorMessage(e));
+      return false;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  /// Sign in with Google
+  Future<bool> signInWithGoogle() async {
+    try {
+      _setLoading(true);
+      _clearError();
+
+      final response = await _authRepository.signInWithGoogle();
+      
+      // Handle OAuth response
+      if (response.user != null) {
+        _user = UserModel(
+          id: response.user!.id,
+          email: response.user!.email ?? '',
+          fullName: response.user!.userMetadata?['full_name'] as String?,
+          avatarUrl: response.user!.userMetadata?['avatar_url'] as String?,
+          createdAt: response.user!.createdAt,
+          updatedAt: response.user!.updatedAt,
+          emailVerified: response.user!.emailConfirmedAt != null,
+          metadata: response.user!.userMetadata ?? {},
+        );
+        
+        notifyListeners();
+        return true;
+      }
+
+      return false;
+    } catch (e) {
+      _setError(_getAuthErrorMessage(e));
+      return false;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  /// Sign out
+  Future<void> signOut() async {
+    try {
+      _setLoading(true);
+      _clearError();
+
+      await _authRepository.signOut();
+      _user = null;
+      
+      notifyListeners();
+    } catch (e) {
+      _setError('Failed to sign out: $e');
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  /// Reset password
+  Future<bool> resetPassword(String email) async {
+    try {
+      _setLoading(true);
+      _clearError();
+
+      if (!_validateEmail(email)) {
+        _setError('Please enter a valid email address');
+        return false;
+      }
+
+      await _authRepository.resetPassword(email);
+      return true;
+    } catch (e) {
+      _setError(_getAuthErrorMessage(e));
+      return false;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  /// Update user profile
+  Future<bool> updateProfile({
+    required String fullName,
+    String? avatarUrl,
+  }) async {
+    try {
+      _setLoading(true);
+      _clearError();
+
+      if (fullName.trim().isEmpty) {
+        _setError('Full name cannot be empty');
+        return false;
+      }
+
+      await _authRepository.updateProfile(
+        fullName: fullName.trim(),
+        avatarUrl: avatarUrl,
+      );
+
+      if (_user != null) {
+        _user = _user!.copyWith(
+          fullName: fullName.trim(),
+          avatarUrl: avatarUrl,
+          updatedAt: DateTime.now(),
+        );
+        
+        notifyListeners();
+      }
+
+      return true;
+    } catch (e) {
+      _setError('Failed to update profile: $e');
+      return false;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  /// Clear error
+  void clearError() {
+    _clearError();
+  }
+
+  // Private methods
+  void _setLoading(bool loading) {
+    _isLoading = loading;
+    notifyListeners();
+  }
+
+  void _setError(String error) {
+    _error = error;
+    notifyListeners();
+  }
+
+  void _clearError() {
+    _error = null;
+    notifyListeners();
+  }
+
+  bool _validateEmail(String email) {
+    return RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email);
+  }
+
+  bool _validatePassword(String password) {
+    return password.length >= 8;
+  }
+
+  String _getAuthErrorMessage(dynamic error) {
+    if (error.toString().contains('Invalid login credentials')) {
+      return 'Invalid email or password';
+    } else if (error.toString().contains('Email not confirmed')) {
+      return 'Please check your email and confirm your account';
+    } else if (error.toString().contains('User already registered')) {
+      return 'An account with this email already exists';
+    } else if (error.toString().contains('Password should be at least')) {
+      return 'Password must be at least 8 characters long';
+    } else {
+      return 'Authentication failed. Please try again.';
+    }
+  }
+}
+```
+
+### 4. Authentication Screens
+
+Create `lib/features/auth/presentation/screens/login_screen.dart`:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../domain/providers/auth_provider.dart';
+import '../../../../core/constants/app_strings.dart';
+import '../../../../core/constants/app_themes.dart';
+import '../widgets/auth_text_field.dart';
+import '../widgets/social_auth_button.dart';
+
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  bool _obscurePassword = true;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppThemes.backgroundColor,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const SizedBox(height: 60),
+                
+                // Logo and Title
+                Center(
+                  child: Column(
+                    children: [
+                      Icon(
+                        Icons.fitness_center,
+                        size: 80,
+                        color: AppThemes.primaryColor,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Welcome Back',
+                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                          color: AppThemes.textPrimary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Sign in to continue your fitness journey',
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          color: AppThemes.textSecondary,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+                
+                const SizedBox(height: 48),
+                
+                // Email Field
+                AuthTextField(
+                  controller: _emailController,
+                  labelText: AppStrings.email,
+                  keyboardType: TextInputType.emailAddress,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your email';
+                    }
+                    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                      return 'Please enter a valid email';
+                    }
+                    return null;
+                  },
+                ),
+                
+                const SizedBox(height: 16),
+                
+                // Password Field
+                AuthTextField(
+                  controller: _passwordController,
+                  labelText: AppStrings.password,
+                  obscureText: _obscurePassword,
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                      color: AppThemes.textSecondary,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscurePassword = !_obscurePassword;
+                      });
+                    },
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your password';
+                    }
+                    return null;
+                  },
+                ),
+                
+                const SizedBox(height: 8),
+                
+                // Forgot Password
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: () {
+                      // Navigate to forgot password screen
+                    },
+                    child: Text(
+                      AppStrings.forgotPassword,
+                      style: TextStyle(color: AppThemes.primaryColor),
+                    ),
+                  ),
+                ),
+                
+                const SizedBox(height: 24),
+                
+                // Login Button
+                Consumer<AuthProvider>(
+                  builder: (context, authProvider, child) {
+                    return ElevatedButton(
+                      onPressed: authProvider.isLoading ? null : _handleLogin,
+                      child: authProvider.isLoading
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                              ),
+                            )
+                          : Text(AppStrings.login),
+                    );
+                  },
+                ),
+                
+                const SizedBox(height: 24),
+                
+                // Divider
+                Row(
+                  children: [
+                    Expanded(child: Divider(color: AppThemes.textTertiary)),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Text(
+                        'OR',
+                        style: TextStyle(color: AppThemes.textSecondary),
+                      ),
+                    ),
+                    Expanded(child: Divider(color: AppThemes.textTertiary)),
+                  ],
+                ),
+                
+                const SizedBox(height: 24),
+                
+                // Social Auth Buttons
+                SocialAuthButton(
+                  text: 'Continue with Google',
+                  icon: Icons.g_mobiledata,
+                  onPressed: _handleGoogleSignIn,
+                ),
+                
+                const SizedBox(height: 12),
+                
+                SocialAuthButton(
+                  text: 'Continue with Apple',
+                  icon: Icons.apple,
+                  onPressed: _handleAppleSignIn,
+                ),
+                
+                const SizedBox(height: 32),
+                
+                // Sign Up Link
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Don't have an account? ",
+                      style: TextStyle(color: AppThemes.textSecondary),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        // Navigate to sign up screen
+                      },
+                      child: Text(
+                        AppStrings.signup,
+                        style: TextStyle(color: AppThemes.primaryColor),
+                      ),
+                    ),
+                  ],
+                ),
+                
+                // Error Message
+                Consumer<AuthProvider>(
+                  builder: (context, authProvider, child) {
+                    if (authProvider.error != null) {
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 16),
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: AppThemes.errorColor.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: AppThemes.errorColor),
+                          ),
+                          child: Text(
+                            authProvider.error!,
+                            style: TextStyle(color: AppThemes.errorColor),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      );
+                    }
+                    return const SizedBox.shrink();
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _handleLogin() async {
+    if (_formKey.currentState!.validate()) {
+      final authProvider = context.read<AuthProvider>();
+      final success = await authProvider.signIn(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      );
+      
+      if (success && mounted) {
+        // Navigate to home screen
+        Navigator.of(context).pushReplacementNamed('/home');
+      }
+    }
+  }
+
+  void _handleGoogleSignIn() async {
+    final authProvider = context.read<AuthProvider>();
+    final success = await authProvider.signInWithGoogle();
+    
+    if (success && mounted) {
+      // Navigate to home screen
+      Navigator.of(context).pushReplacementNamed('/home');
+    }
+  }
+
+  void _handleAppleSignIn() async {
+    // Implement Apple sign in
+  }
+}
+```
+
+## Implementation Guidelines
+
+1. **State Management**: Use Provider with ChangeNotifier
+2. **Error Handling**: Comprehensive error handling with user-friendly messages
+3. **Validation**: Client-side validation for all inputs
+4. **Loading States**: Show loading indicators during async operations
+5. **Security**: Never store sensitive data in plain text
+6. **UI/UX**: Follow Material Design 3 principles
+7. **Testing**: Write unit tests for all business logic
+
+## Next Steps
+
+After implementing the authentication module:
+
+1. Create sign up screen
+2. Implement forgot password screen
+3. Add profile management screen
+4. Set up route guards
+5. Add social authentication
+6. Implement email verification
+7. Add comprehensive testing
+
+Remember to:
+- Handle authentication state changes properly
+- Implement proper error messages
+- Add loading states for better UX
+- Follow security best practices
+- Test all authentication flows 
