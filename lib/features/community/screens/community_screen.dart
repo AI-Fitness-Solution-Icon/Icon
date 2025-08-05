@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/widgets/back_button_widget.dart';
+import '../../../navigation/route_names.dart';
 
 class CommunityScreen extends StatelessWidget {
   const CommunityScreen({super.key});
@@ -9,6 +11,7 @@ class CommunityScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.primaryBackground,
       appBar: AppBar(
+        leading: const BackButtonWidget(fallbackRoute: RouteNames.homePath),
         title: const Text('Community'),
         backgroundColor: AppColors.primaryBackground,
         foregroundColor: AppColors.textLight,

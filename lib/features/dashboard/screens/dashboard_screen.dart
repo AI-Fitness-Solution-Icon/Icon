@@ -177,18 +177,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ),
       ),
       bottomNavigationBar: const DashboardBottomNavigationBar(),
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 80.0), // Add padding to avoid bottom navigation
-        child: FloatingActionButton(
-          onPressed: () {
-            // Add meal or workout
-            AppPrint.printInfo('Add meal/workout button pressed');
-          },
-          backgroundColor: AppColors.primary,
-          foregroundColor: AppColors.textLight,
-          child: const Icon(Icons.add),
-        ),
-      ),
     );
   }
 
