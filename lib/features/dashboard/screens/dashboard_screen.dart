@@ -186,33 +186,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       child: Row(
         children: [
           // App Logo
-          Row(
-            children: [
-              Container(
-                width: 24,
-                height: 24,
-                decoration: BoxDecoration(
-                  color: AppColors.primary,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: const Icon(
-                  Icons.fitness_center,
-                  color: AppColors.textLight,
-                  size: 16,
-                ),
-              ),
-              const SizedBox(width: 8),
-              const Text(
-                'Icon',
-                style: TextStyle(
-                  color: AppColors.textLight,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  fontStyle: FontStyle.italic,
-                ),
-              ),
-            ],
-          ),
+          Image.asset('assets/splash_logo.png',  height: 50, width: 100),
           
           const Spacer(),
           
