@@ -33,8 +33,8 @@ class StripeService {
       // Get publishable key from environment or config
       final publishableKey = _getPublishableKey();
       
-      if (publishableKey.isEmpty || publishableKey == 'your-stripe-publishable-key') {
-        throw Exception('Stripe publishable key not configured. Please set STRIPE_PUBLISHABLE_KEY in your environment.');
+      if (publishableKey.isEmpty) {
+        throw Exception('Stripe publishable key not configured. Please set STRIPE_PUBLISHABLE_KEY in your .env file.');
       }
 
       Stripe.publishableKey = publishableKey;
@@ -52,13 +52,7 @@ class StripeService {
 
   /// Get publishable key from environment
   static String _getPublishableKey() {
-    // Try to get from environment first
-    const String envKey = String.fromEnvironment('STRIPE_PUBLISHABLE_KEY');
-    if (envKey.isNotEmpty && envKey != 'your-stripe-publishable-key') {
-      return envKey;
-    }
-    
-    // Fallback to API config
+    // Get from API config which reads from .env file
     return ApiConfig.stripePublishableKey;
   }
 

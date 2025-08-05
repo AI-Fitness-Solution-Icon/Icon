@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/widgets/back_button_widget.dart';
+import '../../../navigation/route_names.dart';
 
 class EmailVerificationScreen extends StatefulWidget {
   const EmailVerificationScreen({super.key});
@@ -51,6 +53,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
     return Scaffold(
       backgroundColor: AppColors.primaryBackground,
       appBar: AppBar(
+        leading: const BackButtonWidget(fallbackRoute: RouteNames.loginPath),
         title: const Text('Check Your Email'),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,

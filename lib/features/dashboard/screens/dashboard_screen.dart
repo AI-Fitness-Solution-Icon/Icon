@@ -108,21 +108,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
                   if (state is DashboardLoaded) {
                     return SingleChildScrollView(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 80.0), // Add bottom padding for navigation
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const SizedBox(height: 24),
+                          const SizedBox(height: 16), // Reduced spacing
                           
                           // Calorie Summary Card (CalAI inspired)
                           _buildCalorieSummaryCard(),
                           
-                          const SizedBox(height: 20),
+                          const SizedBox(height: 16), // Reduced spacing
                           
                           // Macro Nutrients Section
                           _buildMacroNutrientsSection(),
                           
-                          const SizedBox(height: 20),
+                          const SizedBox(height: 16), // Reduced spacing
                           
                           // Goals Section
                           GoalsSection(
@@ -130,12 +130,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             progress: state.progress,
                           ),
                           
-                          const SizedBox(height: 32),
+                          const SizedBox(height: 24), // Reduced spacing
                           
                           // Recently Uploaded Section
                           _buildRecentlyUploadedSection(),
                           
-                          const SizedBox(height: 24),
+                          const SizedBox(height: 16), // Reduced spacing
                           
                           // Anatomical Models
                           AnatomicalModels(
@@ -159,7 +159,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               },
                             ),
                           
-                          const SizedBox(height: 24),
+                          const SizedBox(height: 16), // Reduced spacing
                         ],
                       ),
                     );
@@ -177,14 +177,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ),
       ),
       bottomNavigationBar: const DashboardBottomNavigationBar(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Add meal or workout
-          AppPrint.printInfo('Add meal/workout button pressed');
-        },
-        backgroundColor: AppColors.primary,
-        foregroundColor: AppColors.textLight,
-        child: const Icon(Icons.add),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 80.0), // Add padding to avoid bottom navigation
+        child: FloatingActionButton(
+          onPressed: () {
+            // Add meal or workout
+            AppPrint.printInfo('Add meal/workout button pressed');
+          },
+          backgroundColor: AppColors.primary,
+          foregroundColor: AppColors.textLight,
+          child: const Icon(Icons.add),
+        ),
       ),
     );
   }
@@ -368,7 +371,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 color: Colors.red,
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 8), // Reduced spacing
             Expanded(
               child: _buildMacroCard(
                 value: '250g',
@@ -377,7 +380,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 color: Colors.orange,
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 8), // Reduced spacing
             Expanded(
               child: _buildMacroCard(
                 value: '90g',
@@ -433,6 +436,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ),
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min, // Prevent overflow
         children: [
           Container(
             width: 32,
@@ -454,6 +458,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
               color: AppColors.textLight,
               fontWeight: FontWeight.bold,
             ),
+            overflow: TextOverflow.ellipsis, // Prevent overflow
+            maxLines: 1,
           ),
           const SizedBox(height: 4),
           Text(
@@ -462,6 +468,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
               color: AppColors.textSecondary,
             ),
             textAlign: TextAlign.center,
+            overflow: TextOverflow.ellipsis, // Prevent overflow
+            maxLines: 2,
           ),
         ],
       ),

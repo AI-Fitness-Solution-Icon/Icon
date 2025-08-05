@@ -1,6 +1,5 @@
 import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
 import '../constants/api_config.dart';
 import '../models/user.dart';
@@ -27,7 +26,7 @@ class SupabaseService {
   static Future<void> initialize() async {
     await supabase.Supabase.initialize(
       url: ApiConfig.supabaseUrl,
-      anonKey: dotenv.env['SUPABASE_ANON_KEY'] ?? '',
+      anonKey: ApiConfig.supabaseAnonKey,
     );
   }
 

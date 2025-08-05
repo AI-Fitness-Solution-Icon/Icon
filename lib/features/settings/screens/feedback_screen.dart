@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/services/feedback_service.dart';
+import '../../../core/widgets/back_button_widget.dart';
 
 /// Feedback form screen for users to send feedback
 class FeedbackScreen extends StatefulWidget {
@@ -66,7 +68,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
               backgroundColor: Colors.green,
             ),
           );
-          Navigator.of(context).pop();
+          context.pop();
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -98,6 +100,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: const BackButtonWidget(fallbackRoute: '/settings'),
         title: const Text('Send Feedback'),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,

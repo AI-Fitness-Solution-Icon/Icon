@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/utils/app_print.dart';
 import '../../../core/services/settings_service.dart';
+import '../../../core/widgets/back_button_widget.dart';
+
 
 /// Notification settings screen for managing notification preferences
 class NotificationSettingsScreen extends StatefulWidget {
@@ -71,6 +73,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: const BackButtonWidget(fallbackRoute: '/settings'),
         title: const Text('Notification Settings'),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/utils/app_print.dart';
+import '../../../core/widgets/back_button_widget.dart';
 
 /// Workout session screen for active workout tracking
 class WorkoutSession extends StatefulWidget {
@@ -143,8 +145,8 @@ class _WorkoutSessionState extends State<WorkoutSession> {
         actions: [
           TextButton(
             onPressed: () {
-              Navigator.of(context).pop();
-              Navigator.of(context).pop(); // Go back to workout home
+              context.pop();
+              context.pop(); // Go back to workout home
             },
             child: const Text('Finish'),
           ),
@@ -170,6 +172,7 @@ class _WorkoutSessionState extends State<WorkoutSession> {
     if (_isCompleted) {
       return Scaffold(
         appBar: AppBar(
+          leading: const BackButtonWidget(fallbackRoute: '/workout'),
           title: const Text('Workout Complete'),
           backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
@@ -185,6 +188,7 @@ class _WorkoutSessionState extends State<WorkoutSession> {
 
     return Scaffold(
       appBar: AppBar(
+        leading: const BackButtonWidget(fallbackRoute: '/workout'),
         title: const Text('Workout Session'),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,

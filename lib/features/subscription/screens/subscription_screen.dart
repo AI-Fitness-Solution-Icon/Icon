@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/utils/app_print.dart';
 import '../../../core/models/subscription_plan.dart';
 import '../../../core/models/subscription.dart';
+import '../../../core/widgets/back_button_widget.dart';
 
 /// Subscription screen for subscription management
 class SubscriptionScreen extends StatefulWidget {
@@ -114,6 +116,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: const BackButtonWidget(fallbackRoute: '/'),
         title: const Text('Subscription'),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
@@ -442,7 +445,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
 
       // Close loading dialog
       if (!mounted) return;
-      Navigator.of(context).pop();
+      context.pop();
 
       // Show success message
       if (!mounted) return;
@@ -457,8 +460,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
       await _loadSubscriptionData();
     } catch (e) {
       // Close loading dialog if still open
-      if (mounted && Navigator.of(context).canPop()) {
-        Navigator.of(context).pop();
+      if (mounted && context.canPop()) {
+        context.pop();
       }
 
       AppPrint.printError('Failed to subscribe: $e');

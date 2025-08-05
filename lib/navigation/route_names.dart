@@ -22,6 +22,11 @@ class RouteNames {
   // Workout routes
   static const String workout = 'workout';
   static const String workoutSession = 'workout_session';
+  static const String strengthWorkouts = 'strength_workouts';
+  static const String createWorkout = 'create_workout';
+  
+  // Community routes
+  static const String community = 'community';
 
   // AI Coach routes
   static const String aiCoach = 'ai_coach';
@@ -34,6 +39,11 @@ class RouteNames {
   static const String settings = 'settings';
   static const String notificationSettings = 'notification_settings';
   static const String privacySettings = 'privacy_settings';
+  static const String fitnessGoalsSettings = 'fitness_goals_settings';
+  static const String paymentHistory = 'payment_history';
+  static const String help = 'help';
+  static const String feedback = 'feedback';
+  static const String webview = 'webview';
 
   // Home route
   static const String home = 'home';
@@ -56,11 +66,19 @@ class RouteNames {
   static const String dashboardPath = '/dashboard';
   static const String workoutPath = '/workout';
   static const String workoutSessionPath = '/workout/session';
+  static const String strengthWorkoutsPath = '/workouts/strength';
+  static const String createWorkoutPath = '/create-workout';
+  static const String communityPath = '/community';
   static const String aiCoachPath = '/ai-coach';
   static const String voiceInteractionPath = '/ai-coach/voice';
   static const String subscriptionPath = '/subscription';
   static const String settingsPath = '/settings';
   static const String notificationSettingsPath = '/notification-settings';
   static const String privacySettingsPath = '/privacy-settings';
+  static const String fitnessGoalsSettingsPath = '/fitness-goals';
+  static const String paymentHistoryPath = '/payment-history';
+  static const String helpPath = '/help';
+  static const String feedbackPath = '/feedback';
+  static const String webviewPath = '/webview';
   static const String homePath = '/home';
 } 

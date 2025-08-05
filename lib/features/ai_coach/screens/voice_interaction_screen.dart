@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/services/speech_to_text_service.dart';
 import '../../../core/services/text_to_speech_service.dart';
+import '../../../core/widgets/back_button_widget.dart';
 import '../bloc/ai_coach_bloc.dart';
 import '../bloc/ai_coach_event.dart';
 import '../bloc/ai_coach_state.dart';
@@ -171,7 +173,7 @@ class _VoiceInteractionScreenState extends State<VoiceInteractionScreen> {
       ),
       actions: [
         TextButton(
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => context.pop(),
           child: const Text('Close'),
         ),
       ],
@@ -183,6 +185,7 @@ class _VoiceInteractionScreenState extends State<VoiceInteractionScreen> {
     return Scaffold(
       backgroundColor: AppColors.primaryBackground,
       appBar: AppBar(
+        leading: const BackButtonWidget(fallbackRoute: '/ai-coach'),
         title: const Text('Voice Coach'),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
@@ -191,7 +194,7 @@ class _VoiceInteractionScreenState extends State<VoiceInteractionScreen> {
             icon: const Icon(Icons.chat),
             onPressed: () {
               // Navigate to chat screen
-              Navigator.of(context).pop();
+              context.pop();
             },
           ),
         ],

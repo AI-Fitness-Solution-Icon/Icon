@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/widgets/back_button_widget.dart';
+import '../../../navigation/route_names.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_state.dart';
@@ -14,6 +16,7 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: const BackButtonWidget(fallbackRoute: RouteNames.homePath),
         title: const Text('Profile'),
         backgroundColor: Colors.transparent,
         elevation: 0,

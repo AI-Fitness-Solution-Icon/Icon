@@ -3,6 +3,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/services/url_service.dart';
 import '../../../core/utils/app_print.dart';
 import '../../../core/utils/toast_util.dart';
+import '../../../core/widgets/back_button_widget.dart';
 
 /// Help screen for user support and assistance
 class HelpScreen extends StatefulWidget {
@@ -44,6 +45,7 @@ class _HelpScreenState extends State<HelpScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: const BackButtonWidget(fallbackRoute: '/settings'),
         title: const Text('Help & Support'),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,

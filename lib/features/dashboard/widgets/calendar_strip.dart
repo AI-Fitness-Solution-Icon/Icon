@@ -15,7 +15,7 @@ class CalendarStrip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 80,
+      height: 120, // Further increased height to accommodate content
       padding: const EdgeInsets.symmetric(vertical: 16.0),
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
@@ -31,21 +31,23 @@ class CalendarStrip extends StatelessWidget {
             child: GestureDetector(
               onTap: () => onDateSelected(date),
               child: Column(
+                mainAxisSize: MainAxisSize.min, // Prevent overflow
                 children: [
                   // Day of week
                   Text(
                     _getDayAbbreviation(date.weekday),
                     style: TextStyle(
                       color: isSelected ? AppColors.textLight : AppColors.textSecondary,
-                      fontSize: 12,
+                      fontSize: 11, // Reduced font size
                       fontWeight: FontWeight.w500,
                     ),
+                    overflow: TextOverflow.visible, // Prevent text overflow
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 6), // Reduced spacing
                   // Date circle
                   Container(
-                    width: 40,
-                    height: 40,
+                    width: 36, // Reduced size
+                    height: 36, // Reduced size
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: isSelected 
@@ -66,9 +68,10 @@ class CalendarStrip extends StatelessWidget {
                               : isToday 
                                   ? AppColors.primary
                                   : AppColors.textLight,
-                          fontSize: 16,
+                          fontSize: 14, // Reduced font size
                           fontWeight: FontWeight.bold,
                         ),
+                        overflow: TextOverflow.visible, // Prevent text overflow
                       ),
                     ),
                   ),

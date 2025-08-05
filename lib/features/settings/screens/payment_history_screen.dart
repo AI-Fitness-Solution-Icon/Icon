@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/repositories/payment_history_repository.dart';
 import '../../../core/models/payment_history.dart';
 import '../../../core/utils/app_print.dart';
+import '../../../core/widgets/back_button_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 /// Payment history screen for viewing payment transactions
@@ -57,6 +59,7 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: const BackButtonWidget(fallbackRoute: '/settings'),
         title: const Text('Payment History'),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
@@ -338,7 +341,7 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () => context.pop(),
             child: const Text('Close'),
           ),
         ],
@@ -393,7 +396,7 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
 
       // Close loading dialog
       if (mounted) {
-        Navigator.of(context).pop();
+        context.pop();
       }
 
       // Launch the download URL
@@ -414,8 +417,8 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
       }
     } catch (e) {
       // Close loading dialog if still open
-      if (mounted && Navigator.of(context).canPop()) {
-        Navigator.of(context).pop();
+      if (mounted && context.canPop()) {
+        context.pop();
       }
       
       AppPrint.printError('Failed to download statement: $e');

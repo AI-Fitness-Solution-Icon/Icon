@@ -5,6 +5,8 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/utils/app_print.dart';
+import '../../../core/widgets/back_button_widget.dart';
+import '../../../navigation/route_names.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_state.dart';
 import '../bloc/auth_event.dart';
@@ -103,6 +105,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: const BackButtonWidget(fallbackRoute: RouteNames.profilePath),
         title: const Text('Edit Profile'),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,

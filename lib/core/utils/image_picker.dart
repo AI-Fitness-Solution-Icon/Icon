@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image/image.dart' as img;
 import 'app_print.dart';
@@ -277,10 +278,10 @@ class ImagePickerUtil {
                 leading: const Icon(Icons.photo_library),
                 title: const Text('Gallery'),
                 onTap: () async {
-                  Navigator.of(context).pop();
+                  context.pop();
                   final File? image = await pickImageFromGallery();
                   if (image != null && context.mounted) {
-                    Navigator.of(context).pop(image);
+                    context.pop(image);
                   }
                 },
               ),
@@ -288,10 +289,10 @@ class ImagePickerUtil {
                 leading: const Icon(Icons.camera_alt),
                 title: const Text('Camera'),
                 onTap: () async {
-                  Navigator.of(context).pop();
+                  context.pop();
                   final File? image = await takePhotoWithCamera();
                   if (image != null && context.mounted) {
-                    Navigator.of(context).pop(image);
+                    context.pop(image);
                   }
                 },
               ),
@@ -299,7 +300,7 @@ class ImagePickerUtil {
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () => context.pop(),
               child: const Text('Cancel'),
             ),
           ],

@@ -62,10 +62,12 @@ class GoalsSection extends StatelessWidget {
         const SizedBox(height: 16),
         
         // Goals Cards
-        SizedBox(
-          height: 160,
+        Container(
+          height: 200, // Fixed height to prevent overflow
+          constraints: const BoxConstraints(maxHeight: 200), // Additional constraint
           child: ListView(
             scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 4.0), // Add padding
             children: [
               _buildGoalCard(
                 icon: Icons.build,
@@ -120,6 +122,8 @@ class GoalsSection extends StatelessWidget {
   }) {
     return Container(
       width: 160,
+      height: 180, // Fixed height to prevent overflow
+      constraints: const BoxConstraints(maxHeight: 180), // Additional constraint
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
         gradient: gradient,
@@ -134,14 +138,16 @@ class GoalsSection extends StatelessWidget {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min, // Prevent overflow
+        mainAxisAlignment: MainAxisAlignment.spaceBetween, // Distribute content evenly
         children: [
           // Icon with progress ring
           Stack(
             alignment: Alignment.center,
             children: [
               SizedBox(
-                width: 40,
-                height: 40,
+                width: 36, // Reduced size
+                height: 36, // Reduced size
                 child: CircularProgressIndicator(
                   value: progress,
                   strokeWidth: 3,
@@ -152,21 +158,23 @@ class GoalsSection extends StatelessWidget {
               Icon(
                 icon,
                 color: Colors.white,
-                size: 20,
+                size: 18, // Reduced size
               ),
             ],
           ),
           
-          const SizedBox(height: 12),
+          const SizedBox(height: 8), // Reduced spacing
           
           // Main value
           Text(
             value,
             style: const TextStyle(
               color: Colors.white,
-              fontSize: 24,
+              fontSize: 22, // Reduced font size
               fontWeight: FontWeight.bold,
             ),
+            overflow: TextOverflow.ellipsis, // Prevent overflow
+            maxLines: 1,
           ),
           
           // Title
@@ -174,20 +182,24 @@ class GoalsSection extends StatelessWidget {
             title,
             style: const TextStyle(
               color: Colors.white,
-              fontSize: 14,
+              fontSize: 13, // Reduced font size
               fontWeight: FontWeight.w500,
             ),
+            overflow: TextOverflow.ellipsis, // Prevent overflow
+            maxLines: 1,
           ),
           
-          const SizedBox(height: 8),
+          const SizedBox(height: 6), // Reduced spacing
           
           // Subtitle
           Text(
             subtitle,
             style: TextStyle(
               color: Colors.white.withValues(alpha: 0.8),
-              fontSize: 12,
+              fontSize: 11, // Reduced font size
             ),
+            overflow: TextOverflow.ellipsis, // Prevent overflow
+            maxLines: 1,
           ),
           
           // Subtitle value
@@ -195,9 +207,11 @@ class GoalsSection extends StatelessWidget {
             subtitleValue,
             style: const TextStyle(
               color: Colors.white,
-              fontSize: 16,
+              fontSize: 14, // Reduced font size
               fontWeight: FontWeight.w600,
             ),
+            overflow: TextOverflow.ellipsis, // Prevent overflow
+            maxLines: 1,
           ),
         ],
       ),

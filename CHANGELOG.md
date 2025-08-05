@@ -27,6 +27,8 @@ All notable changes to this project will be documented in this file.
 - Resolved emit method usage issues in BLoC event handlers
 - Fixed type safety issues in training philosophy screen
 - Corrected BLoC state access patterns in UI components
+- Fixed undefined AppColors.secondaryBackground usage in community screen
+- Resolved RouteNames import issues in settings screens
 
 ### Changed
 - Updated speech recognition service to use proper dynamic typing for result handling
@@ -35,6 +37,13 @@ All notable changes to this project will be documented in this file.
 - Migrated trainer onboarding from Provider to BLoC pattern for consistency with app architecture
 - Enhanced trainer onboarding BLoC with additional loading states and validation methods
 - Updated database schema to include trainer_profiles table with proper structure
+- **BREAKING**: Migrated all navigation from Navigator to Go Router throughout the app
+  - Replaced all `Navigator.pushNamed()` calls with `context.go()` using proper route paths
+  - Replaced all `Navigator.of(context).pop()` calls with `context.pop()`
+  - Updated image picker dialog to use Go Router navigation
+  - Ensured consistent navigation patterns across all screens and widgets
+  - Added proper Go Router imports to all affected files
+  - Fixed route path references to use RouteNames constants where appropriate
 
 ## [0.1.0] - 2024-01-01
 

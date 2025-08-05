@@ -6,6 +6,8 @@ import '../../../core/utils/app_print.dart';
 import '../../../core/services/url_service.dart';
 import '../../../core/services/settings_service.dart';
 import '../../../core/services/data_service.dart';
+import '../../../core/widgets/back_button_widget.dart';
+import '../../../navigation/route_names.dart';
 import '../../auth/bloc/auth_bloc.dart';
 import '../../auth/bloc/auth_state.dart';
 import '../../auth/bloc/auth_event.dart';
@@ -71,6 +73,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
+          leading: const BackButtonWidget(fallbackRoute: RouteNames.settingsPath),
           title: const Text('Privacy & Security'),
           backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
@@ -400,12 +403,12 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () => context.pop(),
             child: const Text('Cancel'),
           ),
           ElevatedButton(
             onPressed: () {
-              Navigator.of(context).pop();
+              context.pop();
               _deleteAccount();
             },
             style: ElevatedButton.styleFrom(

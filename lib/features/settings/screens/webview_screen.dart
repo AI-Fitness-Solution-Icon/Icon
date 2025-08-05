@@ -3,6 +3,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/widgets/back_button_widget.dart';
 
 /// WebView screen for loading privacy policy and terms of service
 class WebViewScreen extends StatefulWidget {
@@ -84,6 +85,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: const BackButtonWidget(fallbackRoute: '/settings'),
         title: Text(widget.title),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,

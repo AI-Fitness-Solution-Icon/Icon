@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/services/settings_service.dart';
+import '../../../core/widgets/back_button_widget.dart';
 
 /// Fitness goals screen for setting and tracking fitness objectives
 class FitnessGoalsScreen extends StatefulWidget {
@@ -81,7 +83,7 @@ class _FitnessGoalsScreenState extends State<FitnessGoalsScreen> {
               backgroundColor: Colors.green,
             ),
           );
-          Navigator.of(context).pop();
+          context.pop();
         }
       } catch (e) {
         if (mounted) {
@@ -100,6 +102,7 @@ class _FitnessGoalsScreenState extends State<FitnessGoalsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: const BackButtonWidget(fallbackRoute: '/settings'),
         title: const Text('Fitness Goals'),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,

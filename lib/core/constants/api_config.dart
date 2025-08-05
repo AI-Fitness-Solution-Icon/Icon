@@ -4,20 +4,20 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 /// Contains endpoints and configuration for external services
 class ApiConfig {
   // Supabase configuration
-  static const String supabaseUrl = 'https://rzbzadllidsuexaspxyz.supabase.co';
-  static String supabaseAnonKey = dotenv.env['SUPABASE_ANON_KEY'] ?? '';
+  static String get supabaseUrl => dotenv.env['SUPABASE_URL'] ?? 'https://rzbzadllidsuexaspxyz.supabase.co';
+  static String get supabaseAnonKey => dotenv.env['SUPABASE_ANON_KEY'] ?? '';
   
   // OpenAI configuration
   static const String openaiBaseUrl = 'https://api.openai.com/v1';
-  static const String openaiApiKey = 'your-openai-api-key';
+  static String get openaiApiKey => dotenv.env['OPENAI_API_KEY'] ?? '';
   
   // Stripe configuration
-  static const String stripePublishableKey = 'your-stripe-publishable-key';
-  static const String stripeSecretKey = 'your-stripe-secret-key';
+  static String get stripePublishableKey => dotenv.env['STRIPE_PUBLISHABLE_KEY'] ?? '';
+  static String get stripeSecretKey => dotenv.env['STRIPE_SECRET_KEY'] ?? '';
   
   // Voice synthesis API configuration
   static const String voiceApiUrl = 'https://api.voice-synthesis.com';
-  static const String voiceApiKey = 'your-voice-api-key';
+  static String get voiceApiKey => dotenv.env['VOICE_API_KEY'] ?? '';
   
   // App configuration
   static const String appName = 'Icon';

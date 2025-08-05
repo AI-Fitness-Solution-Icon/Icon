@@ -7,15 +7,28 @@ import 'core/services/supabase_service.dart';
 import 'core/services/stripe_service.dart';
 import 'core/services/settings_service.dart';
 import 'core/services/deep_link_service.dart';
+import 'core/utils/env_validator.dart';
 import 'navigation/app_router.dart';
 import 'features/auth/bloc/auth_bloc.dart';
 import 'features/auth/data/auth_repository.dart';
 import 'features/settings/bloc/settings_bloc.dart';
+import 'features/dashboard/bloc/dashboard_bloc.dart';
+import 'features/dashboard/data/dashboard_repository.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
   await dotenv.load(fileName: ".env");
+
+  // Validate environment variables
+  try {
+    EnvValidator.validateRequiredEnvVars();
+  } catch (e) {
+    // Use AppPrint instead of print for production code
+    // AppPrint.printError('Environment validation failed: $e');
+    // You can choose to exit the app here or show an error screen
+    // For now, we'll continue but the app may not work properly
+  }
 
   // Initialize Supabase
   await SupabaseService.initialize();
@@ -67,7 +80,12 @@ class MyApp extends StatelessWidget {
             BlocProvider<SettingsBloc>(
               create: (context) => SettingsBloc(snapshot.data!),
             ),
-            
+            // Dashboard Bloc
+            BlocProvider<DashboardBloc>(
+              create: (context) => DashboardBloc(
+                dashboardRepository: DashboardRepository(),
+              ),
+            ),
           ],
           child: MaterialApp.router(
             title: AppStrings.appName,

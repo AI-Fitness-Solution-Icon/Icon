@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/widgets/back_button_widget.dart';
+import '../../../navigation/route_names.dart';
 import '../data/auth_repository.dart';
 
 /// Screen for users to request password reset
@@ -78,6 +80,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     return Scaffold(
       backgroundColor: AppColors.primaryBackground,
       appBar: AppBar(
+        leading: const BackButtonWidget(fallbackRoute: RouteNames.loginPath),
         title: const Text('Forgot Password'),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,

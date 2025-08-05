@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/models/ai_response.dart';
+import '../../../core/widgets/back_button_widget.dart';
 import '../bloc/ai_coach_bloc.dart';
 import '../bloc/ai_coach_event.dart';
 import '../bloc/ai_coach_state.dart';
 import '../widgets/chat_message.dart';
 import '../widgets/chat_input.dart';
+import '../../../navigation/route_names.dart';
+import 'package:go_router/go_router.dart';
 
 /// AI Chat screen for interacting with the AI coach
 class AiChatScreen extends StatefulWidget {
@@ -41,17 +44,18 @@ class _AiChatScreenState extends State<AiChatScreen> {
       create: (context) => AiCoachBloc(),
       child: Scaffold(
         appBar: AppBar(
+          leading: const BackButtonWidget(fallbackRoute: '/'),
           title: const Text('AI Coach'),
           backgroundColor: Colors.transparent,
           elevation: 0,
           actions: [
             IconButton(
               icon: const Icon(Icons.mic),
-              onPressed: () => Navigator.pushNamed(context, '/voice-interaction'),
+              onPressed: () => context.go(RouteNames.voiceInteractionPath),
             ),
             IconButton(
               icon: const Icon(Icons.settings),
-              onPressed: () => Navigator.pushNamed(context, '/ai-settings'),
+              onPressed: () => context.go(RouteNames.settingsPath),
             ),
           ],
         ),

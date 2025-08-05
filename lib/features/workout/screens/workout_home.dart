@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/models/workout.dart';
+import '../../../core/widgets/back_button_widget.dart';
+import '../../../navigation/route_names.dart';
 import '../widgets/workout_card.dart';
 import '../widgets/workout_category_card.dart';
 
@@ -13,6 +15,7 @@ class WorkoutHomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: const BackButtonWidget(fallbackRoute: RouteNames.homePath),
         title: const Text('Workouts'),
         backgroundColor: Colors.transparent,
         elevation: 0,

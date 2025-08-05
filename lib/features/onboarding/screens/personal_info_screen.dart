@@ -6,6 +6,9 @@ import '../widgets/info_card.dart';
 import '../widgets/custom_input_field.dart';
 import '../widgets/gender_selection.dart';
 import '../widgets/primary_button.dart';
+import '../../../core/repositories/user_repository.dart';
+import '../../../core/utils/app_print.dart';
+import '../../../core/services/supabase_service.dart';
 
 /// Step 1 of 10: Personal Information Screen
 /// Gathers user's name, date of birth, and gender
@@ -22,6 +25,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
   final _dateOfBirthController = TextEditingController();
   Gender? _selectedGender;
   DateTime? _selectedDate;
+  bool _shouldNavigate = false;
 
   @override
   void dispose() {
@@ -61,9 +65,43 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
 
   void _onContinue() {
     if (_formKey.currentState!.validate() && _selectedGender != null) {
-      // Save personal information and navigate to next step
-      // TODO: Implement data persistence for personal info
-      context.go('/onboarding/step-2');
+      _savePersonalInfoAndNavigate();
+    }
+  }
+
+  Future<void> _savePersonalInfoAndNavigate() async {
+    try {
+      // Save personal information using UserRepository
+      final userRepository = UserRepository();
+      
+      // Get current user from Supabase
+      final supabaseService = SupabaseService.instance;
+      final currentUser = supabaseService.currentUser;
+      
+      if (currentUser != null) {
+        // Parse the name to get first and last name
+        final nameParts = _nameController.text.trim().split(' ');
+        final firstName = nameParts.isNotEmpty ? nameParts.first : '';
+        final lastName = nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
+        
+        // Update user profile with personal information
+        await userRepository.updateUserProfile(
+          firstName: firstName.isNotEmpty ? firstName : null,
+          lastName: lastName.isNotEmpty ? lastName : null,
+        );
+        
+        AppPrint.printInfo('Personal information saved successfully');
+      }
+      
+      // Set flag to navigate
+      if (mounted) {
+        setState(() {
+          _shouldNavigate = true;
+        });
+      }
+    } catch (e) {
+      AppPrint.printError('Failed to save personal information: $e');
+      // Error handling can be added here if needed
     }
   }
 
@@ -86,6 +124,15 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Handle navigation when flag is set
+    if (_shouldNavigate) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (context.mounted) {
+          context.go('/onboarding/step-2');
+        }
+      });
+    }
+    
     return Scaffold(
       backgroundColor: AppColors.primaryBackground,
       body: SafeArea(

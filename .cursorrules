@@ -74,10 +74,14 @@ You are working on Icon, an AI-powered fitness app built with Flutter. The app u
 - Never mix Provider and BLoC in the same feature
 
 ### 4. Navigation
-- Use Go Router for navigation
+- **ALWAYS** use Go Router as the main routing tool for all navigation
 - Define routes in `lib/navigation/app_router.dart`
 - Use named routes for consistency
 - Implement route guards for authentication
+- **NEVER** use Navigator.push() or Navigator.pop() directly - use context.go() and context.pop() instead
+- Use NavigationHelper class for consistent navigation patterns
+- For navigation with parameters, use context.go() with proper path construction
+- Always check context.mounted before using BuildContext after async operations
 
 ### 5. Styling and UI
 - Follow Material Design 3 principles
@@ -162,6 +166,13 @@ When fixing errors, follow this order:
 4. **Dependency errors** - Resolve missing dependencies and injection issues
 5. **Logic errors** - Fix business logic and flow issues
 6. **Style warnings** - Address code style and formatting issues
+
+### 16. BuildContext Safety
+- **ALWAYS** check `context.mounted` before using BuildContext after async operations
+- **NEVER** use BuildContext across async gaps without proper checks
+- Use `if (context.mounted)` guards before calling Navigator or showing dialogs after await
+- For navigation after async operations, use Go Router's context.go() with mounted checks
+- When showing dialogs or snackbars after async operations, always verify context.mounted first
 
 ### 9. File Naming
 - Use `snake_case.dart` for file names

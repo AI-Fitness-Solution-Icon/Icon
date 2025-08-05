@@ -21,6 +21,14 @@ import 'package:icon_app/features/subscription/screens/subscription_screen.dart'
 import 'package:icon_app/features/settings/screens/settings_screen.dart';
 import 'package:icon_app/features/settings/screens/notification_settings_screen.dart';
 import 'package:icon_app/features/settings/screens/privacy_settings_screen.dart';
+import 'package:icon_app/features/settings/screens/fitness_goals_screen.dart';
+import 'package:icon_app/features/settings/screens/payment_history_screen.dart';
+import 'package:icon_app/features/settings/screens/help_screen.dart';
+import 'package:icon_app/features/settings/screens/feedback_screen.dart';
+import 'package:icon_app/features/settings/screens/webview_screen.dart';
+import 'package:icon_app/features/community/screens/community_screen.dart';
+import 'package:icon_app/features/workout/screens/strength_workouts_screen.dart';
+import 'package:icon_app/features/workout/screens/create_workout_screen.dart';
 import 'package:icon_app/core/services/supabase_service.dart';
 import 'package:icon_app/navigation/route_names.dart';
 
@@ -116,6 +124,27 @@ class AppRouter {
         ],
       ),
       
+      // Strength workouts route
+      GoRoute(
+        path: RouteNames.strengthWorkoutsPath,
+        name: RouteNames.strengthWorkouts,
+        builder: (context, state) => const StrengthWorkoutsScreen(),
+      ),
+      
+      // Create workout route
+      GoRoute(
+        path: RouteNames.createWorkoutPath,
+        name: RouteNames.createWorkout,
+        builder: (context, state) => const CreateWorkoutScreen(),
+      ),
+      
+      // Community route
+      GoRoute(
+        path: RouteNames.communityPath,
+        name: RouteNames.community,
+        builder: (context, state) => const CommunityScreen(),
+      ),
+      
       // AI Coach routes
       GoRoute(
         path: RouteNames.aiCoachPath,
@@ -152,6 +181,35 @@ class AppRouter {
         path: RouteNames.privacySettingsPath,
         name: RouteNames.privacySettings,
         builder: (context, state) => const PrivacySettingsScreen(),
+      ),
+      GoRoute(
+        path: RouteNames.fitnessGoalsSettingsPath,
+        name: RouteNames.fitnessGoalsSettings,
+        builder: (context, state) => const FitnessGoalsScreen(),
+      ),
+      GoRoute(
+        path: RouteNames.paymentHistoryPath,
+        name: RouteNames.paymentHistory,
+        builder: (context, state) => const PaymentHistoryScreen(),
+      ),
+      GoRoute(
+        path: RouteNames.helpPath,
+        name: RouteNames.help,
+        builder: (context, state) => const HelpScreen(),
+      ),
+      GoRoute(
+        path: RouteNames.feedbackPath,
+        name: RouteNames.feedback,
+        builder: (context, state) => const FeedbackScreen(),
+      ),
+      GoRoute(
+        path: RouteNames.webviewPath,
+        name: RouteNames.webview,
+        builder: (context, state) {
+          final title = state.uri.queryParameters['title'] ?? '';
+          final url = state.uri.queryParameters['url'] ?? '';
+          return WebViewScreen(title: title, url: url);
+        },
       ),
       
       // Dashboard route

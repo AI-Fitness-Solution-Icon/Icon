@@ -4,14 +4,17 @@ import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/utils/app_print.dart';
 import '../../../core/services/settings_service.dart';
+import '../../../core/widgets/back_button_widget.dart';
+import '../../../navigation/route_names.dart';
 import '../../auth/bloc/auth_bloc.dart';
 import '../../auth/bloc/auth_event.dart';
 import '../../auth/bloc/auth_state.dart';
-import 'fitness_goals_screen.dart';
-import 'payment_history_screen.dart';
-import 'help_screen.dart';
-import 'feedback_screen.dart';
-import 'webview_screen.dart';
+// TODO: Import these screens when they are implemented
+// import 'fitness_goals_screen.dart';
+// import 'payment_history_screen.dart';
+// import 'help_screen.dart';
+// import 'feedback_screen.dart';
+// import 'webview_screen.dart';
 import '../bloc/settings_bloc.dart';
 
 /// Settings screen for app settings management
@@ -48,6 +51,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: const BackButtonWidget(fallbackRoute: RouteNames.homePath),
         title: const Text('Settings'),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
@@ -58,7 +62,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             listener: (context, state) {
               if (state is Unauthenticated) {
                 AppPrint.printInfo('User signed out successfully');
-                context.go('/login');
+                context.go(RouteNames.loginPath);
               } else if (state is AuthError) {
                 AppPrint.printError('Sign out failed: ${state.message}');
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -298,57 +302,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   // Navigation methods
   void _navigateToFitnessGoals(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const FitnessGoalsScreen(),
-      ),
-    );
+    context.push(RouteNames.fitnessGoalsSettingsPath);
   }
 
   void _navigateToPaymentHistory(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const PaymentHistoryScreen(),
-      ),
-    );
+    context.push(RouteNames.paymentHistoryPath);
   }
 
   void _navigateToHelp(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const HelpScreen(),
-      ),
-    );
+    context.push(RouteNames.helpPath);
   }
 
   void _openFeedbackForm(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const FeedbackScreen(),
-      ),
-    );
+    context.push(RouteNames.feedbackPath);
   }
 
   void _openPrivacyPolicy(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const WebViewScreen(
-          title: 'Privacy Policy',
-          url: 'https://iconapp.com/privacy-policy',
-        ),
-      ),
-    );
+    context.push('${RouteNames.webviewPath}?title=Privacy Policy&url=https://iconapp.com/privacy-policy');
   }
 
   void _openTermsOfService(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const WebViewScreen(
-          title: 'Terms of Service',
-          url: 'https://iconapp.com/terms-of-service',
-        ),
-      ),
-    );
+    context.push('${RouteNames.webviewPath}?title=Terms of Service&url=https://iconapp.com/terms-of-service');
   }
 
   // Settings toggle methods
@@ -381,12 +355,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
           content: const Text('Are you sure you want to sign out?'),
           actions: [
             TextButton(
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () => context.pop(),
               child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop();
+                context.pop();
                 context.read<AuthBloc>().add(const SignOutRequested());
               },
               child: const Text(
