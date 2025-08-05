@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../navigation/route_names.dart';
 import '../widgets/progress_header.dart';
 import '../widgets/info_card.dart';
 import '../widgets/custom_input_field.dart';
@@ -128,7 +129,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
     if (_shouldNavigate) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (context.mounted) {
-          context.go('/onboarding/step-2');
+          context.go(RouteNames.fitnessGoalsPath);
         }
       });
     }

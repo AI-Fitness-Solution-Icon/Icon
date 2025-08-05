@@ -10,16 +10,22 @@ class DashboardBottomNavigationBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      margin: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 16.0), // Add horizontal and bottom margins
       height: 80,
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
       decoration: BoxDecoration(
         color: AppColors.surfaceDark,
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
+        borderRadius: BorderRadius.circular(20), // Round all corners
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.3),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+            spreadRadius: 0,
+          ),
+        ],
         border: Border.all(
-          color: AppColors.textSecondary.withValues(alpha: 0.2),
+          color: AppColors.textSecondary.withValues(alpha: 0.1),
           width: 1,
         ),
       ),

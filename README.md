@@ -17,7 +17,7 @@ Icon is a comprehensive AI-powered fitness platform built with Flutter, designed
 - **AI Services**: OpenAI API
 - **Voice Services**: Speech-to-Text and Text-to-Speech
 - **Payments**: Stripe
-- **State Management**: Provider
+- **State Management**: Bloc
 - **Navigation**: Go Router
 
 ## Project Structure

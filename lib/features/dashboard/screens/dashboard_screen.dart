@@ -108,7 +108,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
                   if (state is DashboardLoaded) {
                     return SingleChildScrollView(
-                      padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 80.0), // Add bottom padding for navigation
+                      padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 120.0), // Increased bottom padding for floating navigation
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [

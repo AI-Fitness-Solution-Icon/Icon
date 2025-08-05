@@ -178,9 +178,9 @@ class UserTypeSelectionScreen extends StatelessWidget {
     final settingsService = SettingsService();
     await settingsService.setUserType('get_fit');
     
-    // Navigate to signup with get fit context
+    // Navigate to onboarding flow for get fit users
     if (context.mounted) {
-      context.go(RouteNames.signupPath);
+      context.go(RouteNames.personalInfoPath);
     }
   }
 } 
