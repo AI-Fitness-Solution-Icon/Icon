@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:icon_app/features/auth/bloc/auth_bloc.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../navigation/route_names.dart';
 import '../../../core/services/settings_service.dart';
@@ -19,7 +21,7 @@ class UserTypeSelectionScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SizedBox(height: 60),
-              
+
               // Header
               Text(
                 'Welcome to Icon',
@@ -31,7 +33,7 @@ class UserTypeSelectionScreen extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),
-              
+
               Text(
                 'Choose your journey',
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
@@ -41,7 +43,7 @@ class UserTypeSelectionScreen extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 80),
-              
+
               // Trainer Option
               _buildUserTypeCard(
                 context: context,
@@ -52,7 +54,7 @@ class UserTypeSelectionScreen extends StatelessWidget {
                 onTap: () => _handleTrainerSelection(context),
               ),
               const SizedBox(height: 24),
-              
+
               // Get Fit Option
               _buildUserTypeCard(
                 context: context,
@@ -63,7 +65,7 @@ class UserTypeSelectionScreen extends StatelessWidget {
                 onTap: () => _handleGetFitSelection(context),
               ),
               const SizedBox(height: 40),
-              
+
               // Additional info
               Text(
                 'You can change this later in settings',
@@ -95,10 +97,7 @@ class UserTypeSelectionScreen extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.surfaceDark,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: color.withValues(alpha: 0.3),
-            width: 2,
-          ),
+          border: Border.all(color: color.withValues(alpha: 0.3), width: 2),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.1),
@@ -117,14 +116,10 @@ class UserTypeSelectionScreen extends StatelessWidget {
                 color: color.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(
-                icon,
-                color: color,
-                size: 30,
-              ),
+              child: Icon(icon, color: color, size: 30),
             ),
             const SizedBox(width: 20),
-            
+
             // Text content
             Expanded(
               child: Column(
@@ -149,7 +144,7 @@ class UserTypeSelectionScreen extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             // Arrow icon
             Icon(
               Icons.arrow_forward_ios,
@@ -166,7 +161,7 @@ class UserTypeSelectionScreen extends StatelessWidget {
     // Store user type preference
     final settingsService = SettingsService();
     await settingsService.setUserType('trainer');
-    
+
     // Navigate to trainer onboarding
     if (context.mounted) {
       context.go(RouteNames.trainerOnboardingPath);
@@ -174,13 +169,20 @@ class UserTypeSelectionScreen extends StatelessWidget {
   }
 
   void _handleGetFitSelection(BuildContext context) async {
-    // Store user type preference
-    final settingsService = SettingsService();
-    await settingsService.setUserType('get_fit');
-    
-    // Navigate to onboarding flow for get fit users
     if (context.mounted) {
-      context.go(RouteNames.personalInfoPath);
+      // set the setting service user type to client
+      final settingsService = SettingsService();
+      await settingsService.setUserType('client');
+
+      if (context.mounted) {
+        // if the user is logged in, take them to the dashboard route
+        final authBloc = context.read<AuthBloc>();
+        if (authBloc.isAuthenticated) {
+          context.go(RouteNames.dashboardPath);
+          return;
+        }
+        context.goNamed(RouteNames.login);
+      }
     }
   }
-} 
+}

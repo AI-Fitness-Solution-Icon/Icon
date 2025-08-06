@@ -23,9 +23,9 @@ class AuthRepository {
     try {
       AppPrint.printInfo('Signing in user: $email');
       final response = await _supabaseService.client.auth.signInWithPassword(
-      email: email,
-      password: password,
-    );
+        email: email,
+        password: password,
+      );
       
       if (response.user != null) {
         return response.user;
