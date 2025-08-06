@@ -18,6 +18,8 @@ class RouteNames {
   static const String changePassword = 'change_password';
   static const String emailVerification = 'email_verification';
   static const String dashboard = 'dashboard';
+  static const String forgotPassword = 'forgot_password';
+  static const String resetPassword = 'reset_password';
 
   // Workout routes
   static const String workout = 'workout';
@@ -81,4 +83,6 @@ class RouteNames {
   static const String feedbackPath = '/feedback';
   static const String webviewPath = '/webview';
   static const String homePath = '/home';
+  static const String forgotPasswordPath = '/forgot-password';
+  static const String resetPasswordPath = '/reset-password';
 } 

@@ -266,7 +266,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         style: TextStyle(color: AppColors.textSecondary),
                       ),
                       TextButton(
-                        onPressed: () => context.go('/login'),
+                        onPressed: () => context.go(RouteNames.loginPath),
                         child: const Text(
                           'Sign In',
                           style: TextStyle(color: AppColors.secondary),

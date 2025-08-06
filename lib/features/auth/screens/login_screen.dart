@@ -36,11 +36,11 @@ class _LoginScreenState extends State<LoginScreen> {
     AppPrint.printInfo('Attempting login for: ${_emailController.text}');
 
     context.read<AuthBloc>().add(
-          SignInRequested(
-            email: _emailController.text.trim(),
-            password: _passwordController.text,
-          ),
-        );
+      SignInRequested(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      ),
+    );
   }
 
   @override
@@ -51,10 +51,7 @@ class _LoginScreenState extends State<LoginScreen> {
         backgroundColor: AppColors.primaryBackground,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back_ios,
-            color: AppColors.textLight,
-          ),
+          icon: const Icon(Icons.arrow_back_ios, color: AppColors.textLight),
           onPressed: () => context.go(RouteNames.userTypeSelectionPath),
         ),
         title: const Text(
@@ -70,11 +67,11 @@ class _LoginScreenState extends State<LoginScreen> {
         listener: (context, state) async {
           if (state is Authenticated) {
             AppPrint.printInfo('Login successful');
-            
+
             // Check if onboarding is completed
             final settingsService = SettingsService();
             final isOnboardingCompleted = settingsService.isOnboardingCompleted;
-            
+
             if (isOnboardingCompleted) {
               context.go(RouteNames.homePath);
             } else {
@@ -132,19 +129,31 @@ class _LoginScreenState extends State<LoginScreen> {
                     style: const TextStyle(color: AppColors.textLight),
                     decoration: InputDecoration(
                       labelText: 'Email',
-                      labelStyle: const TextStyle(color: AppColors.textSecondary),
-                      prefixIcon: const Icon(Icons.email, color: AppColors.textLight),
+                      labelStyle: const TextStyle(
+                        color: AppColors.textSecondary,
+                      ),
+                      prefixIcon: const Icon(
+                        Icons.email,
+                        color: AppColors.textLight,
+                      ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(color: AppColors.textSecondary),
+                        borderSide: const BorderSide(
+                          color: AppColors.textSecondary,
+                        ),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(color: AppColors.textSecondary),
+                        borderSide: const BorderSide(
+                          color: AppColors.textSecondary,
+                        ),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(color: AppColors.secondary, width: 2),
+                        borderSide: const BorderSide(
+                          color: AppColors.secondary,
+                          width: 2,
+                        ),
                       ),
                       filled: true,
                       fillColor: AppColors.surfaceDark,
@@ -153,8 +162,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       if (value == null || value.isEmpty) {
                         return 'Please enter your email';
                       }
-                      if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
-                          .hasMatch(value)) {
+                      if (!RegExp(
+                        r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                      ).hasMatch(value)) {
                         return 'Please enter a valid email';
                       }
                       return null;
@@ -169,8 +179,13 @@ class _LoginScreenState extends State<LoginScreen> {
                     style: const TextStyle(color: AppColors.textLight),
                     decoration: InputDecoration(
                       labelText: 'Password',
-                      labelStyle: const TextStyle(color: AppColors.textSecondary),
-                      prefixIcon: const Icon(Icons.lock, color: AppColors.textLight),
+                      labelStyle: const TextStyle(
+                        color: AppColors.textSecondary,
+                      ),
+                      prefixIcon: const Icon(
+                        Icons.lock,
+                        color: AppColors.textLight,
+                      ),
                       suffixIcon: IconButton(
                         icon: Icon(
                           _obscurePassword
@@ -186,15 +201,22 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(color: AppColors.textSecondary),
+                        borderSide: const BorderSide(
+                          color: AppColors.textSecondary,
+                        ),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(color: AppColors.textSecondary),
+                        borderSide: const BorderSide(
+                          color: AppColors.textSecondary,
+                        ),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(color: AppColors.secondary, width: 2),
+                        borderSide: const BorderSide(
+                          color: AppColors.secondary,
+                          width: 2,
+                        ),
                       ),
                       filled: true,
                       fillColor: AppColors.surfaceDark,
@@ -249,7 +271,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   // Forgot Password Link
                   TextButton(
-                    onPressed: () => context.go('/forgot-password'),
+                    onPressed: () => context.go(RouteNames.forgotPasswordPath),
                     child: const Text(
                       'Forgot Password?',
                       style: TextStyle(color: AppColors.secondary),
@@ -266,7 +288,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         style: TextStyle(color: AppColors.textSecondary),
                       ),
                       TextButton(
-                        onPressed: () => context.go('/signup'),
+                        onPressed: () => context.go(RouteNames.signupPath),
                         child: const Text(
                           'Sign Up',
                           style: TextStyle(color: AppColors.secondary),
@@ -282,4 +304,4 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
-} 
+}
