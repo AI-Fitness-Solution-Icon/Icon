@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:icon_app/features/onboarding/screens/personal_info_screen.dart';
 import 'package:icon_app/features/splash/screens/splash_screen.dart';
 import 'package:icon_app/features/onboarding/screens/user_type_selection_screen.dart';
 import 'package:icon_app/features/trainer_onboarding/presentation/screens/trainer_onboarding_screen.dart';
-import 'package:icon_app/features/onboarding/screens/personal_info_screen.dart';
 import 'package:icon_app/features/auth/screens/login_screen.dart';
 import 'package:icon_app/features/auth/screens/signup_screen.dart';
 import 'package:icon_app/features/auth/screens/email_verification_screen.dart';

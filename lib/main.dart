@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:icon_app/core/repositories/fitness_goals_repository.dart';
+import 'package:icon_app/features/onboarding/bloc/onboarding_bloc_impl.dart';
 import 'core/constants/app_themes.dart';
 import 'core/constants/app_strings.dart';
 import 'core/services/supabase_service.dart';
@@ -94,6 +96,10 @@ class MyApp extends StatelessWidget {
         BlocProvider<DashboardBloc>(
           create: (context) =>
               DashboardBloc(dashboardRepository: DashboardRepository()),
+        ),
+        BlocProvider<OnboardingBloc>(
+          create: (context) =>
+              OnboardingBloc(fitnessGoalsRepository: FitnessGoalsRepository()),
         ),
       ],
       child: MaterialApp.router(

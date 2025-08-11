@@ -13,6 +13,7 @@ class CustomInputField extends StatelessWidget {
   final bool obscureText;
   final bool enabled;
   final VoidCallback? onTap;
+  final ValueChanged<String>? onChanged;
   final bool readOnly;
   final int? maxLines;
   final int? maxLength;
@@ -29,6 +30,7 @@ class CustomInputField extends StatelessWidget {
     this.obscureText = false,
     this.enabled = true,
     this.onTap,
+    this.onChanged,
     this.readOnly = false,
     this.maxLines = 1,
     this.maxLength,
@@ -58,6 +60,7 @@ class CustomInputField extends StatelessWidget {
           obscureText: obscureText,
           enabled: enabled,
           onTap: onTap,
+          onChanged: onChanged,
           readOnly: readOnly,
           maxLines: maxLines,
           maxLength: maxLength,
