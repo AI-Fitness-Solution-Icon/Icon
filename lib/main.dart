@@ -17,7 +17,7 @@ import 'features/dashboard/data/dashboard_repository.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   await dotenv.load(fileName: ".env");
 
   // Validate environment variables
@@ -36,7 +36,10 @@ void main() async {
   await StripeService.initialize();
   // Initialize Deep Link Service
   await DeepLinkService().initialize();
-  
+
+  // Initialize Settings Service
+  await SettingsService().initialize();
+
   runApp(const MyApp());
 }
 
@@ -50,31 +53,23 @@ class MyApp extends StatelessWidget {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const MaterialApp(
-            home: Scaffold(
-              body: Center(
-                child: CircularProgressIndicator(),
-              ),
-            ),
+            home: Scaffold(body: Center(child: CircularProgressIndicator())),
           );
         }
-        
+
         if (snapshot.hasError) {
           return MaterialApp(
             home: Scaffold(
-              body: Center(
-                child: Text('Error: ${snapshot.error}'),
-              ),
+              body: Center(child: Text('Error: ${snapshot.error}')),
             ),
           );
         }
-        
+
         return MultiBlocProvider(
           providers: [
             // Auth Bloc
             BlocProvider<AuthBloc>(
-              create: (context) => AuthBloc(
-                authRepository: AuthRepository(),
-              ),
+              create: (context) => AuthBloc(authRepository: AuthRepository()),
             ),
             // Settings Bloc
             BlocProvider<SettingsBloc>(
@@ -82,9 +77,8 @@ class MyApp extends StatelessWidget {
             ),
             // Dashboard Bloc
             BlocProvider<DashboardBloc>(
-              create: (context) => DashboardBloc(
-                dashboardRepository: DashboardRepository(),
-              ),
+              create: (context) =>
+                  DashboardBloc(dashboardRepository: DashboardRepository()),
             ),
           ],
           child: MaterialApp.router(

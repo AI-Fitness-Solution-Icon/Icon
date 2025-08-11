@@ -1,4 +1,3 @@
-
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:logger/logger.dart';
 
@@ -24,7 +23,7 @@ class SettingsService {
 
   // Theme Settings
   static const String _keyDarkMode = 'dark_mode';
-  
+
   // Notification Settings
   static const String _keyNotificationEnabled = 'notification_enabled';
   static const String _keyWorkoutReminders = 'workout_reminders';
@@ -62,20 +61,23 @@ class SettingsService {
 
   // Theme Settings Methods
   bool get isDarkMode => _prefs.getBool(_keyDarkMode) ?? false;
-  
+
   Future<void> setDarkMode(bool enabled) async {
     await _prefs.setBool(_keyDarkMode, enabled);
     _logger.i('Dark mode: $enabled');
   }
 
   // Notification Settings Methods
-  bool get notificationEnabled => _prefs.getBool(_keyNotificationEnabled) ?? true;
+  bool get notificationEnabled =>
+      _prefs.getBool(_keyNotificationEnabled) ?? true;
   bool get workoutReminders => _prefs.getBool(_keyWorkoutReminders) ?? true;
   bool get progressUpdates => _prefs.getBool(_keyProgressUpdates) ?? true;
-  bool get motivationalMessages => _prefs.getBool(_keyMotivationalMessages) ?? true;
+  bool get motivationalMessages =>
+      _prefs.getBool(_keyMotivationalMessages) ?? true;
   bool get quietHoursEnabled => _prefs.getBool(_keyQuietHoursEnabled) ?? false;
 
-  String get quietHoursStart => _prefs.getString(_keyQuietHoursStart) ?? '22:00';
+  String get quietHoursStart =>
+      _prefs.getString(_keyQuietHoursStart) ?? '22:00';
   String get quietHoursEnd => _prefs.getString(_keyQuietHoursEnd) ?? '08:00';
 
   // Sound and Vibration Settings Methods
@@ -83,15 +85,20 @@ class SettingsService {
   bool get isVibrationEnabled => _prefs.getBool(_keyVibrationEnabled) ?? true;
 
   // Privacy Settings Methods
-  bool get isBiometricAuthEnabled => _prefs.getBool(_keyBiometricAuthEnabled) ?? false;
-  bool get isTwoFactorAuthEnabled => _prefs.getBool(_keyTwoFactorAuthEnabled) ?? false;
-  bool get isDataSharingEnabled => _prefs.getBool(_keyDataSharingEnabled) ?? true;
+  bool get isBiometricAuthEnabled =>
+      _prefs.getBool(_keyBiometricAuthEnabled) ?? false;
+  bool get isTwoFactorAuthEnabled =>
+      _prefs.getBool(_keyTwoFactorAuthEnabled) ?? false;
+  bool get isDataSharingEnabled =>
+      _prefs.getBool(_keyDataSharingEnabled) ?? true;
   bool get isAnalyticsEnabled => _prefs.getBool(_keyAnalyticsEnabled) ?? true;
-  bool get isLocationServicesEnabled => _prefs.getBool(_keyLocationServicesEnabled) ?? false;
+  bool get isLocationServicesEnabled =>
+      _prefs.getBool(_keyLocationServicesEnabled) ?? false;
 
   // User Preferences Methods
   String get userType => _prefs.getString(_keyUserType) ?? 'get_fit';
-  bool get isOnboardingCompleted => _prefs.getBool(_keyOnboardingCompleted) ?? false;
+  bool get isOnboardingCompleted =>
+      _prefs.getBool(_keyOnboardingCompleted) ?? false;
 
   // Alias methods for compatibility
   bool get areNotificationsEnabled => notificationEnabled;
@@ -256,7 +263,7 @@ class SettingsService {
         setQuietHoursStart(quietHoursStart),
         setQuietHoursEnd(quietHoursEnd),
       ]);
-      
+
       _logger.i('All notification settings saved successfully');
     } catch (e) {
       _logger.e('Failed to save notification settings: $e');
@@ -280,7 +287,7 @@ class SettingsService {
         setAnalyticsEnabled(analyticsEnabled),
         setLocationServicesEnabled(locationServicesEnabled),
       ]);
-      
+
       _logger.i('All privacy settings saved successfully');
     } catch (e) {
       _logger.e('Failed to save privacy settings: $e');
@@ -306,7 +313,7 @@ class SettingsService {
         setCaloriesGoal(caloriesGoal),
         setStepsGoal(stepsGoal),
       ]);
-      
+
       _logger.i('All fitness goals saved successfully');
     } catch (e) {
       _logger.e('Failed to save fitness goals: $e');
@@ -324,4 +331,4 @@ class SettingsService {
       rethrow;
     }
   }
-} 
+}

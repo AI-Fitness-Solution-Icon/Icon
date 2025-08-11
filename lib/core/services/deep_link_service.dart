@@ -12,13 +12,13 @@ class DeepLinkService {
   final AppLinks _appLinks = AppLinks();
   final Logger _logger = Logger();
   GoRouter? _router;
-  
+
   /// Stream of incoming deep links
   Stream<Uri> get linkStream => _appLinks.uriLinkStream;
-  
+
   /// Stream of incoming app links
   Stream<Uri> get appLinkStream => _appLinks.uriLinkStream;
-  
+
   /// Stream of all incoming links (deep links + app links)
   Stream<Uri> get allLinkStream => _appLinks.uriLinkStream;
 
@@ -53,11 +53,11 @@ class DeepLinkService {
   void _handleDeepLink(Uri uri) {
     try {
       _logger.i('Processing deep link: $uri');
-      
+
       // Parse the deep link and route accordingly
-              // final path = uri.path;
-        // final queryParameters = uri.queryParameters;
-      
+      // final path = uri.path;
+      // final queryParameters = uri.queryParameters;
+
       switch (uri.scheme) {
         case 'icon':
           _handleCustomScheme(uri);
@@ -77,7 +77,7 @@ class DeepLinkService {
   void _handleCustomScheme(Uri uri) {
     final path = uri.path;
     final queryParams = uri.queryParameters;
-    
+
     switch (path) {
       case '/profile':
         _navigateToProfile(queryParams);
@@ -103,7 +103,7 @@ class DeepLinkService {
   void _handleHttpsScheme(Uri uri) {
     final path = uri.path;
     final queryParams = uri.queryParameters;
-    
+
     switch (path) {
       case '/profile':
         _navigateToProfile(queryParams);
@@ -135,11 +135,12 @@ class DeepLinkService {
   void _navigateToProfile(Map<String, String> queryParams) {
     final userId = queryParams['userId'];
     final section = queryParams['section'];
-    
+
     _logger.i('Navigating to profile - userId: $userId, section: $section');
-    
+
     if (_router != null) {
-      final path = '/profile${userId != null ? '/$userId' : ''}${section != null ? '?section=$section' : ''}';
+      final path =
+          '/profile${userId != null ? '/$userId' : ''}${section != null ? '?section=$section' : ''}';
       _router!.go(path);
     } else {
       _logger.w('Router not set, cannot navigate to profile');
@@ -149,9 +150,9 @@ class DeepLinkService {
   /// Navigate to settings screen
   void _navigateToSettings(Map<String, String> queryParams) {
     final section = queryParams['section'];
-    
+
     _logger.i('Navigating to settings - section: $section');
-    
+
     if (_router != null) {
       final path = '/settings${section != null ? '?section=$section' : ''}';
       _router!.go(path);
@@ -164,11 +165,12 @@ class DeepLinkService {
   void _navigateToBadge(Map<String, String> queryParams) {
     final badgeId = queryParams['badgeId'];
     final action = queryParams['action'];
-    
+
     _logger.i('Navigating to badge - badgeId: $badgeId, action: $action');
-    
+
     if (_router != null) {
-      final path = '/badge${badgeId != null ? '/$badgeId' : ''}${action != null ? '?action=$action' : ''}';
+      final path =
+          '/badge${badgeId != null ? '/$badgeId' : ''}${action != null ? '?action=$action' : ''}';
       _router!.go(path);
     } else {
       _logger.w('Router not set, cannot navigate to badge');
@@ -179,11 +181,12 @@ class DeepLinkService {
   void _navigateToFeedback(Map<String, String> queryParams) {
     final type = queryParams['type'];
     final subject = queryParams['subject'];
-    
+
     _logger.i('Navigating to feedback - type: $type, subject: $subject');
-    
+
     if (_router != null) {
-      final path = '/feedback${type != null ? '?type=$type' : ''}${subject != null ? '&subject=$subject' : ''}';
+      final path =
+          '/feedback${type != null ? '?type=$type' : ''}${subject != null ? '&subject=$subject' : ''}';
       _router!.go(path);
     } else {
       _logger.w('Router not set, cannot navigate to feedback');
@@ -193,9 +196,9 @@ class DeepLinkService {
   /// Navigate to help screen
   void _navigateToHelp(Map<String, String> queryParams) {
     final topic = queryParams['topic'];
-    
+
     _logger.i('Navigating to help - topic: $topic');
-    
+
     if (_router != null) {
       final path = '/help${topic != null ? '?topic=$topic' : ''}';
       _router!.go(path);
@@ -207,7 +210,7 @@ class DeepLinkService {
   /// Navigate to privacy policy
   void _navigateToPrivacyPolicy() {
     _logger.i('Navigating to privacy policy');
-    
+
     if (_router != null) {
       _router!.go('/privacy-policy');
     } else {
@@ -218,7 +221,7 @@ class DeepLinkService {
   /// Navigate to terms of service
   void _navigateToTermsOfService() {
     _logger.i('Navigating to terms of service');
-    
+
     if (_router != null) {
       _router!.go('/terms-of-service');
     } else {
@@ -239,7 +242,7 @@ class DeepLinkService {
       path: path,
       queryParameters: queryParameters,
     );
-    
+
     return uri.toString();
   }
 
@@ -260,4 +263,4 @@ class DeepLinkService {
       'https://icon.com/terms',
     ];
   }
-} 
+}

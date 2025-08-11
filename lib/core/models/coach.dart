@@ -9,7 +9,7 @@ class Coach extends Equatable {
   final String? bio;
   final List<String> certifications;
   final List<String> specialties;
-  
+
   // Related models (optional, populated when joined)
   final User? user;
 
@@ -26,14 +26,18 @@ class Coach extends Equatable {
     return Coach(
       coachId: json['coach_id'] as String,
       bio: json['bio'] as String?,
-      certifications: (json['certifications'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList() ?? [],
-      specialties: (json['specialties'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList() ?? [],
-      user: json['user'] != null 
-          ? User.fromJson(json['user'] as Map<String, dynamic>) 
+      certifications:
+          (json['certifications'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          [],
+      specialties:
+          (json['specialties'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          [],
+      user: json['user'] != null
+          ? User.fromJson(json['user'] as Map<String, dynamic>)
           : null,
     );
   }
@@ -67,16 +71,10 @@ class Coach extends Equatable {
   }
 
   @override
-  List<Object?> get props => [
-    coachId, 
-    bio, 
-    certifications, 
-    specialties,
-    user,
-  ];
+  List<Object?> get props => [coachId, bio, certifications, specialties, user];
 
   @override
   String toString() {
     return 'Coach(coachId: $coachId, bio: $bio, certifications: $certifications, specialties: $specialties)';
   }
-} 
+}

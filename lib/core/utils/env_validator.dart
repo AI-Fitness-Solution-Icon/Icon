@@ -7,13 +7,12 @@ class EnvValidator {
     final requiredVars = [
       'SUPABASE_URL',
       'SUPABASE_ANON_KEY',
-      'OPENAI_API_KEY',
       'STRIPE_PUBLISHABLE_KEY',
       'STRIPE_SECRET_KEY',
     ];
 
     final missingVars = <String>[];
-    
+
     for (final varName in requiredVars) {
       final value = dotenv.env[varName];
       if (value == null || value.isEmpty || value.contains('your-')) {
@@ -24,7 +23,7 @@ class EnvValidator {
     if (missingVars.isNotEmpty) {
       throw Exception(
         'Missing or invalid environment variables: ${missingVars.join(', ')}\n'
-        'Please check your .env file and ensure all required variables are set with valid values.'
+        'Please check your .env file and ensure all required variables are set with valid values.',
       );
     }
   }
@@ -46,4 +45,4 @@ class EnvValidator {
     }
     return value;
   }
-} 
+}

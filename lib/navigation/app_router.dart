@@ -102,11 +102,6 @@ class AppRouter {
         builder: (context, state) => const ForgotPasswordScreen(),
       ),
       GoRoute(
-        path: RouteNames.emailVerificationPath,
-        name: RouteNames.emailVerification,
-        builder: (context, state) => const EmailVerificationScreen(),
-      ),
-      GoRoute(
         path: RouteNames.resetPasswordPath,
         name: RouteNames.resetPassword,
         builder: (context, state) => const ResetPasswordScreen(),
