@@ -235,8 +235,7 @@ class AppRouter {
             state.matchedLocation == RouteNames.splashPath ||
             state.matchedLocation == RouteNames.userTypeSelectionPath ||
             state.matchedLocation == RouteNames.trainerOnboardingPath ||
-            state.matchedLocation == RouteNames.personalInfoPath ||
-            state.matchedLocation == RouteNames.nutritionGoalsPath;
+            state.matchedLocation == RouteNames.personalInfoPath;
 
         debugPrint('Is auth route: $isAuthRoute');
         debugPrint('Is onboarding route: $isOnboardingRoute');

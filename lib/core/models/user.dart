@@ -10,7 +10,6 @@ class User extends Equatable {
   final String? firstName;
   final String? lastName;
   final String email;
-  final String passwordHash;
   final DateTime createdAt;
   final DateTime updatedAt;
   final DateTime? lastLogin;
@@ -27,7 +26,6 @@ class User extends Equatable {
     this.firstName,
     this.lastName,
     required this.email,
-    required this.passwordHash,
     required this.createdAt,
     required this.updatedAt,
     this.lastLogin,
@@ -45,7 +43,6 @@ class User extends Equatable {
       firstName: json['first_name'] as String?,
       lastName: json['last_name'] as String?,
       email: json['email'] as String,
-      passwordHash: json['password'] as String,
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: DateTime.parse(json['updated_at'] as String),
       lastLogin: json['last_login'] != null
@@ -70,7 +67,6 @@ class User extends Equatable {
       'first_name': firstName,
       'last_name': lastName,
       'email': email,
-      'password': passwordHash,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
       'last_login': lastLogin?.toIso8601String(),
@@ -88,7 +84,6 @@ class User extends Equatable {
     String? firstName,
     String? lastName,
     String? email,
-    String? passwordHash,
     DateTime? createdAt,
     DateTime? updatedAt,
     DateTime? lastLogin,
@@ -103,7 +98,6 @@ class User extends Equatable {
       firstName: firstName ?? this.firstName,
       lastName: lastName ?? this.lastName,
       email: email ?? this.email,
-      passwordHash: passwordHash ?? this.passwordHash,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       lastLogin: lastLogin ?? this.lastLogin,
@@ -133,7 +127,6 @@ class User extends Equatable {
     firstName,
     lastName,
     email,
-    passwordHash,
     createdAt,
     updatedAt,
     lastLogin,

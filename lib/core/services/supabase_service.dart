@@ -131,9 +131,7 @@ class SupabaseService {
   }
 
   /// Convert Supabase User to app User model
-  Future<User?> convertSupabaseUserToAppUser(
-    supabase.User? supabaseUser,
-  ) async {
+  Future<User?> getUserProfile(supabase.User? supabaseUser) async {
     if (supabaseUser == null) return null;
 
     try {

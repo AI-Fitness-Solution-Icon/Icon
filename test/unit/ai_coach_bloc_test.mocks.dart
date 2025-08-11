@@ -398,7 +398,7 @@ class MockSupabaseService extends _i1.Mock implements _i7.SupabaseService {
           as _i5.Future<Map<String, dynamic>?>);
 
   @override
-  _i5.Future<_i9.User?> convertSupabaseUserToAppUser(_i3.User? supabaseUser) =>
+  _i5.Future<_i9.User?> getUserProfile(_i3.User? supabaseUser) =>
       (super.noSuchMethod(
             Invocation.method(#convertSupabaseUserToAppUser, [supabaseUser]),
             returnValue: _i5.Future<_i9.User?>.value(),

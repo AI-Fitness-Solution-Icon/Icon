@@ -19,7 +19,10 @@ class InfoCard extends StatelessWidget {
     this.customIcon,
     this.padding,
     this.borderRadius,
-  }) : assert(icon == null || customIcon == null, 'Cannot provide both icon and customIcon');
+  }) : assert(
+         icon == null || customIcon == null,
+         'Cannot provide both icon and customIcon',
+       );
 
   @override
   Widget build(BuildContext context) {
@@ -39,21 +42,20 @@ class InfoCard extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.white,
               shape: BoxShape.circle,
-              border: Border.all(
-                color: AppColors.secondary,
-                width: 2,
-              ),
+              border: Border.all(color: AppColors.secondary, width: 2),
             ),
             child: Center(
-              child: customIcon ?? Icon(
-                icon ?? Icons.person_outline,
-                color: AppColors.primary,
-                size: 24,
-              ),
+              child:
+                  customIcon ??
+                  Icon(
+                    icon ?? Icons.person_outline,
+                    color: AppColors.primary,
+                    size: 24,
+                  ),
             ),
           ),
           const SizedBox(width: 12),
-          
+
           // Text content
           Expanded(
             child: Column(
@@ -71,7 +73,7 @@ class InfoCard extends StatelessWidget {
                 Text(
                   description,
                   style: const TextStyle(
-                    color: AppColors.textSecondary,
+                    color: AppColors.textLight,
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
                   ),
@@ -83,4 +85,4 @@ class InfoCard extends StatelessWidget {
       ),
     );
   }
-} 
+}
