@@ -292,19 +292,30 @@ class FitnessGoalsStep extends StatelessWidget {
 
         return Column(
           children: [
-            // Header text
-            Text(
-              'Select one or more goals that resonate with you:',
-              style: TextStyle(
-                color: AppColors.textSecondary,
-                fontSize: 14,
-                fontStyle: FontStyle.italic,
+            // Header text with better styling
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              decoration: BoxDecoration(
+                color: AppColors.surfaceDark.withValues(alpha: 0.3),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: AppColors.textSecondary.withValues(alpha: 0.2),
+                  width: 1,
+                ),
               ),
-              textAlign: TextAlign.center,
+              child: Text(
+                'Select one or more goals that resonate with you:',
+                style: TextStyle(
+                  color: AppColors.textLight,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+                textAlign: TextAlign.center,
+              ),
             ),
             const SizedBox(height: 20),
 
-            // Goals grid
+            // Goals grid with fixed height items
             Wrap(
               spacing: 16,
               runSpacing: 16,
@@ -321,6 +332,7 @@ class FitnessGoalsStep extends StatelessWidget {
                         opacity: value,
                         child: SizedBox(
                           width: itemWidth,
+                          height: 200, // Fixed height for all goal items
                           child: _buildAnimatedGoalButton(
                             context,
                             goal,
@@ -382,11 +394,13 @@ class FitnessGoalsStep extends StatelessWidget {
           highlightColor: AppColors.secondary.withValues(alpha: 0.1),
           child: Container(
             padding: const EdgeInsets.all(20),
+            height: double.infinity, // Take full height of parent
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Goal icon
-                Container(
+                // Goal icon with subtle animation
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
                   width: 48,
                   height: 48,
                   decoration: BoxDecoration(
@@ -404,18 +418,24 @@ class FitnessGoalsStep extends StatelessWidget {
 
                 const SizedBox(height: 16),
 
-                // Goal name
-                Text(
-                  goal.name,
-                  style: TextStyle(
-                    color: isSelected ? Colors.white : AppColors.textLight,
-                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
-                    fontSize: 16,
-                    height: 1.2,
+                // Goal name with flexible height and consistent spacing
+                Expanded(
+                  child: Center(
+                    child: Text(
+                      goal.name,
+                      style: TextStyle(
+                        color: isSelected ? Colors.white : AppColors.textLight,
+                        fontWeight: isSelected
+                            ? FontWeight.w700
+                            : FontWeight.w600,
+                        fontSize: 16,
+                        height: 1.2,
+                      ),
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
-                  textAlign: TextAlign.center,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
                 ),
 
                 const SizedBox(height: 8),

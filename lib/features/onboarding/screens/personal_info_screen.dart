@@ -5,6 +5,7 @@ import 'package:icon_app/core/constants/app_colors.dart';
 import 'package:icon_app/features/onboarding/widgets/progress_header.dart';
 import 'package:icon_app/features/onboarding/widgets/steps/personal_info_step.dart';
 import 'package:icon_app/features/onboarding/widgets/steps/fitness_goals_step.dart';
+import 'package:icon_app/features/onboarding/widgets/steps/training_location_step.dart';
 import 'package:icon_app/features/onboarding/widgets/steps/simple_step.dart';
 import 'package:icon_app/features/onboarding/bloc/onboarding_bloc.dart';
 import 'package:icon_app/features/onboarding/bloc/onboarding_bloc_impl.dart';
@@ -121,12 +122,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                         const FitnessGoalsStep(),
 
                         // Step 3: Training Location
-                        const SimpleStep(
-                          title: "Where will you train?",
-                          description:
-                              "Choose your preferred training environment",
-                          icon: Icons.location_on,
-                        ),
+                        const TrainingLocationStep(),
 
                         // Step 4: Training Routine
                         const SimpleStep(

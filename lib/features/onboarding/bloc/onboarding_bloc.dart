@@ -55,6 +55,15 @@ class UpdateOptionalDetails extends OnboardingEvent {
   List<Object?> get props => [details];
 }
 
+class UpdateTrainingLocation extends OnboardingEvent {
+  final String location;
+
+  const UpdateTrainingLocation(this.location);
+
+  @override
+  List<Object?> get props => [location];
+}
+
 class NextStep extends OnboardingEvent {}
 
 class PreviousStep extends OnboardingEvent {}
@@ -139,6 +148,7 @@ class OnboardingData extends Equatable {
   final Set<String> selectedGoalIds;
   final String? experienceLevel;
   final String? optionalDetails;
+  final String? trainingLocation;
 
   const OnboardingData({
     this.firstName,
@@ -148,6 +158,7 @@ class OnboardingData extends Equatable {
     this.selectedGoalIds = const {},
     this.experienceLevel,
     this.optionalDetails,
+    this.trainingLocation,
   });
 
   OnboardingData copyWith({
@@ -158,6 +169,7 @@ class OnboardingData extends Equatable {
     Set<String>? selectedGoalIds,
     String? experienceLevel,
     String? optionalDetails,
+    String? trainingLocation,
   }) {
     return OnboardingData(
       firstName: firstName ?? this.firstName,
@@ -167,6 +179,7 @@ class OnboardingData extends Equatable {
       selectedGoalIds: selectedGoalIds ?? this.selectedGoalIds,
       experienceLevel: experienceLevel ?? this.experienceLevel,
       optionalDetails: optionalDetails ?? this.optionalDetails,
+      trainingLocation: trainingLocation ?? this.trainingLocation,
     );
   }
 
@@ -189,5 +202,6 @@ class OnboardingData extends Equatable {
     selectedGoalIds,
     experienceLevel,
     optionalDetails,
+    trainingLocation,
   ];
 }

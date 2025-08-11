@@ -14,6 +14,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     on<UpdateFitnessGoals>(_onUpdateFitnessGoals);
     on<UpdateExperienceLevel>(_onUpdateExperienceLevel);
     on<UpdateOptionalDetails>(_onUpdateOptionalDetails);
+    on<UpdateTrainingLocation>(_onUpdateTrainingLocation);
     on<NextStep>(_onNextStep);
     on<PreviousStep>(_onPreviousStep);
     on<GoToStep>(_onGoToStep);
@@ -172,6 +173,32 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     } else {
       // If state is not loaded yet, create a new loaded state with the optional details
       final updatedData = OnboardingData(optionalDetails: event.details);
+
+      emit(
+        OnboardingLoaded(
+          currentStep: 0,
+          data: updatedData,
+          availableGoals: [],
+          isLoadingGoals: false,
+        ),
+      );
+    }
+  }
+
+  void _onUpdateTrainingLocation(
+    UpdateTrainingLocation event,
+    Emitter<OnboardingState> emit,
+  ) {
+    if (state is OnboardingLoaded) {
+      final currentState = state as OnboardingLoaded;
+      final updatedData = currentState.data.copyWith(
+        trainingLocation: event.location,
+      );
+
+      emit(currentState.copyWith(data: updatedData));
+    } else {
+      // If state is not loaded yet, create a new loaded state with the training location
+      final updatedData = OnboardingData(trainingLocation: event.location);
 
       emit(
         OnboardingLoaded(
