@@ -55,8 +55,6 @@ class RouteNames {
   static const String userTypeSelectionPath = '/user-type-selection';
   static const String trainerOnboardingPath = '/trainer-onboarding';
   static const String personalInfoPath = '/onboarding/personal-info';
-  static const String trainingLocationPath = '/onboarding/training-location';
-  static const String trainingRoutinePath = '/onboarding/training-routine';
   static const String nutritionGoalsPath = '/onboarding/nutrition-goals';
   static const String loginPath = '/login';
   static const String signupPath = '/signup';

@@ -31,21 +31,13 @@ class _SplashScreenState extends State<SplashScreen>
       vsync: this,
     );
 
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeIn,
-    ));
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeIn),
+    );
 
-    _scaleAnimation = Tween<double>(
-      begin: 0.8,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.elasticOut,
-    ));
+    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.elasticOut),
+    );
 
     _animationController.forward();
   }
@@ -54,7 +46,7 @@ class _SplashScreenState extends State<SplashScreen>
   Future<void> splashScreenRedirect() async {
     // Add a minimum delay to show the splash screen
     await Future.delayed(const Duration(seconds: 2));
-    
+
     if (!mounted) return;
 
     final supabaseService = SupabaseService.instance;
@@ -63,7 +55,7 @@ class _SplashScreenState extends State<SplashScreen>
     if (isAuthenticated) {
       // User is signed in, redirect to home
       if (mounted) {
-        context.go(RouteNames.homePath);
+        context.go(RouteNames.personalInfoPath);
       }
     } else {
       // User is not signed in, redirect to user type selection
@@ -98,12 +90,16 @@ class _SplashScreenState extends State<SplashScreen>
                     SizedBox(
                       width: 120,
                       height: 120,
-                      child: Image.asset('assets/splash_logo.png', height: 130, width: 130),
+                      child: Image.asset(
+                        'assets/splash_logo.png',
+                        height: 130,
+                        width: 130,
+                      ),
                     ),
                     const SizedBox(height: 32),
-                  
+
                     const SizedBox(height: 8),
-                    
+
                     // App Tagline
                     Text(
                       'Your Personal Fitness Journey',
@@ -113,7 +109,7 @@ class _SplashScreenState extends State<SplashScreen>
                       ),
                     ),
                     const SizedBox(height: 64),
-                    
+
                     // Loading indicator
                     SizedBox(
                       width: 40,
@@ -134,4 +130,4 @@ class _SplashScreenState extends State<SplashScreen>
       ),
     );
   }
-} 
+}

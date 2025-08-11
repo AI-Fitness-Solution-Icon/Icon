@@ -4,9 +4,6 @@ import 'package:icon_app/features/splash/screens/splash_screen.dart';
 import 'package:icon_app/features/onboarding/screens/user_type_selection_screen.dart';
 import 'package:icon_app/features/trainer_onboarding/presentation/screens/trainer_onboarding_screen.dart';
 import 'package:icon_app/features/onboarding/screens/personal_info_screen.dart';
-import 'package:icon_app/features/onboarding/screens/training_location_screen.dart';
-import 'package:icon_app/features/onboarding/screens/training_routine_screen.dart';
-import 'package:icon_app/features/onboarding/screens/nutrition_goals_screen.dart';
 import 'package:icon_app/features/auth/screens/login_screen.dart';
 import 'package:icon_app/features/auth/screens/signup_screen.dart';
 import 'package:icon_app/features/auth/screens/email_verification_screen.dart';
@@ -38,7 +35,7 @@ import 'package:icon_app/navigation/route_names.dart';
 class AppRouter {
   /// Main router instance
   static final GoRouter router = GoRouter(
-    initialLocation: RouteNames.signupPath,
+    initialLocation: RouteNames.splashPath,
     debugLogDiagnostics: true,
     routes: [
       // Splash and onboarding routes
@@ -62,22 +59,6 @@ class AppRouter {
         name: RouteNames.personalInfo,
         builder: (context, state) => const PersonalInfoScreen(),
       ),
-      GoRoute(
-        path: RouteNames.trainingLocationPath,
-        name: RouteNames.trainingLocation,
-        builder: (context, state) => const TrainingLocationScreen(),
-      ),
-      GoRoute(
-        path: RouteNames.trainingRoutinePath,
-        name: RouteNames.trainingRoutine,
-        builder: (context, state) => const TrainingRoutineScreen(),
-      ),
-      GoRoute(
-        path: RouteNames.nutritionGoalsPath,
-        name: RouteNames.nutritionGoals,
-        builder: (context, state) => const NutritionGoalsScreen(),
-      ),
-
       // Auth routes
       GoRoute(
         path: RouteNames.loginPath,
@@ -255,8 +236,6 @@ class AppRouter {
             state.matchedLocation == RouteNames.userTypeSelectionPath ||
             state.matchedLocation == RouteNames.trainerOnboardingPath ||
             state.matchedLocation == RouteNames.personalInfoPath ||
-            state.matchedLocation == RouteNames.trainingLocationPath ||
-            state.matchedLocation == RouteNames.trainingRoutinePath ||
             state.matchedLocation == RouteNames.nutritionGoalsPath;
 
         debugPrint('Is auth route: $isAuthRoute');
