@@ -70,7 +70,7 @@ class _CreateWorkoutScreenState extends State<CreateWorkoutScreen> {
               },
             ),
             const SizedBox(height: 16),
-            
+
             // Description
             TextFormField(
               controller: _descriptionController,
@@ -81,7 +81,7 @@ class _CreateWorkoutScreenState extends State<CreateWorkoutScreen> {
               maxLines: 3,
             ),
             const SizedBox(height: 16),
-            
+
             // Difficulty level
             DropdownButtonFormField<String>(
               value: _selectedDifficulty,
@@ -89,8 +89,9 @@ class _CreateWorkoutScreenState extends State<CreateWorkoutScreen> {
                 labelText: 'Difficulty Level',
                 border: OutlineInputBorder(),
               ),
-              items: ['Beginner', 'Intermediate', 'Advanced']
-                  .map((String value) {
+              items: ['Beginner', 'Intermediate', 'Advanced'].map((
+                String value,
+              ) {
                 return DropdownMenuItem<String>(
                   value: value,
                   child: Text(value),
@@ -103,7 +104,7 @@ class _CreateWorkoutScreenState extends State<CreateWorkoutScreen> {
               },
             ),
             const SizedBox(height: 16),
-            
+
             // Duration
             DropdownButtonFormField<int>(
               value: _selectedDuration,
@@ -111,8 +112,7 @@ class _CreateWorkoutScreenState extends State<CreateWorkoutScreen> {
                 labelText: 'Duration (minutes)',
                 border: OutlineInputBorder(),
               ),
-              items: [15, 30, 45, 60, 75, 90]
-                  .map((int value) {
+              items: [15, 30, 45, 60, 75, 90].map((int value) {
                 return DropdownMenuItem<int>(
                   value: value,
                   child: Text('$value minutes'),
@@ -125,7 +125,7 @@ class _CreateWorkoutScreenState extends State<CreateWorkoutScreen> {
               },
             ),
             const SizedBox(height: 32),
-            
+
             // Add exercises button
             ElevatedButton.icon(
               onPressed: () {
@@ -140,14 +140,16 @@ class _CreateWorkoutScreenState extends State<CreateWorkoutScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            
+
             // Exercise list placeholder
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: AppColors.surfaceDark,
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: AppColors.textSecondary.withValues(alpha: 0.3)),
+                border: Border.all(
+                  color: AppColors.textSecondary.withValues(alpha: 0.3),
+                ),
               ),
               child: Column(
                 children: [
@@ -184,8 +186,7 @@ class _CreateWorkoutScreenState extends State<CreateWorkoutScreen> {
   void _saveWorkout() {
     if (_formKey.currentState!.validate()) {
       AppPrint.printInfo('Saving workout: ${_nameController.text}');
-      // TODO: Implement workout saving logic
       context.pop();
     }
   }
-} 
+}

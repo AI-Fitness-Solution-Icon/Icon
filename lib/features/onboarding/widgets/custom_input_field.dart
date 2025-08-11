@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../core/constants/app_colors.dart';
+import 'package:icon_app/core/constants/app_colors.dart';
 
 /// Reusable custom input field component for onboarding screens
 class CustomInputField extends StatelessWidget {
@@ -49,7 +49,7 @@ class CustomInputField extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 8),
-        
+
         // Input field
         TextFormField(
           controller: controller,
@@ -61,10 +61,7 @@ class CustomInputField extends StatelessWidget {
           readOnly: readOnly,
           maxLines: maxLines,
           maxLength: maxLength,
-          style: const TextStyle(
-            color: AppColors.textLight,
-            fontSize: 16,
-          ),
+          style: const TextStyle(color: AppColors.textLight, fontSize: 16),
           decoration: InputDecoration(
             hintText: hintText,
             hintStyle: const TextStyle(
@@ -92,10 +89,7 @@ class CustomInputField extends StatelessWidget {
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(
-                color: AppColors.error,
-                width: 2,
-              ),
+              borderSide: const BorderSide(color: AppColors.error, width: 2),
             ),
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,
@@ -106,4 +100,4 @@ class CustomInputField extends StatelessWidget {
       ],
     );
   }
-} 
+}

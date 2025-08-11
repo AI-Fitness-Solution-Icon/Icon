@@ -11,8 +11,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthRepository _authRepository;
 
   AuthBloc({required AuthRepository authRepository})
-      : _authRepository = authRepository,
-        super(const AuthInitial()) {
+    : _authRepository = authRepository,
+      super(const AuthInitial()) {
     on<SignInRequested>(_onSignInRequested);
     on<SignUpRequested>(_onSignUpRequested);
     on<SignOutRequested>(_onSignOutRequested);
@@ -38,7 +38,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       );
 
       if (user != null) {
-        emit(Authenticated(user: user ));
+        emit(Authenticated(user: user));
       } else {
         emit(const AuthError(message: 'Sign in failed'));
       }
@@ -61,7 +61,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       );
 
       final user = result['user'] as supabase.User;
-      final requiresEmailConfirmation = result['requiresEmailConfirmation'] as bool;
+      final requiresEmailConfirmation =
+          result['requiresEmailConfirmation'] as bool;
 
       if (requiresEmailConfirmation) {
         // User needs to verify their email
@@ -204,12 +205,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final updatedUser = await userRepository.updateUserProfile(
         firstName: event.firstName,
         lastName: event.lastName,
-        email: event.email,
       );
-      
+
       if (updatedUser != null) {
         // Get the current Supabase user to maintain the auth state
-        final currentSupabaseUser = supabase.Supabase.instance.client.auth.currentUser;
+        final currentSupabaseUser =
+            supabase.Supabase.instance.client.auth.currentUser;
         if (currentSupabaseUser != null) {
           emit(Authenticated(user: currentSupabaseUser));
         } else {
@@ -218,8 +219,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       } else {
         emit(const AuthError(message: 'Profile update failed'));
       }
-    } catch (e) { 
+    } catch (e) {
       emit(AuthError(message: e.toString()));
     }
   }
-} 
+}

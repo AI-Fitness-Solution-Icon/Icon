@@ -52,7 +52,8 @@ class SupabaseService {
   }
 
   /// Stream of auth state changes
-  Stream<supabase.AuthState> get authStateChanges => _client.auth.onAuthStateChange;
+  Stream<supabase.AuthState> get authStateChanges =>
+      _client.auth.onAuthStateChange;
 
   /// Get data from a table
   Future<List<Map<String, dynamic>>> getData({
@@ -73,15 +74,6 @@ class SupabaseService {
     return await _client.from(table).insert(data).select();
   }
 
-  /// Update data in a table
-  Future<List<Map<String, dynamic>>> updateData({
-    required String table,
-    required Map<String, dynamic> data,
-    required Map<String, dynamic> filters,
-  }) async {
-    return await _client.from(table).update(data).select();
-  }
-
   /// Delete data from a table
   Future<void> deleteData({
     required String table,
@@ -97,14 +89,14 @@ class SupabaseService {
     required Uint8List fileBytes,
     String? contentType,
   }) async {
-    await _client.storage.from(bucket).uploadBinary(
-      path,
-      fileBytes,
-      fileOptions: supabase.FileOptions(
-        contentType: contentType,
-      ),
-    );
-    
+    await _client.storage
+        .from(bucket)
+        .uploadBinary(
+          path,
+          fileBytes,
+          fileOptions: supabase.FileOptions(contentType: contentType),
+        );
+
     return _client.storage.from(bucket).getPublicUrl(path);
   }
 
@@ -139,13 +131,15 @@ class SupabaseService {
   }
 
   /// Convert Supabase User to app User model
-  Future<User?> convertSupabaseUserToAppUser(supabase.User? supabaseUser) async {
+  Future<User?> convertSupabaseUserToAppUser(
+    supabase.User? supabaseUser,
+  ) async {
     if (supabaseUser == null) return null;
-    
+
     try {
       final userData = await getUserData(supabaseUser.id);
       if (userData == null) return null;
-      
+
       return User.fromJson(userData);
     } catch (e) {
       return null;
@@ -156,4 +150,4 @@ class SupabaseService {
   Future<void> deleteUser() async {
     await _client.auth.admin.deleteUser(currentUser!.id);
   }
-} 
+}

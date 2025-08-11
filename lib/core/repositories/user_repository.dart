@@ -13,17 +13,20 @@ class UserRepository {
     try {
       AppPrint.printStep('Fetching all users');
       final startTime = DateTime.now();
-      
+
       final response = await _supabaseService.getData(
         table: _tableName,
         select: '*, roles(*)',
       );
-      
+
       final users = response.map((json) => User.fromJson(json)).toList();
-      
-      AppPrint.printPerformance('Get all users', DateTime.now().difference(startTime));
+
+      AppPrint.printPerformance(
+        'Get all users',
+        DateTime.now().difference(startTime),
+      );
       AppPrint.printSuccess('Successfully fetched ${users.length} users');
-      
+
       return users;
     } catch (e) {
       AppPrint.printError('Failed to fetch users: $e');
@@ -36,23 +39,26 @@ class UserRepository {
     try {
       AppPrint.printStep('Fetching user by ID: $userId');
       final startTime = DateTime.now();
-      
+
       final response = await _supabaseService.getData(
         table: _tableName,
         select: '*, roles(*)',
         filters: {'user_id': userId},
       );
-      
+
       if (response.isEmpty) {
         AppPrint.printWarning('User not found with ID: $userId');
         return null;
       }
-      
+
       final user = User.fromJson(response.first);
-      
-      AppPrint.printPerformance('Get user by ID', DateTime.now().difference(startTime));
+
+      AppPrint.printPerformance(
+        'Get user by ID',
+        DateTime.now().difference(startTime),
+      );
       AppPrint.printSuccess('Successfully fetched user: ${user.email}');
-      
+
       return user;
     } catch (e) {
       AppPrint.printError('Failed to fetch user by ID: $e');
@@ -65,23 +71,26 @@ class UserRepository {
     try {
       AppPrint.printStep('Fetching user by email: $email');
       final startTime = DateTime.now();
-      
+
       final response = await _supabaseService.getData(
         table: _tableName,
         select: '*, roles(*)',
         filters: {'email': email},
       );
-      
+
       if (response.isEmpty) {
         AppPrint.printWarning('User not found with email: $email');
         return null;
       }
-      
+
       final user = User.fromJson(response.first);
-      
-      AppPrint.printPerformance('Get user by email', DateTime.now().difference(startTime));
+
+      AppPrint.printPerformance(
+        'Get user by email',
+        DateTime.now().difference(startTime),
+      );
       AppPrint.printSuccess('Successfully fetched user: ${user.email}');
-      
+
       return user;
     } catch (e) {
       AppPrint.printError('Failed to fetch user by email: $e');
@@ -94,18 +103,23 @@ class UserRepository {
     try {
       AppPrint.printStep('Fetching users by role: $roleId');
       final startTime = DateTime.now();
-      
+
       final response = await _supabaseService.getData(
         table: _tableName,
         select: '*, roles(*)',
         filters: {'role_id': roleId},
       );
-      
+
       final users = response.map((json) => User.fromJson(json)).toList();
-      
-      AppPrint.printPerformance('Get users by role', DateTime.now().difference(startTime));
-      AppPrint.printSuccess('Successfully fetched ${users.length} users with role: $roleId');
-      
+
+      AppPrint.printPerformance(
+        'Get users by role',
+        DateTime.now().difference(startTime),
+      );
+      AppPrint.printSuccess(
+        'Successfully fetched ${users.length} users with role: $roleId',
+      );
+
       return users;
     } catch (e) {
       AppPrint.printError('Failed to fetch users by role: $e');
@@ -118,18 +132,23 @@ class UserRepository {
     try {
       AppPrint.printStep('Fetching active users');
       final startTime = DateTime.now();
-      
+
       final response = await _supabaseService.getData(
         table: _tableName,
         select: '*, roles(*)',
         filters: {'is_active': true},
       );
-      
+
       final users = response.map((json) => User.fromJson(json)).toList();
-      
-      AppPrint.printPerformance('Get active users', DateTime.now().difference(startTime));
-      AppPrint.printSuccess('Successfully fetched ${users.length} active users');
-      
+
+      AppPrint.printPerformance(
+        'Get active users',
+        DateTime.now().difference(startTime),
+      );
+      AppPrint.printSuccess(
+        'Successfully fetched ${users.length} active users',
+      );
+
       return users;
     } catch (e) {
       AppPrint.printError('Failed to fetch active users: $e');
@@ -148,7 +167,7 @@ class UserRepository {
     try {
       AppPrint.printStep('Creating new user: $email');
       final startTime = DateTime.now();
-      
+
       final userData = {
         'role_id': roleId,
         'email': email,
@@ -157,17 +176,20 @@ class UserRepository {
         'last_name': lastName,
         'is_active': true,
       };
-      
+
       final response = await _supabaseService.insertData(
         table: _tableName,
         data: userData,
       );
-      
+
       final user = User.fromJson(response.first);
-      
-      AppPrint.printPerformance('Create user', DateTime.now().difference(startTime));
+
+      AppPrint.printPerformance(
+        'Create user',
+        DateTime.now().difference(startTime),
+      );
       AppPrint.printSuccess('Successfully created user: ${user.email}');
-      
+
       return user;
     } catch (e) {
       AppPrint.printError('Failed to create user: $e');
@@ -176,30 +198,36 @@ class UserRepository {
   }
 
   /// Update user
-  Future<User?> updateUser(String userId, Map<String, dynamic> updateData) async {
+  Future<User?> updateUser(
+    String userId,
+    Map<String, dynamic> updateData,
+  ) async {
     try {
       AppPrint.printStep('Updating user: $userId');
       final startTime = DateTime.now();
-      
+
       // Add updated_at timestamp
       updateData['updated_at'] = DateTime.now().toIso8601String();
-      
-      final response = await _supabaseService.updateData(
-        table: _tableName,
-        data: updateData,
-        filters: {'user_id': userId},
-      );
-      
+
+      final response = await _supabaseService.client
+          .from(_tableName)
+          .update(updateData)
+          .eq('user_id', userId)
+          .select();
+
       if (response.isEmpty) {
         AppPrint.printWarning('User not found for update with ID: $userId');
         return null;
       }
-      
+
       final user = User.fromJson(response.first);
-      
-      AppPrint.printPerformance('Update user', DateTime.now().difference(startTime));
+
+      AppPrint.printPerformance(
+        'Update user',
+        DateTime.now().difference(startTime),
+      );
       AppPrint.printSuccess('Successfully updated user: ${user.email}');
-      
+
       return user;
     } catch (e) {
       AppPrint.printError('Failed to update user: $e');
@@ -208,30 +236,24 @@ class UserRepository {
   }
 
   /// Update user profile
-  Future<User?> updateUserProfile({
-    String? firstName,
-    String? lastName,
-    String? email,
-  }) async {
+  Future<User?> updateUserProfile({String? firstName, String? lastName}) async {
+    AppPrint.printInfo('Updating profile for current user');
 
-      AppPrint.printInfo('Updating profile for current user');
-      
-      final currentUser = _supabaseService.currentUser;
-      if (currentUser == null) {
-        throw Exception('No authenticated user found');
-      }
+    final currentUser = _supabaseService.currentUser;
+    if (currentUser == null) {
+      throw Exception('No authenticated user found');
+    }
 
-      final userId = supabase.Supabase.instance.client.auth.currentUser!.id;
-
+    final userId = supabase.Supabase.instance.client.auth.currentUser!.id;
 
     try {
       AppPrint.printStep('Updating user profile: $userId');
-      
+
       final updateData = <String, dynamic>{};
       if (firstName != null) updateData['first_name'] = firstName;
       if (lastName != null) updateData['last_name'] = lastName;
-      if (email != null) updateData['email'] = email;
-      
+      updateData['email'] = currentUser.email;
+
       return await updateUser(userId, updateData);
     } catch (e) {
       AppPrint.printError('Failed to update user profile: $e');
@@ -240,14 +262,15 @@ class UserRepository {
   }
 
   /// Update user password
-  Future<User?> updateUserPassword(String userId, String newPasswordHash) async {
+  Future<User?> updateUserPassword(
+    String userId,
+    String newPasswordHash,
+  ) async {
     try {
       AppPrint.printStep('Updating user password: $userId');
-      
-      final updateData = {
-        'password_hash': newPasswordHash,
-      };
-      
+
+      final updateData = {'password_hash': newPasswordHash};
+
       return await updateUser(userId, updateData);
     } catch (e) {
       AppPrint.printError('Failed to update user password: $e');
@@ -259,11 +282,9 @@ class UserRepository {
   Future<User?> updateLastLogin(String userId) async {
     try {
       AppPrint.printStep('Updating last login: $userId');
-      
-      final updateData = {
-        'last_login': DateTime.now().toIso8601String(),
-      };
-      
+
+      final updateData = {'last_login': DateTime.now().toIso8601String()};
+
       return await updateUser(userId, updateData);
     } catch (e) {
       AppPrint.printError('Failed to update last login: $e');
@@ -275,11 +296,9 @@ class UserRepository {
   Future<User?> deactivateUser(String userId) async {
     try {
       AppPrint.printStep('Deactivating user: $userId');
-      
-      final updateData = {
-        'is_active': false,
-      };
-      
+
+      final updateData = {'is_active': false};
+
       return await updateUser(userId, updateData);
     } catch (e) {
       AppPrint.printError('Failed to deactivate user: $e');
@@ -291,11 +310,9 @@ class UserRepository {
   Future<User?> activateUser(String userId) async {
     try {
       AppPrint.printStep('Activating user: $userId');
-      
-      final updateData = {
-        'is_active': true,
-      };
-      
+
+      final updateData = {'is_active': true};
+
       return await updateUser(userId, updateData);
     } catch (e) {
       AppPrint.printError('Failed to activate user: $e');
@@ -308,15 +325,18 @@ class UserRepository {
     try {
       AppPrint.printStep('Deleting user: $userId');
       final startTime = DateTime.now();
-      
+
       await _supabaseService.deleteData(
         table: _tableName,
         filters: {'user_id': userId},
       );
-      
-      AppPrint.printPerformance('Delete user', DateTime.now().difference(startTime));
+
+      AppPrint.printPerformance(
+        'Delete user',
+        DateTime.now().difference(startTime),
+      );
       AppPrint.printSuccess('Successfully deleted user: $userId');
-      
+
       return true;
     } catch (e) {
       AppPrint.printError('Failed to delete user: $e');
@@ -328,15 +348,15 @@ class UserRepository {
   Future<bool> userExists(String email) async {
     try {
       AppPrint.printStep('Checking if user exists: $email');
-      
+
       final response = await _supabaseService.getData(
         table: _tableName,
         filters: {'email': email},
       );
-      
+
       final exists = response.isNotEmpty;
       AppPrint.printInfo('User $email exists: $exists');
-      
+
       return exists;
     } catch (e) {
       AppPrint.printError('Failed to check if user exists: $e');
@@ -352,13 +372,15 @@ class UserRepository {
     bool? isActive,
   }) async {
     try {
-      AppPrint.printStep('Fetching users with pagination (limit: $limit, offset: $offset)');
+      AppPrint.printStep(
+        'Fetching users with pagination (limit: $limit, offset: $offset)',
+      );
       final startTime = DateTime.now();
-      
+
       final filters = <String, dynamic>{};
       if (roleId != null) filters['role_id'] = roleId;
       if (isActive != null) filters['is_active'] = isActive;
-      
+
       final response = await _supabaseService.getData(
         table: _tableName,
         select: '*, roles(*)',
@@ -366,12 +388,15 @@ class UserRepository {
         limit: limit,
         offset: offset,
       );
-      
+
       final users = response.map((json) => User.fromJson(json)).toList();
-      
-      AppPrint.printPerformance('Get users with pagination', DateTime.now().difference(startTime));
+
+      AppPrint.printPerformance(
+        'Get users with pagination',
+        DateTime.now().difference(startTime),
+      );
       AppPrint.printSuccess('Successfully fetched ${users.length} users');
-      
+
       return users;
     } catch (e) {
       AppPrint.printError('Failed to fetch users with pagination: $e');
@@ -384,21 +409,24 @@ class UserRepository {
     try {
       AppPrint.printStep('Getting users count');
       final startTime = DateTime.now();
-      
+
       final filters = <String, dynamic>{};
       if (roleId != null) filters['role_id'] = roleId;
       if (isActive != null) filters['is_active'] = isActive;
-      
+
       final response = await _supabaseService.getData(
         table: _tableName,
         filters: filters.isNotEmpty ? filters : null,
       );
-      
+
       final count = response.length;
-      
-      AppPrint.printPerformance('Get users count', DateTime.now().difference(startTime));
+
+      AppPrint.printPerformance(
+        'Get users count',
+        DateTime.now().difference(startTime),
+      );
       AppPrint.printInfo('Total users count: $count');
-      
+
       return count;
     } catch (e) {
       AppPrint.printError('Failed to get users count: $e');
@@ -411,32 +439,37 @@ class UserRepository {
     try {
       AppPrint.printStep('Searching users: $searchTerm');
       final startTime = DateTime.now();
-      
+
       // Note: This is a simple search implementation
       // For production, you might want to use full-text search or more sophisticated filtering
       final response = await _supabaseService.getData(
         table: _tableName,
         select: '*, roles(*)',
       );
-      
+
       final users = response.map((json) => User.fromJson(json)).toList();
-      
+
       // Filter users based on search term
       final filteredUsers = users.where((user) {
         final searchLower = searchTerm.toLowerCase();
         return user.email.toLowerCase().contains(searchLower) ||
-               (user.firstName?.toLowerCase().contains(searchLower) ?? false) ||
-               (user.lastName?.toLowerCase().contains(searchLower) ?? false) ||
-               user.fullName.toLowerCase().contains(searchLower);
+            (user.firstName?.toLowerCase().contains(searchLower) ?? false) ||
+            (user.lastName?.toLowerCase().contains(searchLower) ?? false) ||
+            user.fullName.toLowerCase().contains(searchLower);
       }).toList();
-      
-      AppPrint.printPerformance('Search users', DateTime.now().difference(startTime));
-      AppPrint.printSuccess('Found ${filteredUsers.length} users matching: $searchTerm');
-      
+
+      AppPrint.printPerformance(
+        'Search users',
+        DateTime.now().difference(startTime),
+      );
+      AppPrint.printSuccess(
+        'Found ${filteredUsers.length} users matching: $searchTerm',
+      );
+
       return filteredUsers;
     } catch (e) {
       AppPrint.printError('Failed to search users: $e');
       rethrow;
     }
   }
-} 
+}

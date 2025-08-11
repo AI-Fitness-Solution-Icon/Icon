@@ -12,17 +12,20 @@ class WorkoutRepository {
     try {
       AppPrint.printStep('Fetching all workouts');
       final startTime = DateTime.now();
-      
+
       final response = await _supabaseService.getData(
         table: _tableName,
         select: '*, creator:coaches(*)',
       );
-      
+
       final workouts = response.map((json) => Workout.fromJson(json)).toList();
-      
-      AppPrint.printPerformance('Get all workouts', DateTime.now().difference(startTime));
+
+      AppPrint.printPerformance(
+        'Get all workouts',
+        DateTime.now().difference(startTime),
+      );
       AppPrint.printSuccess('Successfully fetched ${workouts.length} workouts');
-      
+
       return workouts;
     } catch (e) {
       AppPrint.printError('Failed to fetch workouts: $e');
@@ -35,23 +38,26 @@ class WorkoutRepository {
     try {
       AppPrint.printStep('Fetching workout by ID: $workoutId');
       final startTime = DateTime.now();
-      
+
       final response = await _supabaseService.getData(
         table: _tableName,
         select: '*, creator:coaches(*)',
         filters: {'workout_id': workoutId},
       );
-      
+
       if (response.isEmpty) {
         AppPrint.printWarning('Workout not found with ID: $workoutId');
         return null;
       }
-      
+
       final workout = Workout.fromJson(response.first);
-      
-      AppPrint.printPerformance('Get workout by ID', DateTime.now().difference(startTime));
+
+      AppPrint.printPerformance(
+        'Get workout by ID',
+        DateTime.now().difference(startTime),
+      );
       AppPrint.printSuccess('Successfully fetched workout: ${workout.name}');
-      
+
       return workout;
     } catch (e) {
       AppPrint.printError('Failed to fetch workout by ID: $e');
@@ -64,18 +70,23 @@ class WorkoutRepository {
     try {
       AppPrint.printStep('Fetching workouts by creator: $creatorId');
       final startTime = DateTime.now();
-      
+
       final response = await _supabaseService.getData(
         table: _tableName,
         select: '*, creator:coaches(*)',
         filters: {'creator_id': creatorId},
       );
-      
+
       final workouts = response.map((json) => Workout.fromJson(json)).toList();
-      
-      AppPrint.printPerformance('Get workouts by creator', DateTime.now().difference(startTime));
-      AppPrint.printSuccess('Successfully fetched ${workouts.length} workouts for creator: $creatorId');
-      
+
+      AppPrint.printPerformance(
+        'Get workouts by creator',
+        DateTime.now().difference(startTime),
+      );
+      AppPrint.printSuccess(
+        'Successfully fetched ${workouts.length} workouts for creator: $creatorId',
+      );
+
       return workouts;
     } catch (e) {
       AppPrint.printError('Failed to fetch workouts by creator: $e');
@@ -88,18 +99,23 @@ class WorkoutRepository {
     try {
       AppPrint.printStep('Fetching workouts by difficulty: $difficultyLevel');
       final startTime = DateTime.now();
-      
+
       final response = await _supabaseService.getData(
         table: _tableName,
         select: '*, creator:coaches(*)',
         filters: {'difficulty_level': difficultyLevel},
       );
-      
+
       final workouts = response.map((json) => Workout.fromJson(json)).toList();
-      
-      AppPrint.printPerformance('Get workouts by difficulty', DateTime.now().difference(startTime));
-      AppPrint.printSuccess('Successfully fetched ${workouts.length} workouts with difficulty: $difficultyLevel');
-      
+
+      AppPrint.printPerformance(
+        'Get workouts by difficulty',
+        DateTime.now().difference(startTime),
+      );
+      AppPrint.printSuccess(
+        'Successfully fetched ${workouts.length} workouts with difficulty: $difficultyLevel',
+      );
+
       return workouts;
     } catch (e) {
       AppPrint.printError('Failed to fetch workouts by difficulty: $e');
@@ -108,26 +124,37 @@ class WorkoutRepository {
   }
 
   /// Get workouts by duration range
-  Future<List<Workout>> getWorkoutsByDurationRange(int minDuration, int maxDuration) async {
+  Future<List<Workout>> getWorkoutsByDurationRange(
+    int minDuration,
+    int maxDuration,
+  ) async {
     try {
-      AppPrint.printStep('Fetching workouts by duration range: $minDuration-$maxDuration minutes');
+      AppPrint.printStep(
+        'Fetching workouts by duration range: $minDuration-$maxDuration minutes',
+      );
       final startTime = DateTime.now();
-      
+
       final response = await _supabaseService.getData(
         table: _tableName,
         select: '*, creator:coaches(*)',
       );
-      
+
       final workouts = response.map((json) => Workout.fromJson(json)).toList();
-      
+
       // Filter workouts by duration range
       final filteredWorkouts = workouts.where((workout) {
-        return workout.duration >= minDuration && workout.duration <= maxDuration;
+        return workout.duration >= minDuration &&
+            workout.duration <= maxDuration;
       }).toList();
-      
-      AppPrint.printPerformance('Get workouts by duration range', DateTime.now().difference(startTime));
-      AppPrint.printSuccess('Successfully fetched ${filteredWorkouts.length} workouts in duration range: $minDuration-$maxDuration');
-      
+
+      AppPrint.printPerformance(
+        'Get workouts by duration range',
+        DateTime.now().difference(startTime),
+      );
+      AppPrint.printSuccess(
+        'Successfully fetched ${filteredWorkouts.length} workouts in duration range: $minDuration-$maxDuration',
+      );
+
       return filteredWorkouts;
     } catch (e) {
       AppPrint.printError('Failed to fetch workouts by duration range: $e');
@@ -146,7 +173,7 @@ class WorkoutRepository {
     try {
       AppPrint.printStep('Creating new workout: $name');
       final startTime = DateTime.now();
-      
+
       final workoutData = {
         'creator_id': creatorId,
         'name': name,
@@ -154,17 +181,20 @@ class WorkoutRepository {
         'duration': duration,
         'difficulty_level': difficultyLevel ?? 'Beginner',
       };
-      
+
       final response = await _supabaseService.insertData(
         table: _tableName,
         data: workoutData,
       );
-      
+
       final workout = Workout.fromJson(response.first);
-      
-      AppPrint.printPerformance('Create workout', DateTime.now().difference(startTime));
+
+      AppPrint.printPerformance(
+        'Create workout',
+        DateTime.now().difference(startTime),
+      );
       AppPrint.printSuccess('Successfully created workout: ${workout.name}');
-      
+
       return workout;
     } catch (e) {
       AppPrint.printError('Failed to create workout: $e');
@@ -173,30 +203,38 @@ class WorkoutRepository {
   }
 
   /// Update workout
-  Future<Workout?> updateWorkout(String workoutId, Map<String, dynamic> updateData) async {
+  Future<Workout?> updateWorkout(
+    String workoutId,
+    Map<String, dynamic> updateData,
+  ) async {
     try {
       AppPrint.printStep('Updating workout: $workoutId');
       final startTime = DateTime.now();
-      
+
       // Add updated_at timestamp
       updateData['updated_at'] = DateTime.now().toIso8601String();
-      
-      final response = await _supabaseService.updateData(
-        table: _tableName,
-        data: updateData,
-        filters: {'workout_id': workoutId},
-      );
-      
+
+      final response = await _supabaseService.client
+          .from(_tableName)
+          .update(updateData)
+          .eq('workout_id', workoutId)
+          .select();
+
       if (response.isEmpty) {
-        AppPrint.printWarning('Workout not found for update with ID: $workoutId');
+        AppPrint.printWarning(
+          'Workout not found for update with ID: $workoutId',
+        );
         return null;
       }
-      
+
       final workout = Workout.fromJson(response.first);
-      
-      AppPrint.printPerformance('Update workout', DateTime.now().difference(startTime));
+
+      AppPrint.printPerformance(
+        'Update workout',
+        DateTime.now().difference(startTime),
+      );
       AppPrint.printSuccess('Successfully updated workout: ${workout.name}');
-      
+
       return workout;
     } catch (e) {
       AppPrint.printError('Failed to update workout: $e');
@@ -208,11 +246,9 @@ class WorkoutRepository {
   Future<Workout?> updateWorkoutName(String workoutId, String name) async {
     try {
       AppPrint.printStep('Updating workout name: $workoutId');
-      
-      final updateData = {
-        'name': name,
-      };
-      
+
+      final updateData = {'name': name};
+
       return await updateWorkout(workoutId, updateData);
     } catch (e) {
       AppPrint.printError('Failed to update workout name: $e');
@@ -221,14 +257,15 @@ class WorkoutRepository {
   }
 
   /// Update workout description
-  Future<Workout?> updateWorkoutDescription(String workoutId, String description) async {
+  Future<Workout?> updateWorkoutDescription(
+    String workoutId,
+    String description,
+  ) async {
     try {
       AppPrint.printStep('Updating workout description: $workoutId');
-      
-      final updateData = {
-        'description': description,
-      };
-      
+
+      final updateData = {'description': description};
+
       return await updateWorkout(workoutId, updateData);
     } catch (e) {
       AppPrint.printError('Failed to update workout description: $e');
@@ -240,11 +277,9 @@ class WorkoutRepository {
   Future<Workout?> updateWorkoutDuration(String workoutId, int duration) async {
     try {
       AppPrint.printStep('Updating workout duration: $workoutId');
-      
-      final updateData = {
-        'duration': duration,
-      };
-      
+
+      final updateData = {'duration': duration};
+
       return await updateWorkout(workoutId, updateData);
     } catch (e) {
       AppPrint.printError('Failed to update workout duration: $e');
@@ -253,14 +288,15 @@ class WorkoutRepository {
   }
 
   /// Update workout difficulty level
-  Future<Workout?> updateWorkoutDifficulty(String workoutId, String difficultyLevel) async {
+  Future<Workout?> updateWorkoutDifficulty(
+    String workoutId,
+    String difficultyLevel,
+  ) async {
     try {
       AppPrint.printStep('Updating workout difficulty: $workoutId');
-      
-      final updateData = {
-        'difficulty_level': difficultyLevel,
-      };
-      
+
+      final updateData = {'difficulty_level': difficultyLevel};
+
       return await updateWorkout(workoutId, updateData);
     } catch (e) {
       AppPrint.printError('Failed to update workout difficulty: $e');
@@ -273,15 +309,18 @@ class WorkoutRepository {
     try {
       AppPrint.printStep('Deleting workout: $workoutId');
       final startTime = DateTime.now();
-      
+
       await _supabaseService.deleteData(
         table: _tableName,
         filters: {'workout_id': workoutId},
       );
-      
-      AppPrint.printPerformance('Delete workout', DateTime.now().difference(startTime));
+
+      AppPrint.printPerformance(
+        'Delete workout',
+        DateTime.now().difference(startTime),
+      );
       AppPrint.printSuccess('Successfully deleted workout: $workoutId');
-      
+
       return true;
     } catch (e) {
       AppPrint.printError('Failed to delete workout: $e');
@@ -293,15 +332,15 @@ class WorkoutRepository {
   Future<bool> workoutExists(String workoutId) async {
     try {
       AppPrint.printStep('Checking if workout exists: $workoutId');
-      
+
       final response = await _supabaseService.getData(
         table: _tableName,
         filters: {'workout_id': workoutId},
       );
-      
+
       final exists = response.isNotEmpty;
       AppPrint.printInfo('Workout $workoutId exists: $exists');
-      
+
       return exists;
     } catch (e) {
       AppPrint.printError('Failed to check if workout exists: $e');
@@ -317,13 +356,17 @@ class WorkoutRepository {
     String? difficultyLevel,
   }) async {
     try {
-      AppPrint.printStep('Fetching workouts with pagination (limit: $limit, offset: $offset)');
+      AppPrint.printStep(
+        'Fetching workouts with pagination (limit: $limit, offset: $offset)',
+      );
       final startTime = DateTime.now();
-      
+
       final filters = <String, dynamic>{};
       if (creatorId != null) filters['creator_id'] = creatorId;
-      if (difficultyLevel != null) filters['difficulty_level'] = difficultyLevel;
-      
+      if (difficultyLevel != null) {
+        filters['difficulty_level'] = difficultyLevel;
+      }
+
       final response = await _supabaseService.getData(
         table: _tableName,
         select: '*, creator:coaches(*)',
@@ -331,12 +374,15 @@ class WorkoutRepository {
         limit: limit,
         offset: offset,
       );
-      
+
       final workouts = response.map((json) => Workout.fromJson(json)).toList();
-      
-      AppPrint.printPerformance('Get workouts with pagination', DateTime.now().difference(startTime));
+
+      AppPrint.printPerformance(
+        'Get workouts with pagination',
+        DateTime.now().difference(startTime),
+      );
       AppPrint.printSuccess('Successfully fetched ${workouts.length} workouts');
-      
+
       return workouts;
     } catch (e) {
       AppPrint.printError('Failed to fetch workouts with pagination: $e');
@@ -345,25 +391,33 @@ class WorkoutRepository {
   }
 
   /// Get workouts count
-  Future<int> getWorkoutsCount({String? creatorId, String? difficultyLevel}) async {
+  Future<int> getWorkoutsCount({
+    String? creatorId,
+    String? difficultyLevel,
+  }) async {
     try {
       AppPrint.printStep('Getting workouts count');
       final startTime = DateTime.now();
-      
+
       final filters = <String, dynamic>{};
       if (creatorId != null) filters['creator_id'] = creatorId;
-      if (difficultyLevel != null) filters['difficulty_level'] = difficultyLevel;
-      
+      if (difficultyLevel != null) {
+        filters['difficulty_level'] = difficultyLevel;
+      }
+
       final response = await _supabaseService.getData(
         table: _tableName,
         filters: filters.isNotEmpty ? filters : null,
       );
-      
+
       final count = response.length;
-      
-      AppPrint.printPerformance('Get workouts count', DateTime.now().difference(startTime));
+
+      AppPrint.printPerformance(
+        'Get workouts count',
+        DateTime.now().difference(startTime),
+      );
       AppPrint.printInfo('Total workouts count: $count');
-      
+
       return count;
     } catch (e) {
       AppPrint.printError('Failed to get workouts count: $e');
@@ -376,25 +430,31 @@ class WorkoutRepository {
     try {
       AppPrint.printStep('Searching workouts: $searchTerm');
       final startTime = DateTime.now();
-      
+
       final response = await _supabaseService.getData(
         table: _tableName,
         select: '*, creator:coaches(*)',
       );
-      
+
       final workouts = response.map((json) => Workout.fromJson(json)).toList();
-      
+
       // Filter workouts based on search term
       final filteredWorkouts = workouts.where((workout) {
         final searchLower = searchTerm.toLowerCase();
         return workout.name.toLowerCase().contains(searchLower) ||
-               (workout.description?.toLowerCase().contains(searchLower) ?? false) ||
-               workout.difficultyLevel.toLowerCase().contains(searchLower);
+            (workout.description?.toLowerCase().contains(searchLower) ??
+                false) ||
+            workout.difficultyLevel.toLowerCase().contains(searchLower);
       }).toList();
-      
-      AppPrint.printPerformance('Search workouts', DateTime.now().difference(startTime));
-      AppPrint.printSuccess('Found ${filteredWorkouts.length} workouts matching: $searchTerm');
-      
+
+      AppPrint.printPerformance(
+        'Search workouts',
+        DateTime.now().difference(startTime),
+      );
+      AppPrint.printSuccess(
+        'Found ${filteredWorkouts.length} workouts matching: $searchTerm',
+      );
+
       return filteredWorkouts;
     } catch (e) {
       AppPrint.printError('Failed to search workouts: $e');
@@ -407,25 +467,30 @@ class WorkoutRepository {
     try {
       AppPrint.printStep('Fetching recent workouts');
       final startTime = DateTime.now();
-      
+
       final response = await _supabaseService.getData(
         table: _tableName,
         select: '*, creator:coaches(*)',
         limit: limit,
       );
-      
+
       final workouts = response.map((json) => Workout.fromJson(json)).toList();
-      
+
       // Sort by creation date (newest first)
       workouts.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-      
-      AppPrint.printPerformance('Get recent workouts', DateTime.now().difference(startTime));
-      AppPrint.printSuccess('Successfully fetched ${workouts.length} recent workouts');
-      
+
+      AppPrint.printPerformance(
+        'Get recent workouts',
+        DateTime.now().difference(startTime),
+      );
+      AppPrint.printSuccess(
+        'Successfully fetched ${workouts.length} recent workouts',
+      );
+
       return workouts;
     } catch (e) {
       AppPrint.printError('Failed to fetch recent workouts: $e');
       rethrow;
     }
   }
-} 
+}

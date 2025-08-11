@@ -319,25 +319,6 @@ class MockSupabaseService extends _i1.Mock implements _i7.SupabaseService {
             ),
           )
           as _i5.Future<List<Map<String, dynamic>>>);
-
-  @override
-  _i5.Future<List<Map<String, dynamic>>> updateData({
-    required String? table,
-    required Map<String, dynamic>? data,
-    required Map<String, dynamic>? filters,
-  }) =>
-      (super.noSuchMethod(
-            Invocation.method(#updateData, [], {
-              #table: table,
-              #data: data,
-              #filters: filters,
-            }),
-            returnValue: _i5.Future<List<Map<String, dynamic>>>.value(
-              <Map<String, dynamic>>[],
-            ),
-          )
-          as _i5.Future<List<Map<String, dynamic>>>);
-
   @override
   _i5.Future<void> deleteData({
     required String? table,

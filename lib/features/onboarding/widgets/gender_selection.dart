@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../core/constants/app_colors.dart';
+import 'package:icon_app/core/constants/app_colors.dart';
 
 /// Gender option for selection
 enum Gender { male, female, others }
@@ -9,11 +9,7 @@ class GenderSelection extends StatelessWidget {
   final Gender? selectedGender;
   final ValueChanged<Gender>? onGenderChanged;
 
-  const GenderSelection({
-    super.key,
-    this.selectedGender,
-    this.onGenderChanged,
-  });
+  const GenderSelection({super.key, this.selectedGender, this.onGenderChanged});
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +26,7 @@ class GenderSelection extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
-        
+
         // Gender options
         Row(
           children: Gender.values.map((gender) {
@@ -40,12 +36,19 @@ class GenderSelection extends StatelessWidget {
                 onTap: () => onGenderChanged?.call(gender),
                 child: Container(
                   margin: const EdgeInsets.only(right: 8),
-                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 12,
+                    horizontal: 16,
+                  ),
                   decoration: BoxDecoration(
-                    color: isSelected ? AppColors.secondary : AppColors.surfaceDark,
+                    color: isSelected
+                        ? AppColors.secondary
+                        : AppColors.surfaceDark,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: isSelected ? AppColors.secondary : Colors.transparent,
+                      color: isSelected
+                          ? AppColors.secondary
+                          : Colors.transparent,
                       width: 2,
                     ),
                   ),
@@ -77,4 +80,4 @@ class GenderSelection extends StatelessWidget {
         return 'Others';
     }
   }
-} 
+}

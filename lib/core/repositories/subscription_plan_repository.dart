@@ -12,14 +12,21 @@ class SubscriptionPlanRepository {
     try {
       AppPrint.printStep('Fetching all subscription plans');
       final startTime = DateTime.now();
-      
+
       final response = await _supabaseService.getData(table: _tableName);
-      
-      final plans = response.map((json) => SubscriptionPlan.fromJson(json)).toList();
-      
-      AppPrint.printPerformance('Get all subscription plans', DateTime.now().difference(startTime));
-      AppPrint.printSuccess('Successfully fetched ${plans.length} subscription plans');
-      
+
+      final plans = response
+          .map((json) => SubscriptionPlan.fromJson(json))
+          .toList();
+
+      AppPrint.printPerformance(
+        'Get all subscription plans',
+        DateTime.now().difference(startTime),
+      );
+      AppPrint.printSuccess(
+        'Successfully fetched ${plans.length} subscription plans',
+      );
+
       return plans;
     } catch (e) {
       AppPrint.printError('Failed to fetch subscription plans: $e');
@@ -32,22 +39,27 @@ class SubscriptionPlanRepository {
     try {
       AppPrint.printStep('Fetching subscription plan by ID: $planId');
       final startTime = DateTime.now();
-      
+
       final response = await _supabaseService.getData(
         table: _tableName,
         filters: {'plan_id': planId},
       );
-      
+
       if (response.isEmpty) {
         AppPrint.printWarning('Subscription plan not found with ID: $planId');
         return null;
       }
-      
+
       final plan = SubscriptionPlan.fromJson(response.first);
-      
-      AppPrint.printPerformance('Get subscription plan by ID', DateTime.now().difference(startTime));
-      AppPrint.printSuccess('Successfully fetched subscription plan: ${plan.name}');
-      
+
+      AppPrint.printPerformance(
+        'Get subscription plan by ID',
+        DateTime.now().difference(startTime),
+      );
+      AppPrint.printSuccess(
+        'Successfully fetched subscription plan: ${plan.name}',
+      );
+
       return plan;
     } catch (e) {
       AppPrint.printError('Failed to fetch subscription plan by ID: $e');
@@ -56,49 +68,76 @@ class SubscriptionPlanRepository {
   }
 
   /// Get subscription plans by billing cycle
-  Future<List<SubscriptionPlan>> getSubscriptionPlansByBillingCycle(String billingCycle) async {
+  Future<List<SubscriptionPlan>> getSubscriptionPlansByBillingCycle(
+    String billingCycle,
+  ) async {
     try {
-      AppPrint.printStep('Fetching subscription plans by billing cycle: $billingCycle');
+      AppPrint.printStep(
+        'Fetching subscription plans by billing cycle: $billingCycle',
+      );
       final startTime = DateTime.now();
-      
+
       final response = await _supabaseService.getData(
         table: _tableName,
         filters: {'billing_cycle': billingCycle},
       );
-      
-      final plans = response.map((json) => SubscriptionPlan.fromJson(json)).toList();
-      
-      AppPrint.printPerformance('Get subscription plans by billing cycle', DateTime.now().difference(startTime));
-      AppPrint.printSuccess('Successfully fetched ${plans.length} subscription plans with billing cycle: $billingCycle');
-      
+
+      final plans = response
+          .map((json) => SubscriptionPlan.fromJson(json))
+          .toList();
+
+      AppPrint.printPerformance(
+        'Get subscription plans by billing cycle',
+        DateTime.now().difference(startTime),
+      );
+      AppPrint.printSuccess(
+        'Successfully fetched ${plans.length} subscription plans with billing cycle: $billingCycle',
+      );
+
       return plans;
     } catch (e) {
-      AppPrint.printError('Failed to fetch subscription plans by billing cycle: $e');
+      AppPrint.printError(
+        'Failed to fetch subscription plans by billing cycle: $e',
+      );
       rethrow;
     }
   }
 
   /// Get subscription plans by price range
-  Future<List<SubscriptionPlan>> getSubscriptionPlansByPriceRange(double minPrice, double maxPrice) async {
+  Future<List<SubscriptionPlan>> getSubscriptionPlansByPriceRange(
+    double minPrice,
+    double maxPrice,
+  ) async {
     try {
-      AppPrint.printStep('Fetching subscription plans by price range: \$$minPrice-\$$maxPrice');
+      AppPrint.printStep(
+        'Fetching subscription plans by price range: \$$minPrice-\$$maxPrice',
+      );
       final startTime = DateTime.now();
-      
+
       final response = await _supabaseService.getData(table: _tableName);
-      
-      final plans = response.map((json) => SubscriptionPlan.fromJson(json)).toList();
-      
+
+      final plans = response
+          .map((json) => SubscriptionPlan.fromJson(json))
+          .toList();
+
       // Filter plans by price range
       final filteredPlans = plans.where((plan) {
         return plan.price >= minPrice && plan.price <= maxPrice;
       }).toList();
-      
-      AppPrint.printPerformance('Get subscription plans by price range', DateTime.now().difference(startTime));
-      AppPrint.printSuccess('Successfully fetched ${filteredPlans.length} subscription plans in price range: \$$minPrice-\$$maxPrice');
-      
+
+      AppPrint.printPerformance(
+        'Get subscription plans by price range',
+        DateTime.now().difference(startTime),
+      );
+      AppPrint.printSuccess(
+        'Successfully fetched ${filteredPlans.length} subscription plans in price range: \$$minPrice-\$$maxPrice',
+      );
+
       return filteredPlans;
     } catch (e) {
-      AppPrint.printError('Failed to fetch subscription plans by price range: $e');
+      AppPrint.printError(
+        'Failed to fetch subscription plans by price range: $e',
+      );
       rethrow;
     }
   }
@@ -136,7 +175,7 @@ class SubscriptionPlanRepository {
     try {
       AppPrint.printStep('Creating new subscription plan: $name');
       final startTime = DateTime.now();
-      
+
       final planData = {
         'name': name,
         'description': description,
@@ -144,17 +183,22 @@ class SubscriptionPlanRepository {
         'billing_cycle': billingCycle ?? 'monthly',
         'features': features ?? {},
       };
-      
+
       final response = await _supabaseService.insertData(
         table: _tableName,
         data: planData,
       );
-      
+
       final plan = SubscriptionPlan.fromJson(response.first);
-      
-      AppPrint.printPerformance('Create subscription plan', DateTime.now().difference(startTime));
-      AppPrint.printSuccess('Successfully created subscription plan: ${plan.name}');
-      
+
+      AppPrint.printPerformance(
+        'Create subscription plan',
+        DateTime.now().difference(startTime),
+      );
+      AppPrint.printSuccess(
+        'Successfully created subscription plan: ${plan.name}',
+      );
+
       return plan;
     } catch (e) {
       AppPrint.printError('Failed to create subscription plan: $e');
@@ -163,30 +207,40 @@ class SubscriptionPlanRepository {
   }
 
   /// Update subscription plan
-  Future<SubscriptionPlan?> updateSubscriptionPlan(String planId, Map<String, dynamic> updateData) async {
+  Future<SubscriptionPlan?> updateSubscriptionPlan(
+    String planId,
+    Map<String, dynamic> updateData,
+  ) async {
     try {
       AppPrint.printStep('Updating subscription plan: $planId');
       final startTime = DateTime.now();
-      
+
       // Add updated_at timestamp
       updateData['updated_at'] = DateTime.now().toIso8601String();
-      
-      final response = await _supabaseService.updateData(
-        table: _tableName,
-        data: updateData,
-        filters: {'plan_id': planId},
-      );
-      
+
+      final response = await _supabaseService.client
+          .from(_tableName)
+          .update(updateData)
+          .eq('plan_id', planId)
+          .select();
+
       if (response.isEmpty) {
-        AppPrint.printWarning('Subscription plan not found for update with ID: $planId');
+        AppPrint.printWarning(
+          'Subscription plan not found for update with ID: $planId',
+        );
         return null;
       }
-      
+
       final plan = SubscriptionPlan.fromJson(response.first);
-      
-      AppPrint.printPerformance('Update subscription plan', DateTime.now().difference(startTime));
-      AppPrint.printSuccess('Successfully updated subscription plan: ${plan.name}');
-      
+
+      AppPrint.printPerformance(
+        'Update subscription plan',
+        DateTime.now().difference(startTime),
+      );
+      AppPrint.printSuccess(
+        'Successfully updated subscription plan: ${plan.name}',
+      );
+
       return plan;
     } catch (e) {
       AppPrint.printError('Failed to update subscription plan: $e');
@@ -195,14 +249,15 @@ class SubscriptionPlanRepository {
   }
 
   /// Update subscription plan name
-  Future<SubscriptionPlan?> updateSubscriptionPlanName(String planId, String name) async {
+  Future<SubscriptionPlan?> updateSubscriptionPlanName(
+    String planId,
+    String name,
+  ) async {
     try {
       AppPrint.printStep('Updating subscription plan name: $planId');
-      
-      final updateData = {
-        'name': name,
-      };
-      
+
+      final updateData = {'name': name};
+
       return await updateSubscriptionPlan(planId, updateData);
     } catch (e) {
       AppPrint.printError('Failed to update subscription plan name: $e');
@@ -211,14 +266,15 @@ class SubscriptionPlanRepository {
   }
 
   /// Update subscription plan description
-  Future<SubscriptionPlan?> updateSubscriptionPlanDescription(String planId, String description) async {
+  Future<SubscriptionPlan?> updateSubscriptionPlanDescription(
+    String planId,
+    String description,
+  ) async {
     try {
       AppPrint.printStep('Updating subscription plan description: $planId');
-      
-      final updateData = {
-        'description': description,
-      };
-      
+
+      final updateData = {'description': description};
+
       return await updateSubscriptionPlan(planId, updateData);
     } catch (e) {
       AppPrint.printError('Failed to update subscription plan description: $e');
@@ -227,14 +283,15 @@ class SubscriptionPlanRepository {
   }
 
   /// Update subscription plan price
-  Future<SubscriptionPlan?> updateSubscriptionPlanPrice(String planId, double price) async {
+  Future<SubscriptionPlan?> updateSubscriptionPlanPrice(
+    String planId,
+    double price,
+  ) async {
     try {
       AppPrint.printStep('Updating subscription plan price: $planId');
-      
-      final updateData = {
-        'price': price,
-      };
-      
+
+      final updateData = {'price': price};
+
       return await updateSubscriptionPlan(planId, updateData);
     } catch (e) {
       AppPrint.printError('Failed to update subscription plan price: $e');
@@ -243,30 +300,34 @@ class SubscriptionPlanRepository {
   }
 
   /// Update subscription plan billing cycle
-  Future<SubscriptionPlan?> updateSubscriptionPlanBillingCycle(String planId, String billingCycle) async {
+  Future<SubscriptionPlan?> updateSubscriptionPlanBillingCycle(
+    String planId,
+    String billingCycle,
+  ) async {
     try {
       AppPrint.printStep('Updating subscription plan billing cycle: $planId');
-      
-      final updateData = {
-        'billing_cycle': billingCycle,
-      };
-      
+
+      final updateData = {'billing_cycle': billingCycle};
+
       return await updateSubscriptionPlan(planId, updateData);
     } catch (e) {
-      AppPrint.printError('Failed to update subscription plan billing cycle: $e');
+      AppPrint.printError(
+        'Failed to update subscription plan billing cycle: $e',
+      );
       rethrow;
     }
   }
 
   /// Update subscription plan features
-  Future<SubscriptionPlan?> updateSubscriptionPlanFeatures(String planId, Map<String, dynamic> features) async {
+  Future<SubscriptionPlan?> updateSubscriptionPlanFeatures(
+    String planId,
+    Map<String, dynamic> features,
+  ) async {
     try {
       AppPrint.printStep('Updating subscription plan features: $planId');
-      
-      final updateData = {
-        'features': features,
-      };
-      
+
+      final updateData = {'features': features};
+
       return await updateSubscriptionPlan(planId, updateData);
     } catch (e) {
       AppPrint.printError('Failed to update subscription plan features: $e');
@@ -275,19 +336,23 @@ class SubscriptionPlanRepository {
   }
 
   /// Add feature to subscription plan
-  Future<SubscriptionPlan?> addFeatureToSubscriptionPlan(String planId, String featureKey, dynamic featureValue) async {
+  Future<SubscriptionPlan?> addFeatureToSubscriptionPlan(
+    String planId,
+    String featureKey,
+    dynamic featureValue,
+  ) async {
     try {
       AppPrint.printStep('Adding feature to subscription plan: $planId');
-      
+
       final currentPlan = await getSubscriptionPlanById(planId);
       if (currentPlan == null) {
         AppPrint.printWarning('Subscription plan not found: $planId');
         return null;
       }
-      
+
       final updatedFeatures = Map<String, dynamic>.from(currentPlan.features);
       updatedFeatures[featureKey] = featureValue;
-      
+
       return await updateSubscriptionPlanFeatures(planId, updatedFeatures);
     } catch (e) {
       AppPrint.printError('Failed to add feature to subscription plan: $e');
@@ -296,22 +361,27 @@ class SubscriptionPlanRepository {
   }
 
   /// Remove feature from subscription plan
-  Future<SubscriptionPlan?> removeFeatureFromSubscriptionPlan(String planId, String featureKey) async {
+  Future<SubscriptionPlan?> removeFeatureFromSubscriptionPlan(
+    String planId,
+    String featureKey,
+  ) async {
     try {
       AppPrint.printStep('Removing feature from subscription plan: $planId');
-      
+
       final currentPlan = await getSubscriptionPlanById(planId);
       if (currentPlan == null) {
         AppPrint.printWarning('Subscription plan not found: $planId');
         return null;
       }
-      
+
       final updatedFeatures = Map<String, dynamic>.from(currentPlan.features);
       updatedFeatures.remove(featureKey);
-      
+
       return await updateSubscriptionPlanFeatures(planId, updatedFeatures);
     } catch (e) {
-      AppPrint.printError('Failed to remove feature from subscription plan: $e');
+      AppPrint.printError(
+        'Failed to remove feature from subscription plan: $e',
+      );
       rethrow;
     }
   }
@@ -321,15 +391,18 @@ class SubscriptionPlanRepository {
     try {
       AppPrint.printStep('Deleting subscription plan: $planId');
       final startTime = DateTime.now();
-      
+
       await _supabaseService.deleteData(
         table: _tableName,
         filters: {'plan_id': planId},
       );
-      
-      AppPrint.printPerformance('Delete subscription plan', DateTime.now().difference(startTime));
+
+      AppPrint.printPerformance(
+        'Delete subscription plan',
+        DateTime.now().difference(startTime),
+      );
       AppPrint.printSuccess('Successfully deleted subscription plan: $planId');
-      
+
       return true;
     } catch (e) {
       AppPrint.printError('Failed to delete subscription plan: $e');
@@ -341,15 +414,15 @@ class SubscriptionPlanRepository {
   Future<bool> subscriptionPlanExists(String planId) async {
     try {
       AppPrint.printStep('Checking if subscription plan exists: $planId');
-      
+
       final response = await _supabaseService.getData(
         table: _tableName,
         filters: {'plan_id': planId},
       );
-      
+
       final exists = response.isNotEmpty;
       AppPrint.printInfo('Subscription plan $planId exists: $exists');
-      
+
       return exists;
     } catch (e) {
       AppPrint.printError('Failed to check if subscription plan exists: $e');
@@ -364,27 +437,38 @@ class SubscriptionPlanRepository {
     String? billingCycle,
   }) async {
     try {
-      AppPrint.printStep('Fetching subscription plans with pagination (limit: $limit, offset: $offset)');
+      AppPrint.printStep(
+        'Fetching subscription plans with pagination (limit: $limit, offset: $offset)',
+      );
       final startTime = DateTime.now();
-      
+
       final filters = <String, dynamic>{};
       if (billingCycle != null) filters['billing_cycle'] = billingCycle;
-      
+
       final response = await _supabaseService.getData(
         table: _tableName,
         filters: filters.isNotEmpty ? filters : null,
         limit: limit,
         offset: offset,
       );
-      
-      final plans = response.map((json) => SubscriptionPlan.fromJson(json)).toList();
-      
-      AppPrint.printPerformance('Get subscription plans with pagination', DateTime.now().difference(startTime));
-      AppPrint.printSuccess('Successfully fetched ${plans.length} subscription plans');
-      
+
+      final plans = response
+          .map((json) => SubscriptionPlan.fromJson(json))
+          .toList();
+
+      AppPrint.printPerformance(
+        'Get subscription plans with pagination',
+        DateTime.now().difference(startTime),
+      );
+      AppPrint.printSuccess(
+        'Successfully fetched ${plans.length} subscription plans',
+      );
+
       return plans;
     } catch (e) {
-      AppPrint.printError('Failed to fetch subscription plans with pagination: $e');
+      AppPrint.printError(
+        'Failed to fetch subscription plans with pagination: $e',
+      );
       rethrow;
     }
   }
@@ -394,20 +478,23 @@ class SubscriptionPlanRepository {
     try {
       AppPrint.printStep('Getting subscription plans count');
       final startTime = DateTime.now();
-      
+
       final filters = <String, dynamic>{};
       if (billingCycle != null) filters['billing_cycle'] = billingCycle;
-      
+
       final response = await _supabaseService.getData(
         table: _tableName,
         filters: filters.isNotEmpty ? filters : null,
       );
-      
+
       final count = response.length;
-      
-      AppPrint.printPerformance('Get subscription plans count', DateTime.now().difference(startTime));
+
+      AppPrint.printPerformance(
+        'Get subscription plans count',
+        DateTime.now().difference(startTime),
+      );
       AppPrint.printInfo('Total subscription plans count: $count');
-      
+
       return count;
     } catch (e) {
       AppPrint.printError('Failed to get subscription plans count: $e');
@@ -416,26 +503,35 @@ class SubscriptionPlanRepository {
   }
 
   /// Search subscription plans by name or description
-  Future<List<SubscriptionPlan>> searchSubscriptionPlans(String searchTerm) async {
+  Future<List<SubscriptionPlan>> searchSubscriptionPlans(
+    String searchTerm,
+  ) async {
     try {
       AppPrint.printStep('Searching subscription plans: $searchTerm');
       final startTime = DateTime.now();
-      
+
       final response = await _supabaseService.getData(table: _tableName);
-      
-      final plans = response.map((json) => SubscriptionPlan.fromJson(json)).toList();
-      
+
+      final plans = response
+          .map((json) => SubscriptionPlan.fromJson(json))
+          .toList();
+
       // Filter plans based on search term
       final filteredPlans = plans.where((plan) {
         final searchLower = searchTerm.toLowerCase();
         return plan.name.toLowerCase().contains(searchLower) ||
-               (plan.description?.toLowerCase().contains(searchLower) ?? false) ||
-               plan.billingCycle.toLowerCase().contains(searchLower);
+            (plan.description?.toLowerCase().contains(searchLower) ?? false) ||
+            plan.billingCycle.toLowerCase().contains(searchLower);
       }).toList();
-      
-      AppPrint.printPerformance('Search subscription plans', DateTime.now().difference(startTime));
-      AppPrint.printSuccess('Found ${filteredPlans.length} subscription plans matching: $searchTerm');
-      
+
+      AppPrint.printPerformance(
+        'Search subscription plans',
+        DateTime.now().difference(startTime),
+      );
+      AppPrint.printSuccess(
+        'Found ${filteredPlans.length} subscription plans matching: $searchTerm',
+      );
+
       return filteredPlans;
     } catch (e) {
       AppPrint.printError('Failed to search subscription plans: $e');
@@ -444,32 +540,41 @@ class SubscriptionPlanRepository {
   }
 
   /// Get cheapest subscription plan
-  Future<SubscriptionPlan?> getCheapestSubscriptionPlan({String? billingCycle}) async {
+  Future<SubscriptionPlan?> getCheapestSubscriptionPlan({
+    String? billingCycle,
+  }) async {
     try {
       AppPrint.printStep('Fetching cheapest subscription plan');
       final startTime = DateTime.now();
-      
+
       final filters = <String, dynamic>{};
       if (billingCycle != null) filters['billing_cycle'] = billingCycle;
-      
+
       final response = await _supabaseService.getData(
         table: _tableName,
         filters: filters.isNotEmpty ? filters : null,
       );
-      
+
       if (response.isEmpty) {
         AppPrint.printWarning('No subscription plans found');
         return null;
       }
-      
-      final plans = response.map((json) => SubscriptionPlan.fromJson(json)).toList();
-      
+
+      final plans = response
+          .map((json) => SubscriptionPlan.fromJson(json))
+          .toList();
+
       // Find the cheapest plan
       final cheapestPlan = plans.reduce((a, b) => a.price < b.price ? a : b);
-      
-      AppPrint.printPerformance('Get cheapest subscription plan', DateTime.now().difference(startTime));
-      AppPrint.printSuccess('Successfully found cheapest subscription plan: ${cheapestPlan.name}');
-      
+
+      AppPrint.printPerformance(
+        'Get cheapest subscription plan',
+        DateTime.now().difference(startTime),
+      );
+      AppPrint.printSuccess(
+        'Successfully found cheapest subscription plan: ${cheapestPlan.name}',
+      );
+
       return cheapestPlan;
     } catch (e) {
       AppPrint.printError('Failed to fetch cheapest subscription plan: $e');
@@ -478,36 +583,49 @@ class SubscriptionPlanRepository {
   }
 
   /// Get most expensive subscription plan
-  Future<SubscriptionPlan?> getMostExpensiveSubscriptionPlan({String? billingCycle}) async {
+  Future<SubscriptionPlan?> getMostExpensiveSubscriptionPlan({
+    String? billingCycle,
+  }) async {
     try {
       AppPrint.printStep('Fetching most expensive subscription plan');
       final startTime = DateTime.now();
-      
+
       final filters = <String, dynamic>{};
       if (billingCycle != null) filters['billing_cycle'] = billingCycle;
-      
+
       final response = await _supabaseService.getData(
         table: _tableName,
         filters: filters.isNotEmpty ? filters : null,
       );
-      
+
       if (response.isEmpty) {
         AppPrint.printWarning('No subscription plans found');
         return null;
       }
-      
-      final plans = response.map((json) => SubscriptionPlan.fromJson(json)).toList();
-      
+
+      final plans = response
+          .map((json) => SubscriptionPlan.fromJson(json))
+          .toList();
+
       // Find the most expensive plan
-      final mostExpensivePlan = plans.reduce((a, b) => a.price > b.price ? a : b);
-      
-      AppPrint.printPerformance('Get most expensive subscription plan', DateTime.now().difference(startTime));
-      AppPrint.printSuccess('Successfully found most expensive subscription plan: ${mostExpensivePlan.name}');
-      
+      final mostExpensivePlan = plans.reduce(
+        (a, b) => a.price > b.price ? a : b,
+      );
+
+      AppPrint.printPerformance(
+        'Get most expensive subscription plan',
+        DateTime.now().difference(startTime),
+      );
+      AppPrint.printSuccess(
+        'Successfully found most expensive subscription plan: ${mostExpensivePlan.name}',
+      );
+
       return mostExpensivePlan;
     } catch (e) {
-      AppPrint.printError('Failed to fetch most expensive subscription plan: $e');
+      AppPrint.printError(
+        'Failed to fetch most expensive subscription plan: $e',
+      );
       rethrow;
     }
   }
-} 
+}

@@ -993,11 +993,10 @@ class MockSupabaseService extends _i1.Mock implements _i6.SupabaseService {
           )
           as _i4.Future<List<Map<String, dynamic>>>);
 
-  @override
   _i4.Future<List<Map<String, dynamic>>> updateData({
     required String? table,
     required Map<String, dynamic>? data,
-    required Map<String, dynamic>? filters,
+    Map<String, dynamic>? filters,
   }) =>
       (super.noSuchMethod(
             Invocation.method(#updateData, [], {

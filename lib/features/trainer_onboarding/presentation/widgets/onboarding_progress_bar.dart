@@ -43,7 +43,7 @@ class OnboardingProgressBar extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
-          
+
           // Progress bar
           Container(
             height: 4,
@@ -66,4 +66,4 @@ class OnboardingProgressBar extends StatelessWidget {
       ),
     );
   }
-} 
+}
