@@ -18,7 +18,8 @@ class TrainerOnboardingScreen extends StatefulWidget {
   const TrainerOnboardingScreen({super.key});
 
   @override
-  State<TrainerOnboardingScreen> createState() => _TrainerOnboardingScreenState();
+  State<TrainerOnboardingScreen> createState() =>
+      _TrainerOnboardingScreenState();
 }
 
 class _TrainerOnboardingScreenState extends State<TrainerOnboardingScreen> {
@@ -31,23 +32,21 @@ class _TrainerOnboardingScreenState extends State<TrainerOnboardingScreen> {
           if (state is TrainerOnboardingInitial) {
             return const Scaffold(
               backgroundColor: AppColors.primaryBackground,
-              body: Center(
-                child: CircularProgressIndicator(),
-              ),
+              body: Center(child: CircularProgressIndicator()),
             );
           }
 
-          final currentStep = state is TrainerOnboardingLoaded 
+          final currentStep = state is TrainerOnboardingLoaded
               ? state.currentStep
-              : state is TrainerOnboardingError 
-                  ? state.currentStep
-                  : state is TrainerOnboardingLoading
-                      ? state.currentStep
-                      : state is TrainerOnboardingValidatingEmail
-                          ? state.currentStep
-                          : 1;
+              : state is TrainerOnboardingError
+              ? state.currentStep
+              : state is TrainerOnboardingLoading
+              ? state.currentStep
+              : state is TrainerOnboardingValidatingEmail
+              ? state.currentStep
+              : 1;
 
-          final progressPercentage = state is TrainerOnboardingLoaded 
+          final progressPercentage = state is TrainerOnboardingLoaded
               ? state.progressPercentage
               : currentStep / 4.0; // Assuming 4 total steps
 
@@ -62,7 +61,7 @@ class _TrainerOnboardingScreenState extends State<TrainerOnboardingScreen> {
                     totalSteps: 4,
                     progressPercentage: progressPercentage,
                   ),
-                  
+
                   // Back button
                   if (currentStep > 1)
                     Padding(
@@ -71,7 +70,9 @@ class _TrainerOnboardingScreenState extends State<TrainerOnboardingScreen> {
                         alignment: Alignment.centerLeft,
                         child: TextButton.icon(
                           onPressed: () {
-                            context.read<TrainerOnboardingBloc>().add(const PreviousStepEvent());
+                            context.read<TrainerOnboardingBloc>().add(
+                              const PreviousStepEvent(),
+                            );
                           },
                           icon: const Icon(
                             Icons.arrow_back,
@@ -88,11 +89,9 @@ class _TrainerOnboardingScreenState extends State<TrainerOnboardingScreen> {
                         ),
                       ),
                     ),
-                  
+
                   // Step content
-                  Expanded(
-                    child: _buildStepContent(context, state),
-                  ),
+                  Expanded(child: _buildStepContent(context, state)),
                 ],
               ),
             ),
@@ -104,28 +103,31 @@ class _TrainerOnboardingScreenState extends State<TrainerOnboardingScreen> {
 
   /// Builds the content for the current step
   Widget _buildStepContent(BuildContext context, TrainerOnboardingState state) {
-    final currentStep = state is TrainerOnboardingLoaded 
+    final currentStep = state is TrainerOnboardingLoaded
         ? state.currentStep
-        : state is TrainerOnboardingError 
-            ? state.currentStep
-            : state is TrainerOnboardingLoading
-                ? state.currentStep
-                : state is TrainerOnboardingValidatingEmail
-                    ? state.currentStep
-                    : 1;
+        : state is TrainerOnboardingError
+        ? state.currentStep
+        : state is TrainerOnboardingLoading
+        ? state.currentStep
+        : state is TrainerOnboardingValidatingEmail
+        ? state.currentStep
+        : 1;
 
     switch (currentStep) {
       case 1:
         return IdentityIntroductionScreen(
-          onContinue: () => context.read<TrainerOnboardingBloc>().add(const NextStepEvent()),
+          onContinue: () =>
+              context.read<TrainerOnboardingBloc>().add(const NextStepEvent()),
         );
       case 2:
         return CredentialsExperienceScreen(
-          onContinue: () => context.read<TrainerOnboardingBloc>().add(const NextStepEvent()),
+          onContinue: () =>
+              context.read<TrainerOnboardingBloc>().add(const NextStepEvent()),
         );
       case 3:
         return TrainingPhilosophyScreen(
-          onContinue: () => context.read<TrainerOnboardingBloc>().add(const NextStepEvent()),
+          onContinue: () =>
+              context.read<TrainerOnboardingBloc>().add(const NextStepEvent()),
         );
       case 4:
         return AccountCreationScreen(
@@ -146,4 +148,4 @@ class _TrainerOnboardingScreenState extends State<TrainerOnboardingScreen> {
     // Navigate to dashboard or email verification
     context.go(RouteNames.dashboardPath);
   }
-} 
+}

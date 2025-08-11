@@ -20,7 +20,7 @@ class ProgressHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final progress = currentStep / totalSteps;
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -34,7 +34,7 @@ class ProgressHeader extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
-        
+
         // Progress bar
         Row(
           children: [
@@ -68,7 +68,7 @@ class ProgressHeader extends StatelessWidget {
             ),
           ],
         ),
-        
+
         // Back button
         if (showBackButton) ...[
           const SizedBox(height: 16),
@@ -98,4 +98,4 @@ class ProgressHeader extends StatelessWidget {
       ],
     );
   }
-} 
+}

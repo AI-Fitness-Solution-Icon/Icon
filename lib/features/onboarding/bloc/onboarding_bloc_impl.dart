@@ -262,10 +262,10 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
   }
 
   /// Get the current step index
-  int getCurrentStep() {
+  int? getCurrentStep() {
     if (state is OnboardingLoaded) {
       return (state as OnboardingLoaded).currentStep;
     }
-    return 0;
+    return null;
   }
 }
