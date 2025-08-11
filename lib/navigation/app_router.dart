@@ -38,7 +38,7 @@ import 'package:icon_app/navigation/route_names.dart';
 class AppRouter {
   /// Main router instance
   static final GoRouter router = GoRouter(
-    initialLocation: RouteNames.personalInfoPath,
+    initialLocation: RouteNames.signupPath,
     debugLogDiagnostics: true,
     routes: [
       // Splash and onboarding routes

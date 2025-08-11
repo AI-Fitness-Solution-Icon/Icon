@@ -1,25 +1,33 @@
 import 'package:equatable/equatable.dart';
 import 'user.dart';
 
-/// UserSettings model representing user settings in the Icon app
+/// UserSettings model representing user preferences and settings
 class UserSettings extends Equatable {
   static const String tableName = 'user_settings';
 
   final String settingId;
-  final String userId;
+  final String id;
   final String theme;
-  final bool notificationEnabled;
   final String language;
-  
+  final bool notificationsEnabled;
+  final bool soundEnabled;
+  final bool vibrationEnabled;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+
   // Related models (optional, populated when joined)
   final User? user;
 
   const UserSettings({
     required this.settingId,
-    required this.userId,
-    this.theme = 'light',
-    this.notificationEnabled = true,
+    required this.id,
+    this.theme = 'dark',
     this.language = 'en',
+    this.notificationsEnabled = true,
+    this.soundEnabled = true,
+    this.vibrationEnabled = true,
+    required this.createdAt,
+    required this.updatedAt,
     this.user,
   });
 
@@ -27,13 +35,14 @@ class UserSettings extends Equatable {
   factory UserSettings.fromJson(Map<String, dynamic> json) {
     return UserSettings(
       settingId: json['setting_id'] as String,
-      userId: json['user_id'] as String,
-      theme: json['theme'] as String? ?? 'light',
-      notificationEnabled: json['notification_enabled'] as bool? ?? true,
+      id: json['id'] as String,
+      theme: json['theme'] as String? ?? 'dark',
       language: json['language'] as String? ?? 'en',
-      user: json['user'] != null 
-          ? User.fromJson(json['user'] as Map<String, dynamic>) 
-          : null,
+      notificationsEnabled: json['notifications_enabled'] as bool? ?? true,
+      soundEnabled: json['sound_enabled'] as bool? ?? true,
+      vibrationEnabled: json['vibration_enabled'] as bool? ?? true,
+      createdAt: DateTime.parse(json['created_at'] as String),
+      updatedAt: DateTime.parse(json['updated_at'] as String),
     );
   }
 
@@ -41,29 +50,38 @@ class UserSettings extends Equatable {
   Map<String, dynamic> toJson() {
     return {
       'setting_id': settingId,
-      'user_id': userId,
+      'id': id,
       'theme': theme,
-      'notification_enabled': notificationEnabled,
       'language': language,
-      'user': user?.toJson(),
+      'notifications_enabled': notificationsEnabled,
+      'sound_enabled': soundEnabled,
+      'vibration_enabled': vibrationEnabled,
+      'created_at': createdAt.toIso8601String(),
+      'updated_at': updatedAt.toIso8601String(),
     };
   }
 
   /// Creates a copy of UserSettings with updated fields
   UserSettings copyWith({
     String? settingId,
-    String? userId,
+    String? id,
     String? theme,
-    bool? notificationEnabled,
-    String? language,
+    bool? notificationsEnabled,
+    bool? soundEnabled,
+    bool? vibrationEnabled,
+    DateTime? createdAt,
+    DateTime? updatedAt,
     User? user,
   }) {
     return UserSettings(
       settingId: settingId ?? this.settingId,
-      userId: userId ?? this.userId,
+      id: id ?? this.id,
       theme: theme ?? this.theme,
-      notificationEnabled: notificationEnabled ?? this.notificationEnabled,
-      language: language ?? this.language,
+      notificationsEnabled: notificationsEnabled ?? this.notificationsEnabled,
+      soundEnabled: soundEnabled ?? this.soundEnabled,
+      vibrationEnabled: vibrationEnabled ?? this.vibrationEnabled,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
       user: user ?? this.user,
     );
   }
@@ -71,15 +89,18 @@ class UserSettings extends Equatable {
   @override
   List<Object?> get props => [
     settingId,
-    userId,
+    id,
     theme,
-    notificationEnabled,
-    language,
+    notificationsEnabled,
+    soundEnabled,
+    vibrationEnabled,
+    createdAt,
+    updatedAt,
     user,
   ];
 
   @override
   String toString() {
-    return 'UserSettings(settingId: $settingId, userId: $userId, theme: $theme, language: $language)';
+    return 'UserSettings(settingId: $settingId, id: $id, theme: $theme, language: $language)';
   }
-} 
+}

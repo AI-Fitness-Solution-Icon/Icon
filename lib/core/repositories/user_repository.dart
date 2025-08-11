@@ -43,7 +43,7 @@ class UserRepository {
       final response = await _supabaseService.getData(
         table: _tableName,
         select: '*, roles(*)',
-        filters: {'user_id': userId},
+        filters: {'id': userId},
       );
 
       if (response.isEmpty) {
@@ -212,7 +212,7 @@ class UserRepository {
       final response = await _supabaseService.client
           .from(_tableName)
           .update(updateData)
-          .eq('user_id', userId)
+          .eq('id', userId)
           .select();
 
       if (response.isEmpty) {
@@ -343,7 +343,7 @@ class UserRepository {
 
       await _supabaseService.deleteData(
         table: _tableName,
-        filters: {'user_id': userId},
+        filters: {'id': userId},
       );
 
       AppPrint.printPerformance(

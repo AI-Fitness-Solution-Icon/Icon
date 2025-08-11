@@ -239,7 +239,7 @@ export type Database = {
             columns: ["client_id"]
             isOneToOne: true
             referencedRelation: "users"
-            referencedColumns: ["user_id"]
+            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "clients_coach_id_fkey"
@@ -275,7 +275,7 @@ export type Database = {
             columns: ["coach_id"]
             isOneToOne: true
             referencedRelation: "users"
-            referencedColumns: ["user_id"]
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -593,7 +593,7 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users"
-            referencedColumns: ["user_id"]
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -638,7 +638,7 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users"
-            referencedColumns: ["user_id"]
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -649,12 +649,12 @@ export type Database = {
           email: string
           first_name: string | null
           gender: string | null
+          id: string
           is_active: boolean | null
           last_login: string | null
           last_name: string | null
           role_id: string
           updated_at: string | null
-          user_id: string
         }
         Insert: {
           created_at?: string | null
@@ -662,12 +662,12 @@ export type Database = {
           email: string
           first_name?: string | null
           gender?: string | null
+          id?: string
           is_active?: boolean | null
           last_login?: string | null
           last_name?: string | null
           role_id: string
           updated_at?: string | null
-          user_id?: string
         }
         Update: {
           created_at?: string | null
@@ -675,12 +675,12 @@ export type Database = {
           email?: string
           first_name?: string | null
           gender?: string | null
+          id?: string
           is_active?: boolean | null
           last_login?: string | null
           last_name?: string | null
           role_id?: string
           updated_at?: string | null
-          user_id?: string
         }
         Relationships: [
           {

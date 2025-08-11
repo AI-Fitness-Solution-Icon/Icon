@@ -5,7 +5,7 @@ import 'role.dart';
 class User extends Equatable {
   static const String tableName = 'users';
 
-  final String userId;
+  final String id;
   final String roleId;
   final String? firstName;
   final String? lastName;
@@ -22,7 +22,7 @@ class User extends Equatable {
   final Role? role;
 
   const User({
-    required this.userId,
+    required this.id,
     required this.roleId,
     this.firstName,
     this.lastName,
@@ -40,7 +40,7 @@ class User extends Equatable {
   /// Creates a User from JSON data
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      userId: json['user_id'] as String,
+      id: json['id'] as String,
       roleId: json['role_id'] as String,
       firstName: json['first_name'] as String?,
       lastName: json['last_name'] as String?,
@@ -65,7 +65,7 @@ class User extends Equatable {
   /// Converts User to JSON data
   Map<String, dynamic> toJson() {
     return {
-      'user_id': userId,
+      'id': id,
       'role_id': roleId,
       'first_name': firstName,
       'last_name': lastName,
@@ -83,7 +83,7 @@ class User extends Equatable {
 
   /// Creates a copy of User with updated fields
   User copyWith({
-    String? userId,
+    String? id,
     String? roleId,
     String? firstName,
     String? lastName,
@@ -98,7 +98,7 @@ class User extends Equatable {
     Role? role,
   }) {
     return User(
-      userId: userId ?? this.userId,
+      id: id ?? this.id,
       roleId: roleId ?? this.roleId,
       firstName: firstName ?? this.firstName,
       lastName: lastName ?? this.lastName,
@@ -128,7 +128,7 @@ class User extends Equatable {
 
   @override
   List<Object?> get props => [
-    userId,
+    id,
     roleId,
     firstName,
     lastName,
@@ -145,7 +145,7 @@ class User extends Equatable {
 
   @override
   String toString() {
-    return 'User(userId: $userId, email: $email, fullName: $fullName, isActive: $isActive)';
+    return 'User(id: $id, email: $email, fullName: $fullName, isActive: $isActive)';
   }
 }
 

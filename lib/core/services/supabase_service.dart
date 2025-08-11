@@ -122,7 +122,7 @@ class SupabaseService {
       final response = await _client
           .from('users')
           .select('*, roles(*)')
-          .eq('user_id', userId)
+          .eq('id', userId)
           .single();
       return response;
     } catch (e) {

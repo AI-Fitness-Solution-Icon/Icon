@@ -30,7 +30,7 @@ class AIResponse {
       ),
       metadata: json['metadata'] as Map<String, dynamic>?,
       createdAt: DateTime.parse(json['created_at'] as String),
-      userId: json['user_id'] as String,
+      userId: json['id'] as String,
     );
   }
 
@@ -84,10 +84,4 @@ class AIResponse {
 }
 
 /// AI response types
-enum AIResponseType {
-  text,
-  voice,
-  workout,
-  nutrition,
-  motivation,
-} 
+enum AIResponseType { text, voice, workout, nutrition, motivation }

@@ -17,7 +17,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
   final _subjectController = TextEditingController();
   final _messageController = TextEditingController();
   final _emailController = TextEditingController();
-  
+
   String _selectedCategory = 'General Feedback';
   bool _includeSystemInfo = true;
   bool _isSubmitting = false;
@@ -49,34 +49,22 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
     try {
       // Submit feedback to API
       final feedbackService = FeedbackService();
-      final success = await feedbackService.submitFeedback(
-        type: _selectedCategory.toLowerCase().replaceAll(' ', '_'),
-        subject: _subjectController.text.trim(),
+      await feedbackService.submitFeedback(
         message: _messageController.text.trim(),
-        email: _emailController.text.trim().isNotEmpty ? _emailController.text.trim() : null,
-        metadata: {
-          'include_system_info': _includeSystemInfo,
-          'category': _selectedCategory,
-        },
+        category: _selectedCategory.toLowerCase().replaceAll(' ', '_'),
+        rating: 5, // Default rating for now, could be made configurable
       );
-      
+
       if (mounted) {
-        if (success) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Thank you for your feedback! We\'ll review it shortly.'),
-              backgroundColor: Colors.green,
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Thank you for your feedback! We\'ll review it shortly.',
             ),
-          );
-          context.pop();
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Failed to submit feedback. Please try again.'),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
+            backgroundColor: Colors.green,
+          ),
+        );
+        context.pop();
       }
     } catch (e) {
       if (mounted) {
@@ -116,10 +104,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                       valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                     ),
                   )
-                : const Text(
-                    'Send',
-                    style: TextStyle(color: Colors.white),
-                  ),
+                : const Text('Send', style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -157,9 +142,9 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
               const SizedBox(height: 8),
               Text(
                 'Your feedback helps us improve the app for everyone',
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: Colors.grey[600],
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyLarge?.copyWith(color: Colors.grey[600]),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 32),
@@ -237,7 +222,9 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                 ),
                 validator: (value) {
                   if (value != null && value.isNotEmpty) {
-                    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                    if (!RegExp(
+                      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                    ).hasMatch(value)) {
                       return 'Please enter a valid email address';
                     }
                   }
@@ -280,7 +267,9 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                           height: 20,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.white,
+                            ),
                           ),
                         )
                       : const Text(
@@ -318,10 +307,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
     return DropdownButtonFormField<String>(
       value: value,
       items: items.map((String item) {
-        return DropdownMenuItem<String>(
-          value: item,
-          child: Text(item),
-        );
+        return DropdownMenuItem<String>(value: item, child: Text(item));
       }).toList(),
       onChanged: onChanged,
       decoration: InputDecoration(
@@ -385,13 +371,10 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
             ),
           ),
           Expanded(
-            child: Text(
-              value,
-              style: TextStyle(color: Colors.grey[700]),
-            ),
+            child: Text(value, style: TextStyle(color: Colors.grey[700])),
           ),
         ],
       ),
     );
   }
-} 
+}

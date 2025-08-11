@@ -33,6 +33,7 @@ Deno.serve(async (req) => {
           email,
           'first_name': email ? email.split("@")[0] : null,
           'last_name': "",
+          'role_id': '40b641b8-ff16-49fb-a68b-37b0c405c01f',
           'created_at': new Date().toISOString(),
         },
       ]);

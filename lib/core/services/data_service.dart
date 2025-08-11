@@ -9,7 +9,7 @@ class DataService {
   Future<bool> downloadUserData() async {
     try {
       AppPrint.printInfo('Starting user data download...');
-      
+
       final currentUser = _supabaseService.currentUser;
       if (currentUser == null) {
         throw Exception('No authenticated user found');
@@ -23,7 +23,7 @@ class DataService {
 
       // Get user's fitness data (workouts, activities, etc.)
       final fitnessData = await _getFitnessData(currentUser.id);
-      
+
       // Get user's settings data
       final settingsData = await _getSettingsData(currentUser.id);
 
@@ -41,11 +41,13 @@ class DataService {
       // 3. Send an email to the user with a download link
       // 4. Store the request in a database for tracking
 
-      AppPrint.printInfo('User data prepared for download: ${allUserData.length} items');
-      
+      AppPrint.printInfo(
+        'User data prepared for download: ${allUserData.length} items',
+      );
+
       // Simulate sending email notification
       await _sendDataDownloadEmail(currentUser.email!);
-      
+
       return true;
     } catch (e) {
       AppPrint.printError('Failed to download user data: $e');
@@ -56,28 +58,23 @@ class DataService {
   /// Get user's fitness data
   Future<Map<String, dynamic>> _getFitnessData(String userId) async {
     try {
-      // Get workouts
-      final workouts = await _supabaseService.getData(
+      final workoutData = await _supabaseService.getData(
         table: 'workouts',
-        filters: {'user_id': userId},
+        filters: {'id': userId},
       );
-
-      // Get activities
-      final activities = await _supabaseService.getData(
-        table: 'activities',
-        filters: {'user_id': userId},
+      final progressData = await _supabaseService.getData(
+        table: 'progress',
+        filters: {'id': userId},
       );
-
-      // Get goals
-      final goals = await _supabaseService.getData(
+      final goalsData = await _supabaseService.getData(
         table: 'goals',
-        filters: {'user_id': userId},
+        filters: {'id': userId},
       );
 
       return {
-        'workouts': workouts,
-        'activities': activities,
-        'goals': goals,
+        'workouts': workoutData,
+        'progress': progressData,
+        'goals': goalsData,
       };
     } catch (e) {
       AppPrint.printError('Failed to get fitness data: $e');
@@ -88,15 +85,12 @@ class DataService {
   /// Get user's settings data
   Future<Map<String, dynamic>> _getSettingsData(String userId) async {
     try {
-      // Get user preferences
-      final preferences = await _supabaseService.getData(
-        table: 'user_preferences',
-        filters: {'user_id': userId},
+      final settingsData = await _supabaseService.getData(
+        table: 'user_settings',
+        filters: {'id': userId},
       );
 
-      return {
-        'preferences': preferences,
-      };
+      return {'settings': settingsData};
     } catch (e) {
       AppPrint.printError('Failed to get settings data: $e');
       return {};
@@ -109,14 +103,14 @@ class DataService {
       // In a real app, this would be handled by a backend service
       // For now, we'll just log it
       AppPrint.printInfo('Sending data download email to: $email');
-      
+
       // Simulate email sending delay
       await Future.delayed(const Duration(seconds: 1));
-      
+
       AppPrint.printInfo('Data download email sent successfully');
     } catch (e) {
       AppPrint.printError('Failed to send data download email: $e');
       rethrow;
     }
   }
-} 
+}
