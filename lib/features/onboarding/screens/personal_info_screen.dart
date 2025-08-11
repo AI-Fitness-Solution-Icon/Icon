@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:icon_app/core/constants/app_colors.dart';
-import 'package:icon_app/navigation/route_names.dart';
 import 'package:icon_app/features/onboarding/widgets/progress_header.dart';
 import 'package:icon_app/features/onboarding/widgets/info_card.dart';
 import 'package:icon_app/features/onboarding/widgets/custom_input_field.dart';
@@ -26,7 +25,6 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
   late final TextEditingController _dateOfBirthController;
   Gender? _selectedGender;
   DateTime? _selectedDate;
-  bool _shouldNavigate = false;
 
   @override
   void initState() {
@@ -101,20 +99,15 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
             ? nameParts.sublist(1).join(' ')
             : '';
 
-        // Update user profile with personal information
+        // Update user profile with personal information including date of birth and gender
         await userRepository.updateUserProfile(
           firstName: firstName.isNotEmpty ? firstName : null,
           lastName: lastName.isNotEmpty ? lastName : null,
+          dateOfBirth: _selectedDate,
+          gender: _selectedGender?.name,
         );
 
         AppPrint.printInfo('Personal information saved successfully');
-      }
-
-      // Set flag to navigate
-      if (mounted) {
-        setState(() {
-          _shouldNavigate = true;
-        });
       }
     } catch (e) {
       AppPrint.printError('Failed to save personal information: $e');
@@ -141,15 +134,6 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Handle navigation when flag is set
-    if (_shouldNavigate) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (context.mounted) {
-          context.go(RouteNames.fitnessGoalsPath);
-        }
-      });
-    }
-
     return Scaffold(
       backgroundColor: AppColors.primaryBackground,
       body: SafeArea(
@@ -220,7 +204,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
 
                 const Spacer(),
 
-                // Continue Button
+                // f Button
                 PrimaryButton(
                   text: 'Continue',
                   onPressed: _onContinue,

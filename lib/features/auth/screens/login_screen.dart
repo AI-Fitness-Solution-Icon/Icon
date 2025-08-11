@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import '../../../core/constants/app_colors.dart';
-import '../../../core/utils/app_print.dart';
-import '../../../navigation/route_names.dart';
-import '../../../core/services/settings_service.dart';
-import '../bloc/auth_bloc.dart';
-import '../bloc/auth_event.dart';
-import '../bloc/auth_state.dart';
+import 'package:icon_app/core/constants/app_colors.dart';
+import 'package:icon_app/core/utils/app_print.dart';
+import 'package:icon_app/navigation/route_names.dart';
+import 'package:icon_app/core/services/settings_service.dart';
+import 'package:icon_app/features/auth/bloc/auth_bloc.dart';
+import 'package:icon_app/features/auth/bloc/auth_event.dart';
+import 'package:icon_app/features/auth/bloc/auth_state.dart';
 
 /// Login screen for user authentication
 class LoginScreen extends StatefulWidget {
@@ -19,9 +19,16 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
+  late final TextEditingController _emailController;
+  late final TextEditingController _passwordController;
   bool _obscurePassword = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _emailController = TextEditingController();
+    _passwordController = TextEditingController();
+  }
 
   @override
   void dispose() {

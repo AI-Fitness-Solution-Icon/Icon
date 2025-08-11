@@ -15,7 +15,9 @@ class User extends Equatable {
   final DateTime updatedAt;
   final DateTime? lastLogin;
   final bool isActive;
-  
+  final DateTime? dateOfBirth;
+  final String? gender;
+
   // Related models (optional, populated when joined)
   final Role? role;
 
@@ -30,6 +32,8 @@ class User extends Equatable {
     required this.updatedAt,
     this.lastLogin,
     this.isActive = true,
+    this.dateOfBirth,
+    this.gender,
     this.role,
   });
 
@@ -41,15 +45,19 @@ class User extends Equatable {
       firstName: json['first_name'] as String?,
       lastName: json['last_name'] as String?,
       email: json['email'] as String,
-      passwordHash: json['password_hash'] as String,
+      passwordHash: json['password'] as String,
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: DateTime.parse(json['updated_at'] as String),
-      lastLogin: json['last_login'] != null 
-          ? DateTime.parse(json['last_login'] as String) 
+      lastLogin: json['last_login'] != null
+          ? DateTime.parse(json['last_login'] as String)
           : null,
       isActive: json['is_active'] as bool? ?? true,
-      role: json['role'] != null 
-          ? Role.fromJson(json['role'] as Map<String, dynamic>) 
+      dateOfBirth: json['date_of_birth'] != null
+          ? DateTime.parse(json['date_of_birth'] as String)
+          : null,
+      gender: json['gender'] as String?,
+      role: json['role'] != null
+          ? Role.fromJson(json['role'] as Map<String, dynamic>)
           : null,
     );
   }
@@ -62,11 +70,13 @@ class User extends Equatable {
       'first_name': firstName,
       'last_name': lastName,
       'email': email,
-      'password_hash': passwordHash,
+      'password': passwordHash,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
       'last_login': lastLogin?.toIso8601String(),
       'is_active': isActive,
+      'date_of_birth': dateOfBirth?.toIso8601String(),
+      'gender': gender,
       'role': role?.toJson(),
     };
   }
@@ -83,6 +93,8 @@ class User extends Equatable {
     DateTime? updatedAt,
     DateTime? lastLogin,
     bool? isActive,
+    DateTime? dateOfBirth,
+    String? gender,
     Role? role,
   }) {
     return User(
@@ -96,6 +108,8 @@ class User extends Equatable {
       updatedAt: updatedAt ?? this.updatedAt,
       lastLogin: lastLogin ?? this.lastLogin,
       isActive: isActive ?? this.isActive,
+      dateOfBirth: dateOfBirth ?? this.dateOfBirth,
+      gender: gender ?? this.gender,
       role: role ?? this.role,
     );
   }
@@ -114,16 +128,18 @@ class User extends Equatable {
 
   @override
   List<Object?> get props => [
-    userId, 
-    roleId, 
-    firstName, 
-    lastName, 
-    email, 
-    passwordHash, 
-    createdAt, 
-    updatedAt, 
-    lastLogin, 
+    userId,
+    roleId,
+    firstName,
+    lastName,
+    email,
+    passwordHash,
+    createdAt,
+    updatedAt,
+    lastLogin,
     isActive,
+    dateOfBirth,
+    gender,
     role,
   ];
 
@@ -134,8 +150,4 @@ class User extends Equatable {
 }
 
 /// User roles in the Icon app (legacy enum for backward compatibility)
-enum UserRole {
-  athlete,
-  trainer,
-  admin,
-} 
+enum UserRole { athlete, trainer, admin }

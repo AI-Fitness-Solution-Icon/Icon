@@ -16,15 +16,13 @@ console.log("sync_auth_users function is running...");
 
 Deno.serve(async (req) => {
   try {
-    const body = await req.json();
+    const { record } = await req.json();
 
-    // Supabase webhook for user creation usually sends `record`, `user`, or `new`
-    const user = body?.record ?? body?.user ?? body?.new;
-    if (!user?.id) {
+    const { id, email } = record;
+
+    if (!id) {
       return new Response("No user data in payload", { status: 400 });
     }
-
-    const { id, email } = user;
 
     // Insert into public.users
     const { error } = await supabase

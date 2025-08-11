@@ -18,7 +18,7 @@ class DashboardRepository {
   Future<List<Goal>> getGoals(DateTime date) async {
     try {
       AppPrint.printInfo('Fetching goals for date: $date');
-      
+
       // For now, return mock data
       // In a real app, this would fetch from Supabase
       return [
@@ -83,7 +83,7 @@ class DashboardRepository {
   Future<Progress> getProgress(DateTime date) async {
     try {
       AppPrint.printInfo('Fetching progress for date: $date');
-      
+
       // For now, return mock data
       // In a real app, this would fetch from Supabase
       return Progress(
@@ -105,7 +105,7 @@ class DashboardRepository {
   Future<List<MuscleGroup>> getMuscleGroups(DateTime date) async {
     try {
       AppPrint.printInfo('Fetching muscle groups for date: $date');
-      
+
       // For now, return mock data
       // In a real app, this would fetch from Supabase
       return [
@@ -168,7 +168,7 @@ class DashboardRepository {
   Future<List<WorkoutChallenge>> getWorkoutChallenges() async {
     try {
       AppPrint.printInfo('Fetching workout challenges');
-      
+
       // For now, return mock data
       // In a real app, this would fetch from Supabase
       return [
@@ -201,9 +201,11 @@ class DashboardRepository {
   Future<void> updateGoal(String goalId, double progress) async {
     try {
       AppPrint.printInfo('Updating goal: $goalId with progress: $progress');
-      
+
       // In a real app, this would update in Supabase
-      await Future.delayed(const Duration(milliseconds: 500)); // Simulate API call
+      await Future.delayed(
+        const Duration(milliseconds: 500),
+      ); // Simulate API call
     } catch (e) {
       AppPrint.printError('Failed to update goal: $e');
       rethrow;
@@ -214,9 +216,11 @@ class DashboardRepository {
   Future<void> acceptWorkoutChallenge(String challengeId) async {
     try {
       AppPrint.printInfo('Accepting workout challenge: $challengeId');
-      
+
       // In a real app, this would update in Supabase
-      await Future.delayed(const Duration(milliseconds: 500)); // Simulate API call
+      await Future.delayed(
+        const Duration(milliseconds: 500),
+      ); // Simulate API call
     } catch (e) {
       AppPrint.printError('Failed to accept workout challenge: $e');
       rethrow;
@@ -227,12 +231,14 @@ class DashboardRepository {
   Future<void> dismissWorkoutChallenge(String challengeId) async {
     try {
       AppPrint.printInfo('Dismissing workout challenge: $challengeId');
-      
+
       // In a real app, this would update in Supabase
-      await Future.delayed(const Duration(milliseconds: 500)); // Simulate API call
+      await Future.delayed(
+        const Duration(milliseconds: 500),
+      ); // Simulate API call
     } catch (e) {
       AppPrint.printError('Failed to dismiss workout challenge: $e');
       rethrow;
     }
   }
-} 
+}

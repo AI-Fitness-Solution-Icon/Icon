@@ -26,7 +26,7 @@ class RouteNames {
   static const String workoutSession = 'workout_session';
   static const String strengthWorkouts = 'strength_workouts';
   static const String createWorkout = 'create_workout';
-  
+
   // Community routes
   static const String community = 'community';
 
@@ -55,7 +55,6 @@ class RouteNames {
   static const String userTypeSelectionPath = '/user-type-selection';
   static const String trainerOnboardingPath = '/trainer-onboarding';
   static const String personalInfoPath = '/onboarding/personal-info';
-  static const String fitnessGoalsPath = '/onboarding/fitness-goals';
   static const String trainingLocationPath = '/onboarding/training-location';
   static const String trainingRoutinePath = '/onboarding/training-routine';
   static const String nutritionGoalsPath = '/onboarding/nutrition-goals';
@@ -85,4 +84,4 @@ class RouteNames {
   static const String homePath = '/home';
   static const String forgotPasswordPath = '/forgot-password';
   static const String resetPasswordPath = '/reset-password';
-} 
+}

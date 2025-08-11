@@ -319,6 +319,7 @@ class MockSupabaseService extends _i1.Mock implements _i7.SupabaseService {
             ),
           )
           as _i5.Future<List<Map<String, dynamic>>>);
+
   @override
   _i5.Future<void> deleteData({
     required String? table,

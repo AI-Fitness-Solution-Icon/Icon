@@ -4,8 +4,6 @@ import 'package:icon_app/features/splash/screens/splash_screen.dart';
 import 'package:icon_app/features/onboarding/screens/user_type_selection_screen.dart';
 import 'package:icon_app/features/trainer_onboarding/presentation/screens/trainer_onboarding_screen.dart';
 import 'package:icon_app/features/onboarding/screens/personal_info_screen.dart';
-import 'package:icon_app/features/onboarding/screens/fitness_goals_screen.dart'
-    as onboarding;
 import 'package:icon_app/features/onboarding/screens/training_location_screen.dart';
 import 'package:icon_app/features/onboarding/screens/training_routine_screen.dart';
 import 'package:icon_app/features/onboarding/screens/nutrition_goals_screen.dart';
@@ -26,7 +24,6 @@ import 'package:icon_app/features/subscription/screens/subscription_screen.dart'
 import 'package:icon_app/features/settings/screens/settings_screen.dart';
 import 'package:icon_app/features/settings/screens/notification_settings_screen.dart';
 import 'package:icon_app/features/settings/screens/privacy_settings_screen.dart';
-import 'package:icon_app/features/settings/screens/fitness_goals_screen.dart';
 import 'package:icon_app/features/settings/screens/payment_history_screen.dart';
 import 'package:icon_app/features/settings/screens/help_screen.dart';
 import 'package:icon_app/features/settings/screens/feedback_screen.dart';
@@ -41,7 +38,8 @@ import 'package:icon_app/navigation/route_names.dart';
 class AppRouter {
   /// Main router instance
   static final GoRouter router = GoRouter(
-    initialLocation: RouteNames.login,
+    initialLocation: RouteNames.personalInfoPath,
+    debugLogDiagnostics: true,
     routes: [
       // Splash and onboarding routes
       GoRoute(
@@ -63,11 +61,6 @@ class AppRouter {
         path: RouteNames.personalInfoPath,
         name: RouteNames.personalInfo,
         builder: (context, state) => const PersonalInfoScreen(),
-      ),
-      GoRoute(
-        path: RouteNames.fitnessGoalsPath,
-        name: RouteNames.fitnessGoals,
-        builder: (context, state) => const onboarding.FitnessGoalsScreen(),
       ),
       GoRoute(
         path: RouteNames.trainingLocationPath,
@@ -203,11 +196,6 @@ class AppRouter {
         builder: (context, state) => const PrivacySettingsScreen(),
       ),
       GoRoute(
-        path: RouteNames.fitnessGoalsSettingsPath,
-        name: RouteNames.fitnessGoalsSettings,
-        builder: (context, state) => const FitnessGoalsScreen(),
-      ),
-      GoRoute(
         path: RouteNames.paymentHistoryPath,
         name: RouteNames.paymentHistory,
         builder: (context, state) => const PaymentHistoryScreen(),
@@ -249,56 +237,84 @@ class AppRouter {
 
     // Redirect logic for authentication
     redirect: (context, state) {
-      final supabaseService = SupabaseService.instance;
-      final isAuthenticated = supabaseService.isAuthenticated;
-      final isAuthRoute =
-          state.matchedLocation == RouteNames.loginPath ||
-          state.matchedLocation == RouteNames.signupPath;
-      final isOnboardingRoute =
-          state.matchedLocation == RouteNames.splashPath ||
-          state.matchedLocation == RouteNames.userTypeSelectionPath;
+      try {
+        debugPrint('Router redirect called for: ${state.uri}');
+        debugPrint('Matched location: ${state.matchedLocation}');
 
-      // Allow access to splash and onboarding routes
-      if (isOnboardingRoute) {
+        final supabaseService = SupabaseService.instance;
+        final isAuthenticated = supabaseService.isAuthenticated;
+        debugPrint('Is authenticated: $isAuthenticated');
+
+        final isAuthRoute =
+            state.matchedLocation == RouteNames.loginPath ||
+            state.matchedLocation == RouteNames.signupPath ||
+            state.matchedLocation == RouteNames.forgotPasswordPath ||
+            state.matchedLocation == RouteNames.resetPasswordPath;
+        final isOnboardingRoute =
+            state.matchedLocation == RouteNames.splashPath ||
+            state.matchedLocation == RouteNames.userTypeSelectionPath ||
+            state.matchedLocation == RouteNames.trainerOnboardingPath ||
+            state.matchedLocation == RouteNames.personalInfoPath ||
+            state.matchedLocation == RouteNames.trainingLocationPath ||
+            state.matchedLocation == RouteNames.trainingRoutinePath ||
+            state.matchedLocation == RouteNames.nutritionGoalsPath;
+
+        debugPrint('Is auth route: $isAuthRoute');
+        debugPrint('Is onboarding route: $isOnboardingRoute');
+
+        // Allow access to splash and onboarding routes
+        if (isOnboardingRoute) {
+          debugPrint('Allowing access to onboarding route');
+          return null;
+        }
+
+        // If user is not authenticated and trying to access protected routes
+        if (!isAuthenticated && !isAuthRoute) {
+          debugPrint('Redirecting to user type selection');
+          return RouteNames.userTypeSelectionPath;
+        }
+
+        // If user is authenticated and trying to access auth routes
+        if (isAuthenticated && isAuthRoute) {
+          debugPrint('Redirecting to home');
+          return RouteNames.homePath;
+        }
+
+        // Allow access to the requested route
+        debugPrint('Allowing access to requested route');
         return null;
-      }
-
-      // If user is not authenticated and trying to access protected routes
-      if (!isAuthenticated && !isAuthRoute) {
+      } catch (e) {
+        // If there's an error with Supabase service, redirect to user type selection
+        debugPrint('Router redirect error: $e');
         return RouteNames.userTypeSelectionPath;
       }
-
-      // If user is authenticated and trying to access auth routes
-      if (isAuthenticated && isAuthRoute) {
-        return RouteNames.homePath;
-      }
-
-      // Allow access to the requested route
-      return null;
     },
 
     // Error handling
-    errorBuilder: (context, state) => Scaffold(
-      appBar: AppBar(title: const Text('Page Not Found')),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.error_outline, size: 64, color: Colors.red),
-            const SizedBox(height: 16),
-            Text(
-              'Page not found: ${state.uri}',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () => context.go(RouteNames.homePath),
-              child: const Text('Go Home'),
-            ),
-          ],
+    errorBuilder: (context, state) {
+      debugPrint('Router error: ${state.error} for location: ${state.uri}');
+      return Scaffold(
+        appBar: AppBar(title: const Text('Page Not Found')),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error_outline, size: 64, color: Colors.red),
+              const SizedBox(height: 16),
+              Text(
+                'Page not found: ${state.uri}',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () => context.go(RouteNames.userTypeSelectionPath),
+                child: const Text('Go to Start'),
+              ),
+            ],
+          ),
         ),
-      ),
-    ),
+      );
+    },
   );
 }
 

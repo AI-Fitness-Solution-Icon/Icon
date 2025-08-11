@@ -993,23 +993,6 @@ class MockSupabaseService extends _i1.Mock implements _i6.SupabaseService {
           )
           as _i4.Future<List<Map<String, dynamic>>>);
 
-  _i4.Future<List<Map<String, dynamic>>> updateData({
-    required String? table,
-    required Map<String, dynamic>? data,
-    Map<String, dynamic>? filters,
-  }) =>
-      (super.noSuchMethod(
-            Invocation.method(#updateData, [], {
-              #table: table,
-              #data: data,
-              #filters: filters,
-            }),
-            returnValue: _i4.Future<List<Map<String, dynamic>>>.value(
-              <Map<String, dynamic>>[],
-            ),
-          )
-          as _i4.Future<List<Map<String, dynamic>>>);
-
   @override
   _i4.Future<void> deleteData({
     required String? table,
@@ -1256,13 +1239,15 @@ class MockUserRepository extends _i1.Mock implements _i8.UserRepository {
   _i4.Future<_i3.User?> updateUserProfile({
     String? firstName,
     String? lastName,
-    String? email,
+    DateTime? dateOfBirth,
+    String? gender,
   }) =>
       (super.noSuchMethod(
             Invocation.method(#updateUserProfile, [], {
               #firstName: firstName,
               #lastName: lastName,
-              #email: email,
+              #dateOfBirth: dateOfBirth,
+              #gender: gender,
             }),
             returnValue: _i4.Future<_i3.User?>.value(),
           )

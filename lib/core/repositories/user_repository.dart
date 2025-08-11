@@ -236,7 +236,12 @@ class UserRepository {
   }
 
   /// Update user profile
-  Future<User?> updateUserProfile({String? firstName, String? lastName}) async {
+  Future<User?> updateUserProfile({
+    String? firstName,
+    String? lastName,
+    DateTime? dateOfBirth,
+    String? gender,
+  }) async {
     AppPrint.printInfo('Updating profile for current user');
 
     final currentUser = _supabaseService.currentUser;
@@ -250,8 +255,18 @@ class UserRepository {
       AppPrint.printStep('Updating user profile: $userId');
 
       final updateData = <String, dynamic>{};
-      if (firstName != null) updateData['first_name'] = firstName;
-      if (lastName != null) updateData['last_name'] = lastName;
+      if (firstName != null) {
+        updateData['first_name'] = firstName;
+      }
+      if (lastName != null) {
+        updateData['last_name'] = lastName;
+      }
+      if (dateOfBirth != null) {
+        updateData['date_of_birth'] = dateOfBirth.toIso8601String();
+      }
+      if (gender != null) {
+        updateData['gender'] = gender;
+      }
       updateData['email'] = currentUser.email;
 
       return await updateUser(userId, updateData);
