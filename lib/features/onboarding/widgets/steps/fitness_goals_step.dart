@@ -192,7 +192,7 @@ class FitnessGoalsStep extends StatelessWidget {
       return _buildNoGoalsState();
     }
 
-    return _buildGoalsGrid(context, state);
+    return _buildGoalsWidget(context, state);
   }
 
   /// Build loading state for goals
@@ -281,28 +281,60 @@ class FitnessGoalsStep extends StatelessWidget {
   }
 
   /// Build the goals grid
-  Widget _buildGoalsGrid(BuildContext context, OnboardingLoaded state) {
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
-        childAspectRatio: 2.5,
-      ),
-      itemCount: state.availableGoals.length,
-      itemBuilder: (context, index) {
-        final goal = state.availableGoals[index];
-        return TweenAnimationBuilder<double>(
-          duration: Duration(milliseconds: 400 + (index * 100)),
-          tween: Tween(begin: 0.0, end: 1.0),
-          builder: (context, value, child) {
-            return Transform.scale(
-              scale: value,
-              child: _buildAnimatedGoalButton(context, goal, index, state),
-            );
-          },
+  Widget _buildGoalsWidget(BuildContext context, OnboardingLoaded state) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Calculate optimal item width for uniform appearance
+        final double availableWidth =
+            constraints.maxWidth - 24; // Account for padding
+        final double itemWidth =
+            (availableWidth - 24) / 2; // 2 items per row with spacing
+
+        return Column(
+          children: [
+            // Header text
+            Text(
+              'Select one or more goals that resonate with you:',
+              style: TextStyle(
+                color: AppColors.textSecondary,
+                fontSize: 14,
+                fontStyle: FontStyle.italic,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 20),
+
+            // Goals grid
+            Wrap(
+              spacing: 16,
+              runSpacing: 16,
+              alignment: WrapAlignment.center,
+              children: List.generate(state.availableGoals.length, (index) {
+                final goal = state.availableGoals[index];
+                return TweenAnimationBuilder<double>(
+                  duration: Duration(milliseconds: 300 + (index * 50)),
+                  tween: Tween(begin: 0.0, end: 1.0),
+                  builder: (context, value, child) {
+                    return Transform.translate(
+                      offset: Offset(0, 20 * (1 - value)),
+                      child: Opacity(
+                        opacity: value,
+                        child: SizedBox(
+                          width: itemWidth,
+                          child: _buildAnimatedGoalButton(
+                            context,
+                            goal,
+                            index,
+                            state,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                );
+              }),
+            ),
+          ],
         );
       },
     );
@@ -317,40 +349,136 @@ class FitnessGoalsStep extends StatelessWidget {
     final isSelected = state.data.selectedGoalIds.contains(goal.id);
 
     return AnimatedContainer(
-      duration: const Duration(milliseconds: 200),
+      duration: const Duration(milliseconds: 250),
       curve: Curves.easeInOut,
       decoration: BoxDecoration(
-        color: isSelected ? AppColors.secondary : AppColors.surfaceDark,
-        borderRadius: BorderRadius.circular(12),
+        color: isSelected
+            ? AppColors.secondary
+            : AppColors.surfaceDark.withValues(alpha: 0.8),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isSelected ? AppColors.secondary : Colors.transparent,
-          width: 2,
+          color: isSelected
+              ? AppColors.secondary
+              : AppColors.textSecondary.withValues(alpha: 0.3),
+          width: isSelected ? 2 : 1,
         ),
+        boxShadow: [
+          BoxShadow(
+            color: isSelected
+                ? AppColors.secondary.withValues(alpha: 0.3)
+                : Colors.black.withValues(alpha: 0.1),
+            blurRadius: isSelected ? 8 : 4,
+            offset: Offset(0, isSelected ? 4 : 2),
+            spreadRadius: 0,
+          ),
+        ],
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
           onTap: () => _toggleGoalSelection(context, goal.id, state),
+          splashColor: AppColors.secondary.withValues(alpha: 0.2),
+          highlightColor: AppColors.secondary.withValues(alpha: 0.1),
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: Center(
-              child: Text(
-                goal.name,
-                style: TextStyle(
-                  color: isSelected ? Colors.white : Colors.white,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14,
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Goal icon
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? Colors.white.withValues(alpha: 0.2)
+                        : AppColors.textSecondary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    _getGoalIcon(goal.name),
+                    color: isSelected ? Colors.white : AppColors.textSecondary,
+                    size: 24,
+                  ),
                 ),
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
+
+                const SizedBox(height: 16),
+
+                // Goal name
+                Text(
+                  goal.name,
+                  style: TextStyle(
+                    color: isSelected ? Colors.white : AppColors.textLight,
+                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
+                    fontSize: 16,
+                    height: 1.2,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+
+                const SizedBox(height: 8),
+
+                // Selection indicator
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  width: 20,
+                  height: 20,
+                  decoration: BoxDecoration(
+                    color: isSelected ? Colors.white : Colors.transparent,
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: isSelected
+                          ? Colors.white
+                          : AppColors.textSecondary.withValues(alpha: 0.5),
+                      width: 2,
+                    ),
+                  ),
+                  child: isSelected
+                      ? const Icon(
+                          Icons.check,
+                          color: AppColors.secondary,
+                          size: 14,
+                        )
+                      : null,
+                ),
+              ],
             ),
           ),
         ),
       ),
     );
+  }
+
+  /// Get appropriate icon for each goal type
+  IconData _getGoalIcon(String goalName) {
+    final lowerGoal = goalName.toLowerCase();
+
+    if (lowerGoal.contains('weight') || lowerGoal.contains('strength')) {
+      return Icons.fitness_center;
+    } else if (lowerGoal.contains('cardio') ||
+        lowerGoal.contains('endurance')) {
+      return Icons.directions_run;
+    } else if (lowerGoal.contains('flexibility') ||
+        lowerGoal.contains('mobility')) {
+      return Icons.accessibility_new;
+    } else if (lowerGoal.contains('weight loss') ||
+        lowerGoal.contains('fat loss')) {
+      return Icons.trending_down;
+    } else if (lowerGoal.contains('muscle') || lowerGoal.contains('bulk')) {
+      return Icons.trending_up;
+    } else if (lowerGoal.contains('general') || lowerGoal.contains('overall')) {
+      return Icons.health_and_safety;
+    } else if (lowerGoal.contains('sport') ||
+        lowerGoal.contains('performance')) {
+      return Icons.emoji_events;
+    } else if (lowerGoal.contains('recovery') ||
+        lowerGoal.contains('wellness')) {
+      return Icons.spa;
+    } else {
+      return Icons.fitness_center;
+    }
   }
 
   void _toggleGoalSelection(
