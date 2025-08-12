@@ -75,10 +75,7 @@ class BodyMetricsInput extends StatelessWidget {
 
         SizedBox(height: isSmallScreen ? 14 : 20),
 
-        Row(
-          children: [
-            Expanded(
-              child:  _buildMetricInput(
+        _buildMetricInput(
           context: context,
           label: "Height",
           controller: heightController,
@@ -93,10 +90,11 @@ class BodyMetricsInput extends StatelessWidget {
             label: "Unit",
           ),
         ),
-            ), 
-            const SizedBox(width: 10),
 
-Expanded(child: 
+        const SizedBox(width: 10),
+
+        SizedBox(height: isSmallScreen ? 14 : 20),
+
         _buildMetricInput(
           context: context,
           label: "Body Fat %",
@@ -109,14 +107,10 @@ Expanded(child:
             selectedValue: selectedBodyFatMethod,
             options: const ['DEXA', 'Calipers', 'Bioimpedance', 'Estimate'],
             onChanged: onBodyFatMethodChanged,
-            
+
             label: "Method",
           ),
-        ),),
-          ],
         ),
-
-        SizedBox(height: isSmallScreen ? 14 : 20),
       ],
     );
   }
@@ -253,13 +247,7 @@ Expanded(child:
     required ValueChanged<String?> onChanged,
     required String label,
   }) {
-    // More aggressive responsive width based on screen size
-    final dropdownWidth = isSmallScreen
-        ? 85.0
-        : (isMediumScreen ? 100.0 : 110.0);
-
-    return SizedBox(
-      width: dropdownWidth,
+    return Expanded(
       child: DropdownButtonFormField<String>(
         value: selectedValue,
         onChanged: onChanged,
