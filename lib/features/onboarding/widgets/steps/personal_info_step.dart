@@ -147,8 +147,8 @@ class _PersonalInfoStepState extends State<PersonalInfoStep> {
 
           // Check if widget is still mounted before using BuildContext
           if (mounted) {
-          context.read<OnboardingBloc>().add(NextStep());
-          AppPrint.printInfo('Personal information saved successfully');
+            context.read<OnboardingBloc>().add(NextStep());
+            AppPrint.printInfo('Personal information saved successfully');
           }
         }
       } catch (e) {
@@ -186,75 +186,78 @@ class _PersonalInfoStepState extends State<PersonalInfoStep> {
               )
             : null;
 
-        return Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // Info Card
-                InfoCard(
-                  title: "Let's make this personal",
-                  description: "What would you like to be called?",
-                  icon: Icons.person_outline,
-                ),
-
-                const SizedBox(height: 40),
-
-                // Name Input
-                CustomInputField(
-                  label: 'Name',
-                  hintText: 'Your name',
-                  controller: _nameController,
-                  validator: _validateName,
-                  onChanged: (value) => _updatePersonalInfo(),
-                  prefixIcon: const Icon(
-                    Icons.person_outline,
-                    color: AppColors.textSecondary,
+        return SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Info Card
+                  InfoCard(
+                    title: "Let's make this personal",
+                    description: "What would you like to be called?",
+                    icon: Icons.person_outline,
                   ),
-                ),
 
-                const SizedBox(height: 24),
+                  const SizedBox(height: 40),
 
-                // Date of Birth Input
-                CustomInputField(
-                  label: 'Date of Birth',
-                  hintText: 'dd/mm/yy',
-                  controller: _dateOfBirthController,
-                  validator: _validateDateOfBirth,
-                  readOnly: true,
-                  onTap: _selectDate,
-                  prefixIcon: const Icon(
-                    Icons.calendar_today_outlined,
-                    color: AppColors.textSecondary,
+                  // Name Input
+                  CustomInputField(
+                    label: 'Name',
+                    hintText: 'Your name',
+                    controller: _nameController,
+                    validator: _validateName,
+                    onChanged: (value) => _updatePersonalInfo(),
+                    prefixIcon: const Icon(
+                      Icons.person_outline,
+                      color: AppColors.textSecondary,
+                    ),
                   ),
-                ),
 
-                const SizedBox(height: 24),
+                  const SizedBox(height: 24),
 
-                // Gender Selection
-                GenderSelection(
-                  selectedGender: selectedGender,
-                  onGenderChanged: _onGenderChanged,
-                ),
+                  // Date of Birth Input
+                  CustomInputField(
+                    label: 'Date of Birth',
+                    hintText: 'dd/mm/yy',
+                    controller: _dateOfBirthController,
+                    validator: _validateDateOfBirth,
+                    readOnly: true,
+                    onTap: _selectDate,
+                    prefixIcon: const Icon(
+                      Icons.calendar_today_outlined,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
 
-                const SizedBox(height: 40),
+                  const SizedBox(height: 24),
 
-                // Continue Button
-                PrimaryButton(
-                  text: 'Continue',
-                  onPressed: _onContinue,
-                  isEnabled:
-                      _selectedDate != null &&
-                      _nameController.text.isNotEmpty &&
-                      selectedGender != null,
-                ),
+                  // Gender Selection
+                  GenderSelection(
+                    selectedGender: selectedGender,
+                    onGenderChanged: _onGenderChanged,
+                  ),
 
-                const SizedBox(
-                  height: 40,
-                ), // Bottom padding for scrollable content
-              ],
+                  const SizedBox(height: 40),
+
+                  // Continue Button
+                  PrimaryButton(
+                    text: 'Continue',
+                    onPressed: _onContinue,
+                    isEnabled:
+                        _selectedDate != null &&
+                        _nameController.text.isNotEmpty &&
+                        selectedGender != null,
+                  ),
+
+                  const SizedBox(
+                    height: 40,
+                  ), // Bottom padding for scrollable content
+                ],
+              ),
             ),
           ),
         );

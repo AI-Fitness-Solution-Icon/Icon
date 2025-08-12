@@ -6,7 +6,6 @@ import 'package:icon_app/features/onboarding/bloc/onboarding_bloc_impl.dart';
 import 'core/constants/app_themes.dart';
 import 'core/constants/app_strings.dart';
 import 'core/services/supabase_service.dart';
-import 'core/services/stripe_service.dart';
 import 'core/services/settings_service.dart';
 import 'core/services/deep_link_service.dart';
 import 'core/utils/env_validator.dart';
@@ -34,7 +33,6 @@ void main() async {
 
     // Initialize services in order
     await SupabaseService.initialize();
-    await StripeService.initialize();
     await DeepLinkService().initialize();
     await SettingsService().initialize();
 

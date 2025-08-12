@@ -96,214 +96,218 @@ class _LoginScreenState extends State<LoginScreen> {
           }
         },
         child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // Logo and Title
-                  Icon(
-                    Icons.fitness_center,
-                    size: 80,
-                    color: AppColors.textLight,
-                  ),
-                  const SizedBox(height: 24),
-                  Text(
-                    'Welcome Back',
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // Logo and Title
+                    Icon(
+                      Icons.fitness_center,
+                      size: 80,
                       color: AppColors.textLight,
                     ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Sign in to continue your fitness journey',
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: AppColors.textSecondary,
+                    const SizedBox(height: 24),
+                    Text(
+                      'Welcome Back',
+                      style: Theme.of(context).textTheme.headlineMedium
+                          ?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textLight,
+                          ),
+                      textAlign: TextAlign.center,
                     ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 48),
-
-                  // Email Field
-                  TextFormField(
-                    controller: _emailController,
-                    keyboardType: TextInputType.emailAddress,
-                    style: const TextStyle(color: AppColors.textLight),
-                    decoration: InputDecoration(
-                      labelText: 'Email',
-                      labelStyle: const TextStyle(
+                    const SizedBox(height: 8),
+                    Text(
+                      'Sign in to continue your fitness journey',
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         color: AppColors.textSecondary,
                       ),
-                      prefixIcon: const Icon(
-                        Icons.email,
-                        color: AppColors.textLight,
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(
-                          color: AppColors.secondary,
-                          width: 2,
-                        ),
-                      ),
-                      filled: true,
-                      fillColor: AppColors.surfaceDark,
+                      textAlign: TextAlign.center,
                     ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your email';
-                      }
-                      if (!RegExp(
-                        r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-                      ).hasMatch(value)) {
-                        return 'Please enter a valid email';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 16),
+                    const SizedBox(height: 48),
 
-                  // Password Field
-                  TextFormField(
-                    controller: _passwordController,
-                    obscureText: _obscurePassword,
-                    style: const TextStyle(color: AppColors.textLight),
-                    decoration: InputDecoration(
-                      labelText: 'Password',
-                      labelStyle: const TextStyle(
-                        color: AppColors.textSecondary,
-                      ),
-                      prefixIcon: const Icon(
-                        Icons.lock,
-                        color: AppColors.textLight,
-                      ),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscurePassword
-                              ? Icons.visibility
-                              : Icons.visibility_off,
+                    // Email Field
+                    TextFormField(
+                      controller: _emailController,
+                      keyboardType: TextInputType.emailAddress,
+                      style: const TextStyle(color: AppColors.textLight),
+                      decoration: InputDecoration(
+                        labelText: 'Email',
+                        labelStyle: const TextStyle(
+                          color: AppColors.textSecondary,
+                        ),
+                        prefixIcon: const Icon(
+                          Icons.email,
                           color: AppColors.textLight,
                         ),
-                        onPressed: () {
-                          setState(() {
-                            _obscurePassword = !_obscurePassword;
-                          });
-                        },
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(
-                          color: AppColors.secondary,
-                          width: 2,
-                        ),
-                      ),
-                      filled: true,
-                      fillColor: AppColors.surfaceDark,
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your password';
-                      }
-                      if (value.length < 6) {
-                        return 'Password must be at least 6 characters';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 24),
-
-                  // Login Button
-                  BlocBuilder<AuthBloc, AuthState>(
-                    builder: (context, state) {
-                      return ElevatedButton(
-                        onPressed: state is AuthLoading ? null : _handleLogin,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.secondary,
-                          foregroundColor: AppColors.textLight,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(
+                            color: AppColors.textSecondary,
                           ),
                         ),
-                        child: state is AuthLoading
-                            ? const SizedBox(
-                                height: 20,
-                                width: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    AppColors.textLight,
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(
+                            color: AppColors.secondary,
+                            width: 2,
+                          ),
+                        ),
+                        filled: true,
+                        fillColor: AppColors.surfaceDark,
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your email';
+                        }
+                        if (!RegExp(
+                          r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                        ).hasMatch(value)) {
+                          return 'Please enter a valid email';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Password Field
+                    TextFormField(
+                      controller: _passwordController,
+                      obscureText: _obscurePassword,
+                      style: const TextStyle(color: AppColors.textLight),
+                      decoration: InputDecoration(
+                        labelText: 'Password',
+                        labelStyle: const TextStyle(
+                          color: AppColors.textSecondary,
+                        ),
+                        prefixIcon: const Icon(
+                          Icons.lock,
+                          color: AppColors.textLight,
+                        ),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscurePassword
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                            color: AppColors.textLight,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _obscurePassword = !_obscurePassword;
+                            });
+                          },
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(
+                            color: AppColors.secondary,
+                            width: 2,
+                          ),
+                        ),
+                        filled: true,
+                        fillColor: AppColors.surfaceDark,
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your password';
+                        }
+                        if (value.length < 6) {
+                          return 'Password must be at least 6 characters';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 24),
+
+                    // Login Button
+                    BlocBuilder<AuthBloc, AuthState>(
+                      builder: (context, state) {
+                        return ElevatedButton(
+                          onPressed: state is AuthLoading ? null : _handleLogin,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.secondary,
+                            foregroundColor: AppColors.textLight,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          child: state is AuthLoading
+                              ? const SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      AppColors.textLight,
+                                    ),
+                                  ),
+                                )
+                              : const Text(
+                                  'Sign In',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                              )
-                            : const Text(
-                                'Sign In',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Forgot Password Link
-                  TextButton(
-                    onPressed: () => context.go(RouteNames.forgotPasswordPath),
-                    child: const Text(
-                      'Forgot Password?',
-                      style: TextStyle(color: AppColors.secondary),
+                        );
+                      },
                     ),
-                  ),
-                  const SizedBox(height: 24),
+                    const SizedBox(height: 16),
 
-                  // Sign Up Link
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Don't have an account? ",
-                        style: TextStyle(color: AppColors.textSecondary),
+                    // Forgot Password Link
+                    TextButton(
+                      onPressed: () =>
+                          context.go(RouteNames.forgotPasswordPath),
+                      child: const Text(
+                        'Forgot Password?',
+                        style: TextStyle(color: AppColors.secondary),
                       ),
-                      TextButton(
-                        onPressed: () => context.go(RouteNames.signupPath),
-                        child: const Text(
-                          'Sign Up',
-                          style: TextStyle(color: AppColors.secondary),
+                    ),
+                    const SizedBox(height: 24),
+
+                    // Sign Up Link
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Don't have an account? ",
+                          style: TextStyle(color: AppColors.textSecondary),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
+                        TextButton(
+                          onPressed: () => context.go(RouteNames.signupPath),
+                          child: const Text(
+                            'Sign Up',
+                            style: TextStyle(color: AppColors.secondary),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
