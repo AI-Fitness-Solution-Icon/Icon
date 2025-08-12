@@ -2,20 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:icon_app/core/constants/app_colors.dart';
 
 /// Component for selecting body type/profile
-/// Uses a grid-based selection pattern similar to other onboarding steps
+/// Uses a list-based selection pattern for better responsiveness
 /// Now fully responsive to prevent overflow on any device
 class BodyTypeSelection extends StatelessWidget {
   final String? selectedBodyType;
   final ValueChanged<String?> onBodyTypeChanged;
-  final bool isSmallScreen;
-  final bool isMediumScreen;
 
   const BodyTypeSelection({
     super.key,
     required this.selectedBodyType,
     required this.onBodyTypeChanged,
-    required this.isSmallScreen,
-    required this.isMediumScreen,
   });
 
   @override
@@ -36,63 +32,29 @@ class BodyTypeSelection extends StatelessWidget {
           "Select the body type that best describes you (optional)",
           style: TextStyle(
             color: AppColors.textSecondary,
-            fontSize: isSmallScreen ? 12 : 14,
+            fontSize: 12,
           ),
         ),
         const SizedBox(height: 24),
 
-        // Responsive Body Type Grid
-        ConstrainedBox(
-          constraints: BoxConstraints(
-            minHeight: isSmallScreen ? 160.0 : 200.0,
-            maxHeight: isSmallScreen ? 240.0 : 300.0,
-          ),
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              // Adaptive grid based on screen size
-              int crossAxisCount;
-              double childAspectRatio;
-              double spacing;
+        // Body Type List
+        ListView.separated(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: _bodyTypes.length,
+          separatorBuilder: (context, index) => const SizedBox(height: 12),
+          itemBuilder: (context, index) {
+            final bodyType = _bodyTypes[index];
+            final isSelected = selectedBodyType == bodyType.id;
 
-              if (isSmallScreen) {
-                crossAxisCount = 2; // 2 columns for small screens
-                childAspectRatio = 1.0;
-                spacing = 8.0;
-              } else if (isMediumScreen) {
-                crossAxisCount = 3; // 3 columns for medium screens
-                childAspectRatio = 1.1;
-                spacing = 10.0;
-              } else {
-                crossAxisCount = 3; // 3 columns for large screens
-                childAspectRatio = 1.2;
-                spacing = 12.0;
-              }
-
-              return GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: crossAxisCount,
-                  crossAxisSpacing: spacing,
-                  mainAxisSpacing: spacing,
-                  childAspectRatio: childAspectRatio,
-                ),
-                itemCount: _bodyTypes.length,
-                itemBuilder: (context, index) {
-                  final bodyType = _bodyTypes[index];
-                  final isSelected = selectedBodyType == bodyType.id;
-
-                  return _buildBodyTypeCard(
-                    context: context,
-                    bodyType: bodyType,
-                    isSelected: isSelected,
-                    onTap: () =>
-                        onBodyTypeChanged(isSelected ? null : bodyType.id),
-                  );
-                },
-              );
-            },
-          ),
+            return _buildBodyTypeCard(
+              context: context,
+              bodyType: bodyType,
+              isSelected: isSelected,
+              onTap: () =>
+                  onBodyTypeChanged(isSelected ? null : bodyType.id),
+            );
+          },
         ),
       ],
     );
@@ -110,53 +72,82 @@ class BodyTypeSelection extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         decoration: BoxDecoration(
           color: isSelected ? AppColors.secondary : AppColors.surfaceDark,
-          borderRadius: BorderRadius.circular(isSmallScreen ? 8 : 12),
+          borderRadius: BorderRadius.circular(12),
           border: isSelected
               ? Border.all(color: AppColors.secondary, width: 2)
               : null,
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Icon
-            Icon(
-              bodyType.icon,
-              color: isSelected ? Colors.white : AppColors.textSecondary,
-              size: isSmallScreen ? 24 : 32,
-            ),
-            SizedBox(height: isSmallScreen ? 6 : 8),
-
-            // Title
-            Text(
-              bodyType.title,
-              style: TextStyle(
-                color: isSelected ? Colors.white : AppColors.textLight,
-                fontSize: isSmallScreen ? 10 : 12,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-              ),
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-
-            // Subtitle
-            if (bodyType.subtitle != null) ...[
-              SizedBox(height: isSmallScreen ? 2 : 4),
-              Text(
-                bodyType.subtitle!,
-                style: TextStyle(
-                  color: isSelected
-                      ? Colors.white.withValues(alpha: 0.8)
-                      : AppColors.textSecondary,
-                  fontSize: isSmallScreen ? 8 : 10,
-                  fontWeight: FontWeight.w400,
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              // Icon Container
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: isSelected 
+                      ? Colors.white.withValues(alpha: 0.2)
+                      : AppColors.accentBlueLight,
+                  borderRadius: BorderRadius.circular(8),
                 ),
-                textAlign: TextAlign.center,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+                child: Center(
+                  child: Icon(
+                    bodyType.icon,
+                    color: isSelected ? Colors.white : AppColors.textSecondary,
+                    size: 24,
+                  ),
+                ),
               ),
+              const SizedBox(width: 16),
+              
+              // Text Content
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      bodyType.title,
+                      style: TextStyle(
+                        color: isSelected ? Colors.white : AppColors.textLight,
+                        fontSize: 16,
+                        fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
+                      ),
+                    ),
+                    if (bodyType.subtitle != null) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        bodyType.subtitle!,
+                        style: TextStyle(
+                          color: isSelected
+                              ? Colors.white.withValues(alpha: 0.8)
+                              : AppColors.textSecondary,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              
+              // Selection Indicator
+              if (isSelected)
+                Container(
+                  width: 24,
+                  height: 24,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.check,
+                    color: AppColors.secondary,
+                    size: 16,
+                  ),
+                ),
             ],
-          ],
+          ),
         ),
       ),
     );
@@ -167,37 +158,37 @@ class BodyTypeSelection extends StatelessWidget {
     BodyTypeOption(
       id: 'ectomorph',
       title: 'Ectomorph',
-      subtitle: 'Naturally thin',
+      subtitle: 'Naturally thin and lean build',
       icon: Icons.person_outline,
     ),
     BodyTypeOption(
       id: 'mesomorph',
       title: 'Mesomorph',
-      subtitle: 'Athletic build',
+      subtitle: 'Athletic and muscular build',
       icon: Icons.fitness_center,
     ),
     BodyTypeOption(
       id: 'endomorph',
       title: 'Endomorph',
-      subtitle: 'Naturally curvy',
+      subtitle: 'Naturally curvy and rounded build',
       icon: Icons.person,
     ),
     BodyTypeOption(
       id: 'combination',
       title: 'Combination',
-      subtitle: 'Mixed type',
+      subtitle: 'Mixed body type characteristics',
       icon: Icons.person_2,
     ),
     BodyTypeOption(
       id: 'not_sure',
       title: 'Not Sure',
-      subtitle: 'Skip for now',
+      subtitle: 'I\'ll figure this out later',
       icon: Icons.help_outline,
     ),
     BodyTypeOption(
       id: 'prefer_not',
-      title: 'Prefer Not',
-      subtitle: 'Skip this',
+      title: 'Prefer Not to Say',
+      subtitle: 'I\'d rather skip this question',
       icon: Icons.block,
     ),
   ];

@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:icon_app/core/constants/app_colors.dart';
 
-/// Component for collecting body metrics (weight, height, body fat)
-/// Follows the established design patterns with proper unit selection
-/// Now fully responsive to prevent overflow on any device
 class BodyMetricsInput extends StatelessWidget {
   final TextEditingController weightController;
   final TextEditingController heightController;
@@ -14,8 +11,6 @@ class BodyMetricsInput extends StatelessWidget {
   final ValueChanged<String?> onWeightUnitChanged;
   final ValueChanged<String?> onHeightUnitChanged;
   final ValueChanged<String?> onBodyFatMethodChanged;
-  final bool isSmallScreen;
-  final bool isMediumScreen;
 
   const BodyMetricsInput({
     super.key,
@@ -28,8 +23,6 @@ class BodyMetricsInput extends StatelessWidget {
     required this.onWeightUnitChanged,
     required this.onHeightUnitChanged,
     required this.onBodyFatMethodChanged,
-    required this.isSmallScreen,
-    required this.isMediumScreen,
   });
 
   @override
@@ -37,26 +30,21 @@ class BodyMetricsInput extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Section Title
         Text(
           "Body Metrics",
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
             color: Colors.white,
             fontWeight: FontWeight.bold,
-            fontSize: isSmallScreen ? 18 : 20,
+            fontSize: 18,
           ),
         ),
         const SizedBox(height: 6),
         Text(
           "Share your current measurements (optional)",
-          style: TextStyle(
-            color: AppColors.textSecondary,
-            fontSize: isSmallScreen ? 11 : 13,
-          ),
+          style: TextStyle(color: AppColors.textSecondary, fontSize: 11),
         ),
         const SizedBox(height: 20),
 
-        // Weight Input with Unit Selection
         _buildMetricInput(
           context: context,
           label: "Weight",
@@ -73,7 +61,7 @@ class BodyMetricsInput extends StatelessWidget {
           ),
         ),
 
-        SizedBox(height: isSmallScreen ? 14 : 20),
+        SizedBox(height: 14),
 
         _buildMetricInput(
           context: context,
@@ -91,9 +79,7 @@ class BodyMetricsInput extends StatelessWidget {
           ),
         ),
 
-        const SizedBox(width: 10),
-
-        SizedBox(height: isSmallScreen ? 14 : 20),
+        const SizedBox(height: 14),
 
         _buildMetricInput(
           context: context,
@@ -131,15 +117,60 @@ class BodyMetricsInput extends StatelessWidget {
           label,
           style: TextStyle(
             color: AppColors.textLight,
-            fontSize: isSmallScreen ? 13 : 15,
+            fontSize: 13,
             fontWeight: FontWeight.w500,
           ),
         ),
         const SizedBox(height: 6),
 
-        // Responsive layout: Stack vertically on small screens, horizontally on larger screens
-        if (isSmallScreen) ...[
-          // Vertical layout for small screens - prevents overflow
+        if (suffixWidget != null)
+          Row(
+            children: [
+              Expanded(
+                child: TextFormField(
+                  controller: controller,
+                  keyboardType: keyboardType,
+                  style: const TextStyle(color: AppColors.textLight, fontSize: 15),
+                  decoration: InputDecoration(
+                    hintText: hintText,
+                    hintStyle: const TextStyle(
+                      color: AppColors.textSecondary,
+                      fontSize: 15,
+                    ),
+                    prefixIcon: Icon(
+                      prefixIcon,
+                      color: AppColors.textSecondary,
+                      size: 20,
+                    ),
+                    filled: true,
+                    fillColor: AppColors.surfaceDark,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide.none,
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide.none,
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: const BorderSide(
+                        color: AppColors.secondary,
+                        width: 2,
+                      ),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 14,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              suffixWidget,
+            ],
+          )
+        else
           TextFormField(
             controller: controller,
             keyboardType: keyboardType,
@@ -178,64 +209,6 @@ class BodyMetricsInput extends StatelessWidget {
               ),
             ),
           ),
-          if (suffixWidget != null) ...[
-            const SizedBox(height: 10),
-            suffixWidget,
-          ],
-        ] else ...[
-          // Horizontal layout for medium and large screens
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: TextFormField(
-                  controller: controller,
-                  keyboardType: keyboardType,
-                  style: const TextStyle(
-                    color: AppColors.textLight,
-                    fontSize: 16,
-                  ),
-                  decoration: InputDecoration(
-                    hintText: hintText,
-                    hintStyle: const TextStyle(
-                      color: AppColors.textSecondary,
-                      fontSize: 16,
-                    ),
-                    prefixIcon: Icon(
-                      prefixIcon,
-                      color: AppColors.textSecondary,
-                    ),
-                    filled: true,
-                    fillColor: AppColors.surfaceDark,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(
-                        color: AppColors.secondary,
-                        width: 2,
-                      ),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 16,
-                    ),
-                  ),
-                ),
-              ),
-              if (suffixWidget != null) ...[
-                const SizedBox(width: 12),
-                suffixWidget,
-              ],
-            ],
-          ),
-        ],
       ],
     );
   }
@@ -247,54 +220,45 @@ class BodyMetricsInput extends StatelessWidget {
     required ValueChanged<String?> onChanged,
     required String label,
   }) {
-    return Expanded(
+    return SizedBox(
+      width: 70, // Adjusted width for inline layout
       child: DropdownButtonFormField<String>(
         value: selectedValue,
         onChanged: onChanged,
+        isExpanded: true, // Make dropdown fill the available width
         decoration: InputDecoration(
           labelText: label,
-          labelStyle: TextStyle(
-            color: AppColors.textSecondary,
-            fontSize: isSmallScreen ? 9 : 11,
-          ),
+          labelStyle: TextStyle(color: AppColors.textSecondary, fontSize: 9),
           filled: true,
           fillColor: AppColors.surfaceDark,
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(isSmallScreen ? 8 : 10),
+            borderRadius: BorderRadius.circular(8),
             borderSide: BorderSide.none,
           ),
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(isSmallScreen ? 8 : 10),
+            borderRadius: BorderRadius.circular(8),
             borderSide: BorderSide.none,
           ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(isSmallScreen ? 8 : 10),
+            borderRadius: BorderRadius.circular(8),
             borderSide: const BorderSide(color: AppColors.secondary, width: 2),
           ),
-          contentPadding: EdgeInsets.symmetric(
-            horizontal: isSmallScreen ? 6 : 8,
-            vertical: isSmallScreen ? 12 : 14,
-          ),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 6, vertical: 12),
         ),
         dropdownColor: AppColors.surfaceDark,
-        style: TextStyle(
-          color: AppColors.textLight,
-          fontSize: isSmallScreen ? 11 : 13,
-        ),
+        style: TextStyle(color: AppColors.textLight, fontSize: 11),
         icon: Icon(
           Icons.keyboard_arrow_down,
           color: AppColors.textSecondary,
-          size: isSmallScreen ? 16 : 18,
+          size: 16,
         ),
         items: options.map((String option) {
           return DropdownMenuItem<String>(
             value: option,
             child: Text(
               option,
-              style: TextStyle(
-                color: AppColors.textLight,
-                fontSize: isSmallScreen ? 11 : 13,
-              ),
+              style: TextStyle(color: AppColors.textLight, fontSize: 11),
+              overflow: TextOverflow.ellipsis, // Handle text overflow
             ),
           );
         }).toList(),

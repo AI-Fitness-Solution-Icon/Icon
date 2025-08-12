@@ -11,7 +11,6 @@ class OptionalNoteField extends StatelessWidget {
   final IconData icon;
   final int? maxLines;
   final int? maxLength;
-  final bool isSmallScreen;
 
   const OptionalNoteField({
     super.key,
@@ -21,11 +20,11 @@ class OptionalNoteField extends StatelessWidget {
     required this.icon,
     this.maxLines = 3,
     this.maxLength = 200,
-    required this.isSmallScreen,
   });
 
   @override
   Widget build(BuildContext context) {
+    // Only small screen values are used, so all values are hardcoded for small screens
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -35,14 +34,14 @@ class OptionalNoteField extends StatelessWidget {
             Icon(
               icon,
               color: AppColors.textSecondary,
-              size: isSmallScreen ? 18 : 20,
+              size: 18, // small screen value
             ),
-            SizedBox(width: isSmallScreen ? 6 : 8),
+            SizedBox(width: 6), // small screen value
             Text(
               label,
               style: TextStyle(
                 color: AppColors.textLight,
-                fontSize: isSmallScreen ? 14 : 16,
+                fontSize: 14, // small screen value
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -53,17 +52,16 @@ class OptionalNoteField extends StatelessWidget {
           "Optional - Add any additional information you'd like to share",
           style: TextStyle(
             color: AppColors.textSecondary,
-            fontSize: isSmallScreen ? 10 : 12,
+            fontSize: 10, // small screen value
             fontStyle: FontStyle.italic,
           ),
         ),
-        SizedBox(height: isSmallScreen ? 12 : 16),
-
+        SizedBox(height: 12), // small screen value
         // Text Area
         Container(
           decoration: BoxDecoration(
             color: AppColors.surfaceDark,
-            borderRadius: BorderRadius.circular(isSmallScreen ? 8 : 12),
+            borderRadius: BorderRadius.circular(8), // small screen value
             border: Border.all(color: AppColors.surfaceDark, width: 1),
           ),
           child: TextFormField(
@@ -72,19 +70,19 @@ class OptionalNoteField extends StatelessWidget {
             maxLength: maxLength,
             style: TextStyle(
               color: AppColors.textLight,
-              fontSize: isSmallScreen ? 14 : 16,
+              fontSize: 14, // small screen value
             ),
             decoration: InputDecoration(
               hintText: hintText,
               hintStyle: TextStyle(
                 color: AppColors.textSecondary,
-                fontSize: isSmallScreen ? 14 : 16,
+                fontSize: 14, // small screen value
               ),
               border: InputBorder.none,
-              contentPadding: EdgeInsets.all(isSmallScreen ? 12 : 16),
+              contentPadding: EdgeInsets.all(12), // small screen value
               counterStyle: TextStyle(
                 color: AppColors.textSecondary,
-                fontSize: isSmallScreen ? 10 : 12,
+                fontSize: 10, // small screen value
               ),
             ),
             onChanged: (value) {
@@ -102,7 +100,7 @@ class OptionalNoteField extends StatelessWidget {
               '${controller.text.length}/$maxLength',
               style: TextStyle(
                 color: AppColors.textSecondary,
-                fontSize: isSmallScreen ? 10 : 12,
+                fontSize: 10, // small screen value
               ),
             ),
           ),
