@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'coach.dart';
 
 /// Workout model representing a workout template in the Icon app
 class Workout extends Equatable {
@@ -13,9 +12,8 @@ class Workout extends Equatable {
   final String difficultyLevel;
   final DateTime createdAt;
   final DateTime updatedAt;
-  
+
   // Related models (optional, populated when joined)
-  final Coach? creator;
 
   const Workout({
     required this.workoutId,
@@ -26,7 +24,6 @@ class Workout extends Equatable {
     this.difficultyLevel = 'Beginner',
     required this.createdAt,
     required this.updatedAt,
-    this.creator,
   });
 
   /// Creates a Workout from JSON data
@@ -40,9 +37,6 @@ class Workout extends Equatable {
       difficultyLevel: json['difficulty_level'] as String? ?? 'Beginner',
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: DateTime.parse(json['updated_at'] as String),
-      creator: json['creator'] != null 
-          ? Coach.fromJson(json['creator'] as Map<String, dynamic>) 
-          : null,
     );
   }
 
@@ -57,7 +51,6 @@ class Workout extends Equatable {
       'difficulty_level': difficultyLevel,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
-      'creator': creator?.toJson(),
     };
   }
 
@@ -71,7 +64,6 @@ class Workout extends Equatable {
     String? difficultyLevel,
     DateTime? createdAt,
     DateTime? updatedAt,
-    Coach? creator,
   }) {
     return Workout(
       workoutId: workoutId ?? this.workoutId,
@@ -82,7 +74,6 @@ class Workout extends Equatable {
       difficultyLevel: difficultyLevel ?? this.difficultyLevel,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
-      creator: creator ?? this.creator,
     );
   }
 
@@ -96,19 +87,13 @@ class Workout extends Equatable {
     difficultyLevel,
     createdAt,
     updatedAt,
-    creator,
   ];
 
   @override
   String toString() {
-    return 'Workout(workoutId: $workoutId, name: $name, difficultyLevel: $difficultyLevel)';
+    return 'Workout(workoutId: $workoutId, name: $name)';
   }
 }
 
 /// Workout status enum for workout sessions
-enum WorkoutStatus {
-  planned,
-  inProgress,
-  completed,
-  cancelled,
-} 
+enum WorkoutStatus { planned, inProgress, completed, cancelled }

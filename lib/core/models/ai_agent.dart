@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'coach.dart';
 
 /// AI Agent model representing an AI agent in the Icon app
 class AiAgent extends Equatable {
@@ -11,9 +10,6 @@ class AiAgent extends Equatable {
   final Map<String, dynamic>? brandingInfo;
   final DateTime createdAt;
   final DateTime updatedAt;
-  
-  // Related models (optional, populated when joined)
-  final Coach? coach;
 
   const AiAgent({
     required this.aiAgentId,
@@ -22,7 +18,6 @@ class AiAgent extends Equatable {
     this.brandingInfo,
     required this.createdAt,
     required this.updatedAt,
-    this.coach,
   });
 
   /// Creates an AiAgent from JSON data
@@ -34,9 +29,6 @@ class AiAgent extends Equatable {
       brandingInfo: json['branding_info'] as Map<String, dynamic>?,
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: DateTime.parse(json['updated_at'] as String),
-      coach: json['coach'] != null 
-          ? Coach.fromJson(json['coach'] as Map<String, dynamic>) 
-          : null,
     );
   }
 
@@ -49,7 +41,6 @@ class AiAgent extends Equatable {
       'branding_info': brandingInfo,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
-      'coach': coach?.toJson(),
     };
   }
 
@@ -61,7 +52,6 @@ class AiAgent extends Equatable {
     Map<String, dynamic>? brandingInfo,
     DateTime? createdAt,
     DateTime? updatedAt,
-    Coach? coach,
   }) {
     return AiAgent(
       aiAgentId: aiAgentId ?? this.aiAgentId,
@@ -70,7 +60,6 @@ class AiAgent extends Equatable {
       brandingInfo: brandingInfo ?? this.brandingInfo,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
-      coach: coach ?? this.coach,
     );
   }
 
@@ -82,11 +71,10 @@ class AiAgent extends Equatable {
     brandingInfo,
     createdAt,
     updatedAt,
-    coach,
   ];
 
   @override
   String toString() {
     return 'AiAgent(aiAgentId: $aiAgentId, agentName: $agentName, coachId: $coachId)';
   }
-} 
+}

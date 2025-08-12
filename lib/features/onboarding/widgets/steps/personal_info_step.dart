@@ -147,8 +147,8 @@ class _PersonalInfoStepState extends State<PersonalInfoStep> {
 
           // Check if widget is still mounted before using BuildContext
           if (mounted) {
-            context.read<OnboardingBloc>().add(NextStep());
-            AppPrint.printInfo('Personal information saved successfully');
+          context.read<OnboardingBloc>().add(NextStep());
+          AppPrint.printInfo('Personal information saved successfully');
           }
         }
       } catch (e) {

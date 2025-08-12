@@ -6,7 +6,9 @@ import 'package:icon_app/features/onboarding/widgets/progress_header.dart';
 import 'package:icon_app/features/onboarding/widgets/steps/personal_info_step.dart';
 import 'package:icon_app/features/onboarding/widgets/steps/fitness_goals_step.dart';
 import 'package:icon_app/features/onboarding/widgets/steps/training_location_step.dart';
+import 'package:icon_app/features/onboarding/widgets/steps/training_routine_step.dart';
 import 'package:icon_app/features/onboarding/widgets/steps/simple_step.dart';
+import 'package:icon_app/features/onboarding/widgets/steps/body_profile_step.dart';
 import 'package:icon_app/features/onboarding/bloc/onboarding_bloc.dart';
 import 'package:icon_app/features/onboarding/bloc/onboarding_bloc_impl.dart';
 
@@ -125,18 +127,10 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                         const TrainingLocationStep(),
 
                         // Step 4: Training Routine
-                        const SimpleStep(
-                          title: "What's your training routine?",
-                          description: "How often do you want to work out?",
-                          icon: Icons.schedule,
-                        ),
+                        const TrainingRoutineStep(),
 
-                        // Step 5: Nutrition Goals
-                        const SimpleStep(
-                          title: "What are your nutrition goals?",
-                          description: "Tell us about your dietary preferences",
-                          icon: Icons.restaurant,
-                        ),
+                        // Step 5: Body Profile
+                        const BodyProfileStep(),
 
                         // Step 6: Experience Level
                         const SimpleStep(

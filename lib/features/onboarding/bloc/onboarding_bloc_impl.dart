@@ -15,6 +15,10 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     on<UpdateExperienceLevel>(_onUpdateExperienceLevel);
     on<UpdateOptionalDetails>(_onUpdateOptionalDetails);
     on<UpdateTrainingLocation>(_onUpdateTrainingLocation);
+    on<UpdateTrainingDaysPerWeek>(_onUpdateTrainingDaysPerWeek);
+    on<UpdateTrainingSessionDuration>(_onUpdateTrainingSessionDuration);
+    on<UpdateTrainingPreferredTime>(_onUpdateTrainingPreferredTime);
+    on<UpdateTrainingTime>(_onUpdateTrainingTime);
     on<NextStep>(_onNextStep);
     on<PreviousStep>(_onPreviousStep);
     on<GoToStep>(_onGoToStep);
@@ -199,6 +203,114 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     } else {
       // If state is not loaded yet, create a new loaded state with the training location
       final updatedData = OnboardingData(trainingLocation: event.location);
+
+      emit(
+        OnboardingLoaded(
+          currentStep: 0,
+          data: updatedData,
+          availableGoals: [],
+          isLoadingGoals: false,
+        ),
+      );
+    }
+  }
+
+  void _onUpdateTrainingDaysPerWeek(
+    UpdateTrainingDaysPerWeek event,
+    Emitter<OnboardingState> emit,
+  ) {
+    if (state is OnboardingLoaded) {
+      final currentState = state as OnboardingLoaded;
+      final updatedData = currentState.data.copyWith(
+        trainingDaysPerWeek: event.daysPerWeek,
+      );
+
+      emit(currentState.copyWith(data: updatedData));
+    } else {
+      // If state is not loaded yet, create a new loaded state
+      final updatedData = OnboardingData(
+        trainingDaysPerWeek: event.daysPerWeek,
+      );
+
+      emit(
+        OnboardingLoaded(
+          currentStep: 0,
+          data: updatedData,
+          availableGoals: [],
+          isLoadingGoals: false,
+        ),
+      );
+    }
+  }
+
+  void _onUpdateTrainingSessionDuration(
+    UpdateTrainingSessionDuration event,
+    Emitter<OnboardingState> emit,
+  ) {
+    if (state is OnboardingLoaded) {
+      final currentState = state as OnboardingLoaded;
+      final updatedData = currentState.data.copyWith(
+        trainingSessionDuration: event.sessionDuration,
+      );
+
+      emit(currentState.copyWith(data: updatedData));
+    } else {
+      // If state is not loaded yet, create a new loaded state
+      final updatedData = OnboardingData(
+        trainingSessionDuration: event.sessionDuration,
+      );
+
+      emit(
+        OnboardingLoaded(
+          currentStep: 0,
+          data: updatedData,
+          availableGoals: [],
+          isLoadingGoals: false,
+        ),
+      );
+    }
+  }
+
+  void _onUpdateTrainingPreferredTime(
+    UpdateTrainingPreferredTime event,
+    Emitter<OnboardingState> emit,
+  ) {
+    if (state is OnboardingLoaded) {
+      final currentState = state as OnboardingLoaded;
+      final updatedData = currentState.data.copyWith(
+        trainingPreferredTime: event.preferredTime,
+      );
+
+      emit(currentState.copyWith(data: updatedData));
+    } else {
+      // If state is not loaded yet, create a new loaded state
+      final updatedData = OnboardingData(
+        trainingPreferredTime: event.preferredTime,
+      );
+
+      emit(
+        OnboardingLoaded(
+          currentStep: 0,
+          data: updatedData,
+          availableGoals: [],
+          isLoadingGoals: false,
+        ),
+      );
+    }
+  }
+
+  void _onUpdateTrainingTime(
+    UpdateTrainingTime event,
+    Emitter<OnboardingState> emit,
+  ) {
+    if (state is OnboardingLoaded) {
+      final currentState = state as OnboardingLoaded;
+      final updatedData = currentState.data.copyWith(trainingTime: event.time);
+
+      emit(currentState.copyWith(data: updatedData));
+    } else {
+      // If state is not loaded yet, create a new loaded state
+      final updatedData = OnboardingData(trainingTime: event.time);
 
       emit(
         OnboardingLoaded(

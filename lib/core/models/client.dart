@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 import 'user.dart';
-import 'coach.dart';
 
 /// Client model representing a client profile in the Icon app
 class Client extends Equatable {
@@ -17,10 +16,9 @@ class Client extends Equatable {
   final String preferredActivityLevel;
   final int? targetCaloriesPerDay;
   final bool onboardingCompleted;
-  
+
   // Related models (optional, populated when joined)
   final User? user;
-  final Coach? coach;
 
   const Client({
     required this.clientId,
@@ -35,7 +33,6 @@ class Client extends Equatable {
     this.targetCaloriesPerDay,
     this.onboardingCompleted = false,
     this.user,
-    this.coach,
   });
 
   /// Creates a Client from JSON data
@@ -43,22 +40,20 @@ class Client extends Equatable {
     return Client(
       clientId: json['client_id'] as String,
       coachId: json['coach_id'] as String?,
-      dateOfBirth: json['date_of_birth'] != null 
-          ? DateTime.parse(json['date_of_birth'] as String) 
+      dateOfBirth: json['date_of_birth'] != null
+          ? DateTime.parse(json['date_of_birth'] as String)
           : null,
       gender: json['gender'] as String?,
       height: (json['height'] as num?)?.toDouble(),
       weight: (json['weight'] as num?)?.toDouble(),
       fitnessGoals: json['fitness_goals'] as String?,
       healthConditions: json['health_conditions'] as String?,
-      preferredActivityLevel: json['preferred_activity_level'] as String? ?? 'Beginner',
+      preferredActivityLevel:
+          json['preferred_activity_level'] as String? ?? 'Beginner',
       targetCaloriesPerDay: json['target_calories_per_day'] as int?,
       onboardingCompleted: json['onboarding_completed'] as bool? ?? false,
-      user: json['user'] != null 
-          ? User.fromJson(json['user'] as Map<String, dynamic>) 
-          : null,
-      coach: json['coach'] != null 
-          ? Coach.fromJson(json['coach'] as Map<String, dynamic>) 
+      user: json['user'] != null
+          ? User.fromJson(json['user'] as Map<String, dynamic>)
           : null,
     );
   }
@@ -78,7 +73,6 @@ class Client extends Equatable {
       'target_calories_per_day': targetCaloriesPerDay,
       'onboarding_completed': onboardingCompleted,
       'user': user?.toJson(),
-      'coach': coach?.toJson(),
     };
   }
 
@@ -96,7 +90,6 @@ class Client extends Equatable {
     int? targetCaloriesPerDay,
     bool? onboardingCompleted,
     User? user,
-    Coach? coach,
   }) {
     return Client(
       clientId: clientId ?? this.clientId,
@@ -107,11 +100,11 @@ class Client extends Equatable {
       weight: weight ?? this.weight,
       fitnessGoals: fitnessGoals ?? this.fitnessGoals,
       healthConditions: healthConditions ?? this.healthConditions,
-      preferredActivityLevel: preferredActivityLevel ?? this.preferredActivityLevel,
+      preferredActivityLevel:
+          preferredActivityLevel ?? this.preferredActivityLevel,
       targetCaloriesPerDay: targetCaloriesPerDay ?? this.targetCaloriesPerDay,
       onboardingCompleted: onboardingCompleted ?? this.onboardingCompleted,
       user: user ?? this.user,
-      coach: coach ?? this.coach,
     );
   }
 
@@ -120,7 +113,7 @@ class Client extends Equatable {
     if (dateOfBirth == null) return null;
     final now = DateTime.now();
     int age = now.year - dateOfBirth!.year;
-    if (now.month < dateOfBirth!.month || 
+    if (now.month < dateOfBirth!.month ||
         (now.month == dateOfBirth!.month && now.day < dateOfBirth!.day)) {
       age--;
     }
@@ -141,11 +134,10 @@ class Client extends Equatable {
     targetCaloriesPerDay,
     onboardingCompleted,
     user,
-    coach,
   ];
 
   @override
   String toString() {
-    return 'Client(clientId: $clientId, coachId: $coachId, onboardingCompleted: $onboardingCompleted)';
+    return 'Client(clientId: $clientId, onboardingCompleted: $onboardingCompleted)';
   }
-} 
+}

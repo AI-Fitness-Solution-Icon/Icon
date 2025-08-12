@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 import 'package:icon_app/core/models/fitness_main_goal.dart';
 
 // Events
@@ -62,6 +63,42 @@ class UpdateTrainingLocation extends OnboardingEvent {
 
   @override
   List<Object?> get props => [location];
+}
+
+class UpdateTrainingDaysPerWeek extends OnboardingEvent {
+  final String daysPerWeek;
+
+  const UpdateTrainingDaysPerWeek(this.daysPerWeek);
+
+  @override
+  List<Object?> get props => [daysPerWeek];
+}
+
+class UpdateTrainingSessionDuration extends OnboardingEvent {
+  final String sessionDuration;
+
+  const UpdateTrainingSessionDuration(this.sessionDuration);
+
+  @override
+  List<Object?> get props => [sessionDuration];
+}
+
+class UpdateTrainingPreferredTime extends OnboardingEvent {
+  final String preferredTime;
+
+  const UpdateTrainingPreferredTime(this.preferredTime);
+
+  @override
+  List<Object?> get props => [preferredTime];
+}
+
+class UpdateTrainingTime extends OnboardingEvent {
+  final TimeOfDay time;
+
+  const UpdateTrainingTime(this.time);
+
+  @override
+  List<Object?> get props => [time];
 }
 
 class NextStep extends OnboardingEvent {}
@@ -149,6 +186,10 @@ class OnboardingData extends Equatable {
   final String? experienceLevel;
   final String? optionalDetails;
   final String? trainingLocation;
+  final String? trainingDaysPerWeek;
+  final String? trainingSessionDuration;
+  final String? trainingPreferredTime;
+  final TimeOfDay? trainingTime;
 
   const OnboardingData({
     this.firstName,
@@ -159,6 +200,10 @@ class OnboardingData extends Equatable {
     this.experienceLevel,
     this.optionalDetails,
     this.trainingLocation,
+    this.trainingDaysPerWeek,
+    this.trainingSessionDuration,
+    this.trainingPreferredTime,
+    this.trainingTime,
   });
 
   OnboardingData copyWith({
@@ -170,6 +215,10 @@ class OnboardingData extends Equatable {
     String? experienceLevel,
     String? optionalDetails,
     String? trainingLocation,
+    String? trainingDaysPerWeek,
+    String? trainingSessionDuration,
+    String? trainingPreferredTime,
+    TimeOfDay? trainingTime,
   }) {
     return OnboardingData(
       firstName: firstName ?? this.firstName,
@@ -180,6 +229,12 @@ class OnboardingData extends Equatable {
       experienceLevel: experienceLevel ?? this.experienceLevel,
       optionalDetails: optionalDetails ?? this.optionalDetails,
       trainingLocation: trainingLocation ?? this.trainingLocation,
+      trainingDaysPerWeek: trainingDaysPerWeek ?? this.trainingDaysPerWeek,
+      trainingSessionDuration:
+          trainingSessionDuration ?? this.trainingSessionDuration,
+      trainingPreferredTime:
+          trainingPreferredTime ?? this.trainingPreferredTime,
+      trainingTime: trainingTime ?? this.trainingTime,
     );
   }
 
@@ -203,5 +258,9 @@ class OnboardingData extends Equatable {
     experienceLevel,
     optionalDetails,
     trainingLocation,
+    trainingDaysPerWeek,
+    trainingSessionDuration,
+    trainingPreferredTime,
+    trainingTime,
   ];
 }

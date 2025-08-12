@@ -280,79 +280,61 @@ class FitnessGoalsStep extends StatelessWidget {
     );
   }
 
-  /// Build the goals grid
+  /// Build the goals list
   Widget _buildGoalsWidget(BuildContext context, OnboardingLoaded state) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        // Calculate optimal item width for uniform appearance
-        final double availableWidth =
-            constraints.maxWidth - 24; // Account for padding
-        final double itemWidth =
-            (availableWidth - 24) / 2; // 2 items per row with spacing
-
-        return Column(
-          children: [
-            // Header text with better styling
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              decoration: BoxDecoration(
-                color: AppColors.surfaceDark.withValues(alpha: 0.3),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: AppColors.textSecondary.withValues(alpha: 0.2),
-                  width: 1,
-                ),
-              ),
-              child: Text(
-                'Select one or more goals that resonate with you:',
-                style: TextStyle(
-                  color: AppColors.textLight,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                ),
-                textAlign: TextAlign.center,
-              ),
+    return Column(
+      children: [
+        // Header text with better styling
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          decoration: BoxDecoration(
+            color: AppColors.surfaceDark.withValues(alpha: 0.3),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: AppColors.textSecondary.withValues(alpha: 0.2),
+              width: 1,
             ),
-            const SizedBox(height: 20),
+          ),
+          child: Text(
+            'Select one or more goals that resonate with you:',
+            style: TextStyle(
+              color: AppColors.textLight,
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ),
+        const SizedBox(height: 20),
 
-            // Goals grid with fixed height items
-            Wrap(
-              spacing: 16,
-              runSpacing: 16,
-              alignment: WrapAlignment.center,
-              children: List.generate(state.availableGoals.length, (index) {
-                final goal = state.availableGoals[index];
-                return TweenAnimationBuilder<double>(
-                  duration: Duration(milliseconds: 300 + (index * 50)),
-                  tween: Tween(begin: 0.0, end: 1.0),
-                  builder: (context, value, child) {
-                    return Transform.translate(
-                      offset: Offset(0, 20 * (1 - value)),
-                      child: Opacity(
-                        opacity: value,
-                        child: SizedBox(
-                          width: itemWidth,
-                          height: 200, // Fixed height for all goal items
-                          child: _buildAnimatedGoalButton(
-                            context,
-                            goal,
-                            index,
-                            state,
-                          ),
-                        ),
-                      ),
-                    );
-                  },
+        // Goals list with vertical layout
+        ListView.separated(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: state.availableGoals.length,
+          separatorBuilder: (context, index) => const SizedBox(height: 12),
+          itemBuilder: (context, index) {
+            final goal = state.availableGoals[index];
+            return TweenAnimationBuilder<double>(
+              duration: Duration(milliseconds: 400 + (index * 100)),
+              tween: Tween(begin: 0.0, end: 1.0),
+              builder: (context, value, child) {
+                return Transform.translate(
+                  offset: Offset(20 * (1 - value), 0),
+                  child: Opacity(
+                    opacity: value,
+                    child: _buildGoalListItem(context, goal, index, state),
+                  ),
                 );
-              }),
-            ),
-          ],
-        );
-      },
+              },
+            );
+          },
+        ),
+      ],
     );
   }
 
-  Widget _buildAnimatedGoalButton(
+  Widget _buildGoalListItem(
     BuildContext context,
     FitnessMainGoal goal,
     int index,
@@ -367,7 +349,7 @@ class FitnessGoalsStep extends StatelessWidget {
         color: isSelected
             ? AppColors.secondary
             : AppColors.surfaceDark.withValues(alpha: 0.8),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: isSelected
               ? AppColors.secondary
@@ -388,26 +370,23 @@ class FitnessGoalsStep extends StatelessWidget {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(12),
           onTap: () => _toggleGoalSelection(context, goal.id, state),
           splashColor: AppColors.secondary.withValues(alpha: 0.2),
           highlightColor: AppColors.secondary.withValues(alpha: 0.1),
           child: Container(
-            padding: const EdgeInsets.all(20),
-            height: double.infinity, // Take full height of parent
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+            padding: const EdgeInsets.all(16),
+            child: Row(
               children: [
-                // Goal icon with subtle animation
-                AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
+                // Goal icon
+                Container(
                   width: 48,
                   height: 48,
                   decoration: BoxDecoration(
                     color: isSelected
                         ? Colors.white.withValues(alpha: 0.2)
                         : AppColors.textSecondary.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
                     _getGoalIcon(goal.name),
@@ -416,35 +395,27 @@ class FitnessGoalsStep extends StatelessWidget {
                   ),
                 ),
 
-                const SizedBox(height: 16),
+                const SizedBox(width: 16),
 
-                // Goal name with flexible height and consistent spacing
+                // Goal title
                 Expanded(
-                  child: Center(
-                    child: Text(
-                      goal.name,
-                      style: TextStyle(
-                        color: isSelected ? Colors.white : AppColors.textLight,
-                        fontWeight: isSelected
-                            ? FontWeight.w700
-                            : FontWeight.w600,
-                        fontSize: 16,
-                        height: 1.2,
-                      ),
-                      textAlign: TextAlign.center,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
+                  child: Text(
+                    goal.name,
+                    style: TextStyle(
+                      color: isSelected ? Colors.white : AppColors.textLight,
+                      fontWeight: isSelected
+                          ? FontWeight.w700
+                          : FontWeight.w600,
+                      fontSize: 16,
                     ),
                   ),
                 ),
 
-                const SizedBox(height: 8),
-
                 // Selection indicator
                 AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
-                  width: 20,
-                  height: 20,
+                  width: 24,
+                  height: 24,
                   decoration: BoxDecoration(
                     color: isSelected ? Colors.white : Colors.transparent,
                     shape: BoxShape.circle,
@@ -459,7 +430,7 @@ class FitnessGoalsStep extends StatelessWidget {
                       ? const Icon(
                           Icons.check,
                           color: AppColors.secondary,
-                          size: 14,
+                          size: 16,
                         )
                       : null,
                 ),
@@ -470,6 +441,8 @@ class FitnessGoalsStep extends StatelessWidget {
       ),
     );
   }
+
+  // ignore: unused_element
 
   /// Get appropriate icon for each goal type
   IconData _getGoalIcon(String goalName) {

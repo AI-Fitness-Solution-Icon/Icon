@@ -16,6 +16,7 @@ class TrainingLocationStep extends StatefulWidget {
 
 class _TrainingLocationStepState extends State<TrainingLocationStep> {
   String? _selectedLocation;
+  final Set<String> _selectedEquipment = <String>{};
 
   @override
   void initState() {
@@ -35,6 +36,16 @@ class _TrainingLocationStepState extends State<TrainingLocationStep> {
 
     // Update BLoC with the selection
     context.read<OnboardingBloc>().add(UpdateTrainingLocation(location));
+  }
+
+  void _toggleEquipmentSelection(String equipmentId) {
+    setState(() {
+      if (_selectedEquipment.contains(equipmentId)) {
+        _selectedEquipment.remove(equipmentId);
+      } else {
+        _selectedEquipment.add(equipmentId);
+      }
+    });
   }
 
   @override
@@ -67,7 +78,7 @@ class _TrainingLocationStepState extends State<TrainingLocationStep> {
                   },
                 ),
 
-                const SizedBox(height: 40),
+                const SizedBox(height: 20),
 
                 // Training Location Section with staggered animation
                 TweenAnimationBuilder<double>(
@@ -87,6 +98,7 @@ class _TrainingLocationStepState extends State<TrainingLocationStep> {
                                   ?.copyWith(
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,
+                                    fontSize: 16,
                                   ),
                             ),
                             const SizedBox(height: 20),
@@ -99,6 +111,79 @@ class _TrainingLocationStepState extends State<TrainingLocationStep> {
                 ),
 
                 const SizedBox(height: 40),
+
+                // Equipment Selection Section
+                TweenAnimationBuilder<double>(
+                  duration: const Duration(milliseconds: 1000),
+                  tween: Tween(begin: 0.0, end: 1.0),
+                  builder: (context, value, child) {
+                    return Transform.translate(
+                      offset: Offset(0, 20 * (1 - value)),
+                      child: Opacity(
+                        opacity: value,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'What equipment do you have?',
+                              style: Theme.of(context).textTheme.headlineSmall
+                                  ?.copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                  ),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Select all that apply',
+                              style: TextStyle(
+                                color: AppColors.textSecondary,
+                                fontSize: 14,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 24),
+                            _buildEquipmentList(),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+
+                const SizedBox(height: 32),
+
+                // Optional Details Section
+                TweenAnimationBuilder<double>(
+                  duration: const Duration(milliseconds: 1200),
+                  tween: Tween(begin: 0.0, end: 1.0),
+                  builder: (context, value, child) {
+                    return Transform.translate(
+                      offset: Offset(0, 20 * (1 - value)),
+                      child: Opacity(
+                        opacity: value,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Any other equipment or details? (Optional)',
+                              style: TextStyle(
+                                color: AppColors.textLight,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            _buildOptionalDetailsField(),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+
+                const SizedBox(height: 20),
 
                 // Animated Continue Button
                 TweenAnimationBuilder<double>(
@@ -181,6 +266,192 @@ class _TrainingLocationStepState extends State<TrainingLocationStep> {
           ),
         );
       }).toList(),
+    );
+  }
+
+  Widget _buildEquipmentList() {
+    final equipmentOptions = [
+      {'id': 'dumbbells', 'title': 'Dumbbells', 'icon': Icons.fitness_center},
+      {'id': 'barbell', 'title': 'Barbell', 'icon': Icons.fitness_center},
+      {'id': 'kettlebell', 'title': 'Kettlebell', 'icon': Icons.fitness_center},
+      {
+        'id': 'resistance_band',
+        'title': 'Resistance Band',
+        'icon': Icons.fitness_center,
+      },
+      {
+        'id': 'pull_up_bar',
+        'title': 'Pull-up Bar',
+        'icon': Icons.fitness_center,
+      },
+      {'id': 'bench', 'title': 'Bench', 'icon': Icons.fitness_center},
+      {
+        'id': 'bodyweight_only',
+        'title': 'Bodyweight Only',
+        'icon': Icons.accessibility_new,
+      },
+    ];
+
+    return ListView.separated(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: equipmentOptions.length,
+      separatorBuilder: (context, index) => const SizedBox(height: 12),
+      itemBuilder: (context, index) {
+        final equipment = equipmentOptions[index];
+        final isSelected = _selectedEquipment.contains(
+          equipment['id'] as String,
+        );
+
+        return TweenAnimationBuilder<double>(
+          duration: Duration(milliseconds: 400 + (index * 100)),
+          tween: Tween(begin: 0.0, end: 1.0),
+          builder: (context, value, child) {
+            return Transform.translate(
+              offset: Offset(20 * (1 - value), 0),
+              child: Opacity(
+                opacity: value,
+                child: _buildEquipmentListItem(equipment, isSelected),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildEquipmentListItem(
+    Map<String, dynamic> equipment,
+    bool isSelected,
+  ) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeInOut,
+      decoration: BoxDecoration(
+        color: isSelected ? AppColors.secondary : AppColors.surfaceDark,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: isSelected
+              ? AppColors.secondary
+              : AppColors.textSecondary.withValues(alpha: 0.3),
+          width: isSelected ? 2 : 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: isSelected
+                ? AppColors.secondary.withValues(alpha: 0.3)
+                : Colors.black.withValues(alpha: 0.1),
+            blurRadius: isSelected ? 8 : 4,
+            offset: Offset(0, isSelected ? 4 : 2),
+            spreadRadius: 0,
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: () => _toggleEquipmentSelection(equipment['id'] as String),
+          splashColor: AppColors.secondary.withValues(alpha: 0.2),
+          highlightColor: AppColors.secondary.withValues(alpha: 0.1),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                // Equipment icon
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? Colors.white.withValues(alpha: 0.2)
+                        : AppColors.textSecondary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    equipment['icon'] as IconData,
+                    color: isSelected ? Colors.white : AppColors.textSecondary,
+                    size: 24,
+                  ),
+                ),
+
+                const SizedBox(width: 16),
+
+                // Equipment title
+                Expanded(
+                  child: Text(
+                    equipment['title'] as String,
+                    style: TextStyle(
+                      color: isSelected ? Colors.white : AppColors.textLight,
+                      fontWeight: isSelected
+                          ? FontWeight.w700
+                          : FontWeight.w600,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+
+                // Selection indicator
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  width: 24,
+                  height: 24,
+                  decoration: BoxDecoration(
+                    color: isSelected ? Colors.white : Colors.transparent,
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: isSelected
+                          ? Colors.white
+                          : AppColors.textSecondary.withValues(alpha: 0.5),
+                      width: 2,
+                    ),
+                  ),
+                  child: isSelected
+                      ? const Icon(
+                          Icons.check,
+                          color: AppColors.secondary,
+                          size: 16,
+                        )
+                      : null,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+
+  Widget _buildOptionalDetailsField() {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.surfaceDark,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: AppColors.textSecondary.withValues(alpha: 0.3),
+          width: 1,
+        ),
+      ),
+      child: TextField(
+        maxLines: 4,
+        style: const TextStyle(color: AppColors.textLight, fontSize: 14),
+        decoration: InputDecoration(
+          hintText: 'Tell us about any other equipment you have access to...',
+          hintStyle: TextStyle(
+            color: AppColors.textSecondary.withValues(alpha: 0.7),
+            fontSize: 14,
+          ),
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.all(16),
+        ),
+        onChanged: (value) {
+          // Update BLoC with optional details
+          context.read<OnboardingBloc>().add(
+            UpdateOptionalDetails(value.isEmpty ? null : value),
+          );
+        },
+      ),
     );
   }
 
